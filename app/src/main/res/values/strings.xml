@@ -4,4 +4,7 @@
     <string name="login_welcome_message">Welcome Back!</string>
     <string name="email_address_preview">Email address</string>
     <string name="password_preview">Password</string>
+    <string name="login_button">LOG IN</string>
+    <string name="no_account_message">DON\'T HAVE AN ACCOUNT?</string>
+    <string name="sign_up_button">SIGN UP</string>
 </resources>
