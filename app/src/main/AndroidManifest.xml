@@ -9,7 +9,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Tasky">
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".presentation.register.RegisterActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.login.LoginActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
