@@ -9,55 +9,28 @@ import android.widget.*
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.andrew.tasky.R
+import com.andrew.tasky.databinding.ActivityRegisterBinding
 
 class RegisterActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityRegisterBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-
-
-        val emailAddress = findViewById<EditText>(R.id.emailAddressEditText)
-        val emailAddressCheckBox = findViewById<ImageView>(R.id.emailAddressCheckBox)
-        val password = findViewById<EditText>(R.id.passwordEditText)
-        val passwordVisibilityButton = findViewById<ImageButton>(R.id.passwordVisibilityButton)
-        var passwordCursorPlace = Int
-        var passwordVisibility = false
-        val loginButton = findViewById<Button>(R.id.loginButton)
-        val backButton = findViewById<TextView>(R.id.backButton)
-
-
-
-
-
-
-        backButton.setOnClickListener(){
+        binding.backButton.setOnClickListener(){
             finish()
         }
 
-
-
-
-        emailAddress.addTextChangedListener(){
-            emailAddressCheckBox.isVisible = emailAddress.text.toString() != ""
+        binding.emailAddressEditText.addTextChangedListener(){
+            binding.emailAddressCheckBox.isVisible = binding.emailAddressEditText.text.toString() != ""
         }
 
-        password.addTextChangedListener(){
-
-        }
-
-
-        passwordVisibilityButton.setOnClickListener(){
-            if(!passwordVisibility){
-                passwordVisibilityButton.setBackgroundResource(R.drawable.ic_baseline_visibility_24)
-                passwordVisibility = true
-                password.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            }
-            else{
-                passwordVisibilityButton.setBackgroundResource(R.drawable.ic_baseline_visibility_off_24)
-                passwordVisibility = false
-                password.transformationMethod = PasswordTransformationMethod.getInstance()
-            }
+        // Much cleaner now since you don't need to define the logic for the PW field in every
+        // screen you use it
+        binding.passwordTextField.addOnTextChangeListener {
 
         }
     }
