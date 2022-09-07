@@ -7,4 +7,7 @@
     <string name="login_button">LOG IN</string>
     <string name="no_account_message">DON\'T HAVE AN ACCOUNT?</string>
     <string name="sign_up_button">SIGN UP</string>
+    <string name="register_welcome_message">Create your account</string>
+    <string name="name_preview">Name</string>
+    <string name="get_started_button">GET STARTED</string>
 </resources>

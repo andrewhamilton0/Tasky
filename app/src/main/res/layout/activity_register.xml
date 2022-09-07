@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topOfWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".12" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomOfWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".176" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topOfButtonHolderLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".23" />
+
+
+    <TextView
+        android:id="@+id/welcomeMessageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/register_welcome_message"
+        android:textColor="@color/white"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topOfWelcome"
+        app:layout_constraintBottom_toTopOf="@id/bottomOfWelcome" />
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttonHolderLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/rounded_top"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topOfButtonHolderLayout">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/startOfTextBoxes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".075" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/endOfTextBoxes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".925" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfTextBoxes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".075" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".165" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfEmailAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".19" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfEmailAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".28" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".305" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".395" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfGetStarted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".5" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfGetStarted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".59" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfBackButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".80" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/nameLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_edit_text"
+            android:backgroundTint="@color/light_grey"
+            app:layout_constraintTop_toBottomOf="@+id/topOfTextBoxes"
+            app:layout_constraintBottom_toTopOf="@id/bottomOfName"
+            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
+            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/startOfEditText1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".061" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/endOfEditText1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".878" />
+
+
+            <EditText
+                android:id="@+id/nameEditText"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="@string/name_preview"
+                android:singleLine="true"
+                android:textAlignment="viewStart"
+                android:textColorHighlight="@color/black"
+                android:textColorLink="@color/black"
+                android:textCursorDrawable="@null"
+                app:layout_constraintStart_toEndOf="@id/startOfEditText1"
+                app:layout_constraintEnd_toStartOf="@id/endOfEditText1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+            </EditText>
+
+            <ImageView
+                android:id="@+id/nameCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_baseline_check_24"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/endOfEditText1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+            </ImageView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/emailAddressLayout"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/rounded_edit_text"
+                android:backgroundTint="@color/light_grey"
+                app:layout_constraintTop_toBottomOf="@+id/topOfEmailAddress"
+                app:layout_constraintBottom_toTopOf="@+id/bottomOfEmailAddress"
+                app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
+                app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/startOfEditText2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent=".061" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/endOfEditText2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent=".878" />
+
+                <EditText
+                    android:id="@+id/emailAddressEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="@string/email_address_preview"
+                    android:singleLine="true"
+                    android:textAlignment="viewStart"
+                    android:textColorHighlight="@color/black"
+                    android:textCursorDrawable="@null"
+                    app:layout_constraintStart_toEndOf="@id/startOfEditText2"
+                    app:layout_constraintEnd_toStartOf="@id/endOfEditText2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                </EditText>
+
+                <ImageView
+                    android:id="@+id/emailAddressCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_baseline_check_24"
+                    android:visibility="invisible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/endOfEditText2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                </ImageView>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/passwordLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_edit_text"
+            android:backgroundTint="@color/light_grey"
+            app:layout_constraintTop_toBottomOf="@+id/topOfPassword"
+            app:layout_constraintBottom_toTopOf="@+id/bottomOfPassword"
+            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
+            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/startOfEditText3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".061" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/endOfEditText3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".878" />
+
+            <EditText
+                android:id="@+id/passwordEditText"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="@string/password_preview"
+                android:password="true"
+                android:singleLine="true"
+                android:textAlignment="viewStart"
+                android:textColorHighlight="@color/black"
+                android:textCursorDrawable="@null"
+                app:layout_constraintStart_toEndOf="@id/startOfEditText3"
+                app:layout_constraintEnd_toStartOf="@id/endOfEditText3"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+            </EditText>
+
+            <ImageButton
+                android:id="@+id/passwordVisibilityButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_baseline_visibility_off_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/endOfEditText3"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+            </ImageButton>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/getStartedButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_button"
+            android:text="@string/get_started_button"
+            app:layout_constraintTop_toBottomOf="@id/topOfGetStarted"
+            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
+            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes"
+            app:layout_constraintBottom_toTopOf="@+id/bottomOfGetStarted">
+
+        </Button>
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/rounded_edit_text"
+            app:icon="@drawable/ic_baseline_arrow_back_ios_new_24"
+            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
+            app:layout_constraintTop_toTopOf="@id/topOfBackButton">
+
+        </Button>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
