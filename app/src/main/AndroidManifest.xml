@@ -9,19 +9,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Tasky">
         <activity
-            android:name=".presentation.register.RegisterActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.login.LoginActivity"
-            android:screenOrientation="portrait"
-            android:exported="true">
+            android:name=".presentation.MainActivity"
+            android:exported="true"
+            android:theme="@style/splashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".presentation.task_detail.EditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.task_detail.TaskDetailActivity"
+            android:exported="false" />
     </application>
-
 </manifest>

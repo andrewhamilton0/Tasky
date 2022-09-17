@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -26,7 +27,6 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent=".23" />
 
-
     <TextView
         android:id="@+id/welcomeMessageTextView"
         android:layout_width="wrap_content"
@@ -39,8 +39,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topOfWelcome"
         app:layout_constraintBottom_toTopOf="@id/bottomOfWelcome" />
-
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttonHolderLayout"
@@ -130,7 +128,6 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent=".80" />
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/nameLayout"
             android:layout_width="0dp"
@@ -156,7 +153,6 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent=".878" />
 
-
             <EditText
                 android:id="@+id/nameEditText"
                 android:layout_width="0dp"
@@ -172,7 +168,6 @@
                 app:layout_constraintEnd_toStartOf="@id/endOfEditText1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
-
             </EditText>
 
             <ImageView
@@ -185,128 +180,28 @@
                 app:layout_constraintStart_toEndOf="@id/endOfEditText1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
-
             </ImageView>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/emailAddressLayout"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:background="@drawable/rounded_edit_text"
-                android:backgroundTint="@color/light_grey"
-                app:layout_constraintTop_toBottomOf="@+id/topOfEmailAddress"
-                app:layout_constraintBottom_toTopOf="@+id/bottomOfEmailAddress"
-                app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
-                app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/startOfEditText2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent=".061" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/endOfEditText2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent=".878" />
-
-                <EditText
-                    android:id="@+id/emailAddressEditText"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:hint="@string/email_address_preview"
-                    android:singleLine="true"
-                    android:textAlignment="viewStart"
-                    android:textColorHighlight="@color/black"
-                    android:textCursorDrawable="@null"
-                    app:layout_constraintStart_toEndOf="@id/startOfEditText2"
-                    app:layout_constraintEnd_toStartOf="@id/endOfEditText2"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
-
-                </EditText>
-
-                <ImageView
-                    android:id="@+id/emailAddressCheckBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/ic_baseline_check_24"
-                    android:visibility="invisible"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/endOfEditText2"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
-
-                </ImageView>
-
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/passwordLayout"
+        <com.andrew.tasky.presentation.views.EmailTextField
+            android:id="@+id/emailTextField"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/rounded_edit_text"
-            android:backgroundTint="@color/light_grey"
+            app:layout_constraintTop_toBottomOf="@+id/topOfEmailAddress"
+            app:layout_constraintBottom_toTopOf="@+id/bottomOfEmailAddress"
+            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
+            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
+        </com.andrew.tasky.presentation.views.EmailTextField>
+
+        <com.andrew.tasky.presentation.views.PasswordTextField
+            android:id="@+id/passwordTextField"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@+id/topOfPassword"
             app:layout_constraintBottom_toTopOf="@+id/bottomOfPassword"
             app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
             app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/startOfEditText3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent=".061" />
-
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/endOfEditText3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent=".878" />
-
-            <EditText
-                android:id="@+id/passwordEditText"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:hint="@string/password_preview"
-                android:password="true"
-                android:singleLine="true"
-                android:textAlignment="viewStart"
-                android:textColorHighlight="@color/black"
-                android:textCursorDrawable="@null"
-                app:layout_constraintStart_toEndOf="@id/startOfEditText3"
-                app:layout_constraintEnd_toStartOf="@id/endOfEditText3"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-            </EditText>
-
-            <ImageButton
-                android:id="@+id/passwordVisibilityButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_baseline_visibility_off_24"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/endOfEditText3"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-            </ImageButton>
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.andrew.tasky.presentation.views.PasswordTextField>
 
         <Button
             android:id="@+id/getStartedButton"
@@ -318,7 +213,6 @@
             app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
             app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes"
             app:layout_constraintBottom_toTopOf="@+id/bottomOfGetStarted">
-
         </Button>
 
         <Button
@@ -329,9 +223,6 @@
             app:icon="@drawable/ic_baseline_arrow_back_ios_new_24"
             app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
             app:layout_constraintTop_toTopOf="@id/topOfBackButton">
-
         </Button>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

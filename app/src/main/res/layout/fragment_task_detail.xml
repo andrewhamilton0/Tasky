@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topOfTaskLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.09" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/startOfMargin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".075" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/endOfMargin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".925" />
+
+    <ImageButton
+        android:id="@+id/closeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/ic_baseline_close_24"
+        app:layout_constraintBottom_toTopOf="@id/topOfTaskLayout"
+        app:layout_constraintStart_toEndOf="@id/startOfMargin"
+        app:layout_constraintTop_toTopOf="parent">
+    </ImageButton>
+
+    <ImageButton
+        android:id="@+id/editButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/ic_baseline_edit_24"
+        app:layout_constraintBottom_toTopOf="@id/topOfTaskLayout"
+        app:layout_constraintEnd_toStartOf="@id/endOfMargin"
+        app:layout_constraintTop_toTopOf="parent">
+    </ImageButton>
+
+    <TextView
+        android:id="@+id/currentDateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/topOfTaskLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="01 MARCH 2022"
+        tools:text="01 MARCH 2022" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/taskLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/rounded_top"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topOfTaskLayout"
+        app:layout_constraintVertical_bias="0.0">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/startOfMarginTaskLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".075" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/endOfMarginTaskLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".925" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfTaskType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.05" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfTaskType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.10" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfTitleLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.13" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfTitleLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="133dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfDescriptionLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.09" />
+
+        <View
+            android:id="@+id/taskColorBox"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/rounded_task_box"
+            android:backgroundTint="@color/tasky_green"
+            app:layout_constraintBottom_toTopOf="@id/bottomOfTaskType"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
+            app:layout_constraintTop_toBottomOf="@id/topOfTaskType">
+        </View>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/task"
+            android:textColor="@color/grey"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/bottomOfTaskType"
+            app:layout_constraintStart_toEndOf="@id/taskColorBox"
+            app:layout_constraintTop_toBottomOf="@+id/topOfTaskType">
+        </TextView>
+
+        <View
+            android:id="@+id/taskDoneCircle"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/task_title_circle"
+            android:backgroundTint="@color/black"
+            app:layout_constraintBottom_toTopOf="@+id/bottomOfTitleLine"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
+            app:layout_constraintTop_toBottomOf="@id/topOfTitleLine">
+        </View>
+
+        <TextView
+            android:id="@+id/taskTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Project X"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/bottomOfTitleLine"
+            app:layout_constraintStart_toEndOf="@id/taskDoneCircle"
+            app:layout_constraintTop_toBottomOf="@+id/topOfTitleLine"
+            tools:text="Project X">
+        </TextView>
+
+        <ImageButton
+            android:id="@+id/editTitleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_baseline_arrow_forward_ios_24"
+            android:backgroundTint="@color/black"
+            app:layout_constraintBottom_toTopOf="@id/bottomOfTitleLine"
+            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
+            app:layout_constraintTop_toBottomOf="@id/topOfTitleLine">
+        </ImageButton>
+
+        <View
+            android:id="@+id/topOfDescriptionLine"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/baby_blue"
+            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
+            app:layout_constraintTop_toBottomOf="@id/taskTitle" />
+
+        <TextView
+            android:id="@+id/descriptionTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:lineSpacingExtra="8sp"
+            android:minLines="2"
+            android:text="Weekly plan \nRole distribution\nNow This is a new line"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textFontWeight="600"
+            app:layout_constraintEnd_toStartOf="@id/editDescriptionButton"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
+            app:layout_constraintTop_toBottomOf="@id/topOfDescriptionLine"
+            tools:text="Weekly plan \nRole distribution\nNow This is a new line\nand a new one">
+        </TextView>
+
+        <ImageButton
+            android:id="@+id/editDescriptionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_baseline_arrow_forward_ios_24"
+            android:backgroundTint="@color/black"
+            app:layout_constraintBottom_toBottomOf="@id/descriptionTextView"
+            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
+            app:layout_constraintStart_toEndOf="@id/descriptionTextView"
+            app:layout_constraintTop_toTopOf="@id/descriptionTextView">
+        </ImageButton>
+
+        <View
+            android:id="@+id/topOfTimeLine"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/baby_blue"
+            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
+            app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
+
+        <TextView
+            android:id="@+id/atText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/at"
+            android:textColor="@color/black"
+            android:textFontWeight="600"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
+            app:layout_constraintTop_toBottomOf="@id/topOfTimeLine">
+        </TextView>
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:text="08:00"
+            android:textColor="@color/black"
+            android:textFontWeight="600"
+            app:layout_constraintStart_toEndOf="@id/atText"
+            app:layout_constraintTop_toBottomOf="@id/topOfTimeLine"
+            tools:text="08:00">
+        </TextView>
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="24dp"
+            android:text="Jul 21 2022"
+            android:textColor="@color/black"
+            android:textFontWeight="600"
+            app:layout_constraintStart_toEndOf="@id/time"
+            app:layout_constraintTop_toBottomOf="@id/topOfTimeLine"
+            tools:text="Jul 21 2022">
+        </TextView>
+
+        <View
+            android:id="@+id/bottomOfTimeLine"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/baby_blue"
+            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
+            app:layout_constraintTop_toBottomOf="@id/date" />
+
+        <View
+            android:id="@+id/topOfDeleteTaskButton"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginBottom="24dp"
+            android:background="@color/baby_blue"
+            app:layout_constraintBottom_toTopOf="@id/deleteTaskButton"
+            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout" />
+
+        <TextView
+            android:id="@+id/deleteTaskButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="@string/delete_task_button"
+            android:textColor="@color/lightish_grey"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout">
+        </TextView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,4 +9,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="text_white">#FFeeeeee</color>
     <color name="light_grey">#99DFDFDF</color>
+    <color name="lightish_grey">#95888888</color>
+    <color name="grey">#5c5d5a</color>
+    <color name="tasky_green">#259f70</color>
+    <color name="baby_blue">#5B92BEF0</color>
+
 </resources>
