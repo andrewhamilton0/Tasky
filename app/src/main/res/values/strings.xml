@@ -10,4 +10,14 @@
     <string name="register_welcome_message">Create your account</string>
     <string name="name_preview">Name</string>
     <string name="get_started_button">GET STARTED</string>
+
+    <string name="task">Task</string>
+    <string name="edit_task_text">EDIT TASK</string>
+    <string name="edit_title_text">EDIT TITLE</string>
+    <string name="edit_description_text">EDIT DESCRIPTION</string>
+    <string name="save_button">Save</string>
+    <string name="at">At</string>
+    <string name="delete_task_button">DELETE TASK</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

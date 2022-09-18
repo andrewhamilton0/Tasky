@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/emailAddressLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rounded_edit_text"
+    android:backgroundTint="@color/light_grey">
+
+<androidx.constraintlayout.widget.Guideline
+    android:id="@+id/startOfEditText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent=".061" />
+
+<androidx.constraintlayout.widget.Guideline
+    android:id="@+id/endOfEditText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent=".86" />
+
+<EditText
+    android:id="@+id/emailAddressEditText"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:background="@null"
+    android:hint="@string/email_address_preview"
+    android:singleLine="true"
+    android:textAlignment="viewStart"
+    android:textColorHighlight="@color/black"
+    android:textCursorDrawable="@null"
+    app:layout_constraintStart_toEndOf="@id/startOfEditText"
+    app:layout_constraintEnd_toStartOf="@id/endOfEditText"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent">
+</EditText>
+
+<ImageView
+    android:id="@+id/emailAddressCheckBox"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/ic_baseline_check_24"
+    android:visibility="invisible"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@id/endOfEditText"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent">
+
+</ImageView>
+</androidx.constraintlayout.widget.ConstraintLayout>

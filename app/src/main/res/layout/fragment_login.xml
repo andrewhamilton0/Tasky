@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topOfWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".12" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomOfWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".176" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topOfButtonHolderLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".23" />
+
+    <TextView
+        android:id="@+id/welcomeMessageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_welcome_message"
+        android:textColor="@color/white"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topOfWelcome"
+        app:layout_constraintBottom_toTopOf="@id/bottomOfWelcome" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttonHolderLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/rounded_top"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topOfButtonHolderLayout">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/startOfTextBoxes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".075" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/endOfTextBoxes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".925" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfTextBoxes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".075" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfEmailAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".165" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".19" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".28" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfLoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".31" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfLoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".4" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topOfSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".879" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottomOfSignUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".908" />
+
+        <com.andrew.tasky.presentation.views.EmailTextField
+            android:id="@+id/emailTextField"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/topOfTextBoxes"
+            app:layout_constraintBottom_toTopOf="@+id/bottomOfEmailAddress"
+            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
+            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
+        </com.andrew.tasky.presentation.views.EmailTextField>
+
+        <com.andrew.tasky.presentation.views.PasswordTextField
+            android:id="@+id/passwordTextField"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/topOfPassword"
+            app:layout_constraintBottom_toTopOf="@+id/bottomOfPassword"
+            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
+            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
+        </com.andrew.tasky.presentation.views.PasswordTextField>
+
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/rounded_button"
+            android:text="@string/login_button"
+            app:layout_constraintTop_toBottomOf="@id/topOfLoginButton"
+            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
+            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes"
+            app:layout_constraintBottom_toTopOf="@+id/bottomOfLoginButton">
+        </Button>
+
+        <TextView
+            android:id="@+id/noAccountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_account_message"
+            app:layout_constraintTop_toBottomOf="@id/topOfSignUp"
+            app:layout_constraintBottom_toTopOf="@id/bottomOfSignUp"
+            app:layout_constraintEnd_toStartOf="@id/signUpButton"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent">
+        </TextView>
+
+        <TextView
+            android:id="@+id/signUpButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:clickable="true"
+            android:text="@string/sign_up_button"
+            android:textColor="#3F51B5"
+            app:layout_constraintTop_toBottomOf="@id/topOfSignUp"
+            app:layout_constraintBottom_toTopOf="@id/bottomOfSignUp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/noAccountTextView">
+        </TextView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

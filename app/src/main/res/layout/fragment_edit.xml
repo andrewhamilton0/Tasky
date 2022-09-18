@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.task_detail.EditFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topOfEditLineGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.10" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/startOfMargin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".075" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/endOfMargin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".925" />
+
+    <View
+        android:id="@+id/topOfEditLine"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="24dp"
+        android:background="@color/baby_blue"
+        app:layout_constraintEnd_toStartOf="@id/endOfMargin"
+        app:layout_constraintStart_toEndOf="@id/startOfMargin"
+        app:layout_constraintTop_toTopOf="@id/topOfEditLineGuideline"
+        app:layout_constraintBottom_toBottomOf="@id/topOfEditLineGuideline"
+        />
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_baseline_arrow_back_ios_new_24"
+        android:backgroundTint="@color/black"
+        app:layout_constraintStart_toEndOf="@id/startOfMargin"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/topOfEditLineGuideline">
+    </ImageButton>
+
+    <TextView
+        android:id="@+id/editTypeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_description_text"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/topOfEditLineGuideline"
+        app:layout_constraintEnd_toStartOf="@id/saveButton"
+        app:layout_constraintStart_toEndOf="@id/backButton"
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
+
+    <TextView
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save_button"
+        android:textColor="@color/tasky_green"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/topOfEditLineGuideline"
+        app:layout_constraintEnd_toStartOf="@id/endOfMargin"
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
+
+    <EditText
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textAppearance="@android:style/TextAppearance.Material.Small"
+        app:layout_constraintEnd_toStartOf="@id/endOfMargin"
+        app:layout_constraintStart_toEndOf="@id/startOfMargin"
+        app:layout_constraintTop_toBottomOf="@id/topOfEditLineGuideline"
+        tools:text="hello">
+    </EditText>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
