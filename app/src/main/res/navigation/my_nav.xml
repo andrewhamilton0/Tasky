@@ -14,14 +14,23 @@
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
         <action
-            android:id="@+id/action_loginFragment_to_taskDetailFragment"
-            app:destination="@id/taskDetailFragment" />
+            android:id="@+id/action_loginFragment_to_agendaFragment"
+            app:destination="@id/agendaFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.andrew.tasky.presentation.register.RegisterFragment"
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" >
+    </fragment>
+    <fragment
+        android:id="@+id/agendaFragment"
+        android:name="com.andrew.tasky.presentation.agenda.AgendaFragment"
+        android:label="fragment_agenda"
+        tools:layout="@layout/fragment_agenda" >
+        <action
+            android:id="@+id/action_agendaFragment_to_taskDetailFragment"
+            app:destination="@id/taskDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/taskDetailFragment"
@@ -31,11 +40,17 @@
         <action
             android:id="@+id/action_taskDetailFragment_to_editFragment"
             app:destination="@id/editFragment" />
+        <argument
+            android:name="taskType"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/editFragment"
-        android:name="com.andrew.tasky.presentation.task_detail.EditFragment"
+        android:name="com.andrew.tasky.presentation.edit.EditFragment"
         android:label="fragment_edit"
-        tools:layout="@layout/fragment_edit" />
-
+        tools:layout="@layout/fragment_edit">
+        <argument
+            android:name="editType"
+            app:argType="integer" />
+    </fragment>
 </navigation>

@@ -17,11 +17,5 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".presentation.task_detail.EditActivity"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.task_detail.TaskDetailActivity"
-            android:exported="false" />
     </application>
 </manifest>

@@ -6,8 +6,11 @@
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable-v24/ic_launcher_background.xml" value="0.1615" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.184" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable-v24/rounded_button.xml" value="0.1615" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/event_icon_box.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/ic_baseline_arrow_back_ios_new_24.xml" value="0.184" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/ic_baseline_arrow_forward_ios_24.xml" value="0.1" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/ic_baseline_bell_24.xml" value="0.1" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/ic_baseline_check_24.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/ic_baseline_close_24.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/ic_baseline_visibility_24.xml" value="0.1" />
@@ -15,11 +18,14 @@
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/ic_tasky_logo.xml" value="0.1615" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/line_divider.xml" value="0.1" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/reminder_icon_box.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/rounded_edit_text.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/rounded_task_box.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/rounded_tax_box_2.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/rounded_top.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/splash_image.xml" value="0.1" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/task_done_circle.xml" value="0.1" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/task_icon_box.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/drawable/task_title_circle.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/activity_edit.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/activity_login.xml" value="0.22" />
@@ -27,12 +33,13 @@
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/activity_register.xml" value="0.22" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/activity_task_detail.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/email_text_field.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_agenda.xml" value="0.12" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_blank.xml" value="0.15104166666666666" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_edit.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_login.xml" value="0.16145833333333334" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_login_fragment2.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_register.xml" value="0.16145833333333334" />
-        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_task_detail.xml" value="0.17552083333333332" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_task_detail.xml" value="0.22" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/name_text_field.xml" value="0.15081521739130435" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/password_text_field.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/register_activity.xml" value="0.1" />

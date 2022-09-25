@@ -15,21 +15,17 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     private lateinit var viewModel: LoginViewModel
     private lateinit var binding: FragmentLoginBinding
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentLoginBinding.bind(view)
         navController = Navigation.findNavController(view)
+        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
 
         binding.signUpButton.setOnClickListener(){
             navController.navigate(R.id.action_loginFragment_to_registerFragment)
         }
         binding.loginButton.setOnClickListener(){
-            navController.navigate(R.id.action_loginFragment_to_taskDetailFragment)
+            navController.navigate(R.id.action_loginFragment_to_agendaFragment)
         }
     }
 }

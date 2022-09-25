@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+<item>
+    <!-- drawable/circle_card_icon.xml -->
+    <shape
+        android:shape="ring"
+        android:innerRadius="9dp"
+        android:thickness="2.25dp"
+        android:useLevel="false">
+    <solid android:color="@color/black"/>
+    </shape>
+</item>
+<item>
+    <vector
+        android:height="24dp"
+        android:viewportHeight="24"
+        android:viewportWidth="24"
+        android:width="24dp">
+        <path
+            android:fillColor="@android:color/black"
+            android:pathData="M 10 15 L 6 11 l -1.42 1.41 L 10 18 L 19 8 l -1.41 -1.41 z"/>
+    </vector>
+</item>
+</layer-list>
