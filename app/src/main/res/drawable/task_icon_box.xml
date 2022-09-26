@@ -1,0 +1,12 @@
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="32dp"
+    android:viewportHeight="24"
+    android:viewportWidth="24"
+    android:width="32dp">
+    <group>
+        <path android:name="square"
+            android:fillColor="@color/tasky_green"
+            android:pathData="M 4 0 L 20 0 H 21 Q 24 0 24 3 V 21 Q 24 24 21 24 H 3 Q 0 24 0 21 V 3 Q 0 0 3 0 H 4" />
+    </group>
+</vector>

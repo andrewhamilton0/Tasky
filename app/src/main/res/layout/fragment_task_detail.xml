@@ -47,8 +47,23 @@
         android:background="@drawable/ic_baseline_edit_24"
         app:layout_constraintBottom_toTopOf="@id/topOfTaskLayout"
         app:layout_constraintEnd_toStartOf="@id/endOfMargin"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="visible">
     </ImageButton>
+
+    <TextView
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/save_button"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/topOfTaskLayout"
+        app:layout_constraintEnd_toStartOf="@id/endOfMargin"
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
 
     <TextView
         android:id="@+id/currentDateTextView"
@@ -127,18 +142,18 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.09" />
 
-        <View
+        <ImageView
             android:id="@+id/taskColorBox"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:background="@drawable/rounded_task_box"
-            android:backgroundTint="@color/tasky_green"
+            app:srcCompat="@drawable/reminder_icon_box"
             app:layout_constraintBottom_toTopOf="@id/bottomOfTaskType"
             app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
             app:layout_constraintTop_toBottomOf="@id/topOfTaskType">
-        </View>
+        </ImageView>
 
         <TextView
+            android:id="@+id/taskType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -148,14 +163,13 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/bottomOfTaskType"
             app:layout_constraintStart_toEndOf="@id/taskColorBox"
-            app:layout_constraintTop_toBottomOf="@+id/topOfTaskType">
-        </TextView>
+            app:layout_constraintTop_toBottomOf="@+id/topOfTaskType"></TextView>
 
         <View
             android:id="@+id/taskDoneCircle"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:background="@drawable/task_title_circle"
+            android:background="@drawable/task_done_circle"
             android:backgroundTint="@color/black"
             app:layout_constraintBottom_toTopOf="@+id/bottomOfTitleLine"
             app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
@@ -254,15 +268,15 @@
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
+            android:layout_marginEnd="32dp"
             android:text="08:00"
             android:textColor="@color/black"
             android:textFontWeight="600"
+            app:layout_constraintEnd_toStartOf="@id/date"
             app:layout_constraintStart_toEndOf="@id/atText"
             app:layout_constraintTop_toBottomOf="@id/topOfTimeLine"
-            tools:text="08:00">
-        </TextView>
+            tools:text="08:00"></TextView>
 
         <TextView
             android:id="@+id/date"
@@ -273,6 +287,7 @@
             android:text="Jul 21 2022"
             android:textColor="@color/black"
             android:textFontWeight="600"
+            app:layout_constraintEnd_toStartOf="@+id/endOfMarginTaskLayout"
             app:layout_constraintStart_toEndOf="@id/time"
             app:layout_constraintTop_toBottomOf="@id/topOfTimeLine"
             tools:text="Jul 21 2022">
@@ -287,6 +302,57 @@
             app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
             app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
             app:layout_constraintTop_toBottomOf="@id/date" />
+
+        <ImageView
+            android:id="@+id/notificationIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="8dp"
+            app:srcCompat="@drawable/ic_baseline_bell_24"
+            app:layout_constraintEnd_toStartOf="@id/reminderTextView"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
+            app:layout_constraintTop_toBottomOf="@id/bottomOfTimeLine">
+        </ImageView>
+
+        <TextView
+            android:id="@+id/reminderTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:lineSpacingExtra="8sp"
+            android:text="30 minutes before"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textFontWeight="600"
+            app:layout_constraintEnd_toStartOf="@id/reminderButton"
+            app:layout_constraintStart_toEndOf="@id/notificationIcon"
+            app:layout_constraintTop_toTopOf="@id/notificationIcon"
+            app:layout_constraintBottom_toBottomOf="@id/notificationIcon"
+            tools:text="30 minutes before">
+        </TextView>
+
+        <ImageButton
+            android:id="@+id/reminderButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_baseline_arrow_forward_ios_24"
+            android:backgroundTint="@color/black"
+            app:layout_constraintBottom_toBottomOf="@id/reminderTextView"
+            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
+            app:layout_constraintStart_toEndOf="@id/reminderTextView"
+            app:layout_constraintTop_toTopOf="@id/reminderTextView">
+        </ImageButton>
+
+        <View
+            android:id="@+id/bottomOfNotificationLine"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/baby_blue"
+            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
+            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
+            app:layout_constraintTop_toBottomOf="@id/reminderTextView" />
 
         <View
             android:id="@+id/topOfDeleteTaskButton"
