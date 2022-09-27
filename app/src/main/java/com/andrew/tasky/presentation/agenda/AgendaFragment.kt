@@ -9,7 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentAgendaBinding
-import com.andrew.tasky.util.TaskType
+import com.andrew.tasky.util.AgendaItemType
 
 class AgendaFragment : Fragment(R.layout.fragment_agenda) {
 
@@ -25,21 +25,21 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         binding = FragmentAgendaBinding.bind(view)
 
         binding.addTask.setOnClickListener(){
-            val taskType = TaskType.TASK.ordinal
-            val bundle = bundleOf("taskType" to taskType)
-            navController.navigate(R.id.action_agendaFragment_to_taskDetailFragment, bundle)
+            val agendaItemType = AgendaItemType.TASK.name
+            navController.navigate(AgendaFragmentDirections
+                .actionAgendaFragmentToAgendaItemDetailFragment(agendaItemType))
         }
 
         binding.addEvent.setOnClickListener(){
-            val taskType = TaskType.EVENT.ordinal
-            val bundle = bundleOf("taskType" to taskType)
-            navController.navigate(R.id.action_agendaFragment_to_taskDetailFragment, bundle)
+            val agendaItemType = AgendaItemType.EVENT.name
+            navController.navigate(AgendaFragmentDirections
+                .actionAgendaFragmentToAgendaItemDetailFragment(agendaItemType))
         }
 
         binding.addReminder.setOnClickListener(){
-            val taskType = TaskType.REMINDER.ordinal
-            val bundle = bundleOf("taskType" to taskType)
-            navController.navigate(R.id.action_agendaFragment_to_taskDetailFragment, bundle)
+            val agendaItemType = AgendaItemType.REMINDER.name
+            navController.navigate(AgendaFragmentDirections
+                .actionAgendaFragmentToAgendaItemDetailFragment(agendaItemType))
         }
     }
 }

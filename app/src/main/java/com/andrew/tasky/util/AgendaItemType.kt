@@ -1,6 +1,6 @@
 package com.andrew.tasky.util
 
-enum class TaskType {
+enum class AgendaItemType {
     TASK,
     EVENT,
     REMINDER

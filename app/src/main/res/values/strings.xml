@@ -15,8 +15,12 @@
     <string name="event">Event</string>
     <string name="reminder">Reminder</string>
     <string name="edit_task_text">EDIT TASK</string>
+    <string name="edit_event_text">EDIT EVENT</string>
+    <string name="edit_reminder_text">EDIT REMINDER</string>
+
     <string name="edit_title_text">EDIT TITLE</string>
     <string name="edit_description_text">EDIT DESCRIPTION</string>
+
     <string name="save_button">Save</string>
     <string name="at">At</string>
     <string name="delete_task_button">DELETE TASK</string>
