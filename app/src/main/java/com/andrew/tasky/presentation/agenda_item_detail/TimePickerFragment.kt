@@ -1,4 +1,4 @@
-package com.andrew.tasky.presentation.task_detail
+package com.andrew.tasky.presentation.agenda_item_detail
 
 import android.app.Dialog
 import android.app.TimePickerDialog
@@ -6,12 +6,10 @@ import android.os.Bundle
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class TimePickerFragment: DialogFragment(), TimePickerDialog.OnTimeSetListener {
-
-    private val calendar = Calendar.getInstance()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
@@ -22,14 +20,13 @@ class TimePickerFragment: DialogFragment(), TimePickerDialog.OnTimeSetListener {
     }
 
     override fun onTimeSet(view: TimePicker?, hour: Int, minute: Int) {
-        calendar.set(Calendar.HOUR_OF_DAY, hour)
-        calendar.set(Calendar.MINUTE, minute)
 
-        val selectedTime = SimpleDateFormat("hh:mm a", Locale.ENGLISH).format((calendar.time))
+        val selectedTime = LocalTime.of(hour, minute)
+            .format(DateTimeFormatter.ofPattern("hh:mm a"))
 
-        val selectedDateBundle = Bundle()
-        selectedDateBundle.putString("SELECTED_TIME", selectedTime)
+        val selectedTimeBundle = Bundle()
+        selectedTimeBundle.putString("SELECTED_TIME", selectedTime)
 
-        setFragmentResult("REQUEST_KEY", selectedDateBundle)
+        setFragmentResult("REQUEST_KEY", selectedTimeBundle)
     }
 }

@@ -22,10 +22,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
 
         binding.signUpButton.setOnClickListener(){
-            navController.navigate(R.id.action_loginFragment_to_registerFragment)
+            navController.navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment())
         }
         binding.loginButton.setOnClickListener(){
-            navController.navigate(R.id.action_loginFragment_to_agendaFragment)
+            navController.navigate(LoginFragmentDirections.actionLoginFragmentToAgendaFragment())
         }
     }
 }
