@@ -30,8 +30,6 @@ class AgendaItemAdapter(
 
             doneButton.setOnClickListener{
                 agendaItems[position].isDone = true
-                doneButton.setImageResource(R.drawable.task_done_circle)
-                agendaItemTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             }
 
             if (agendaItems[position].isDone){
