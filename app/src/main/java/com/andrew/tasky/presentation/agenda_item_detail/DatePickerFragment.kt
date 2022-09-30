@@ -16,6 +16,7 @@ class DatePickerFragment: DialogFragment(), DatePickerDialog.OnDateSetListener {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val year = currentDateTime.year
+        //-1 to show the correct month, otherwise shows a month ahead
         val month = currentDateTime.monthValue-1
         val day = currentDateTime.dayOfMonth
 
@@ -24,6 +25,7 @@ class DatePickerFragment: DialogFragment(), DatePickerDialog.OnDateSetListener {
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
 
+        //+1 to return the correct month, otherwise returns one month before
         val selectedDate = LocalDate.of(year, month+1, dayOfMonth)
             .format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
 

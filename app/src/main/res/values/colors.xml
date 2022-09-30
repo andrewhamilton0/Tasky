@@ -14,4 +14,8 @@
     <color name="tasky_green">#259f70</color>
     <color name="baby_blue">#5B92BEF0</color>
 
+    <color name="event_yellow">#cced42</color>
+    <color name="reminder_grey">#f2f3f7</color>
+
+
 </resources>
