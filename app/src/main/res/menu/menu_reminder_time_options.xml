@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tenMinutes"
+        android:title="@string/ten_minutes_before">
+    </item>
+    <item
+        android:id="@+id/thirtyMinutes"
+        android:title="@string/thirty_minutes_before">
+    </item>
+    <item
+        android:id="@+id/oneHour"
+        android:title="@string/one_hour_before">
+    </item>
+    <item
+        android:id="@+id/sixHours"
+        android:title="@string/six_hours_before">
+    </item>
+    <item
+        android:id="@+id/oneDay"
+        android:title="@string/one_day_before">
+    </item>
+</menu>

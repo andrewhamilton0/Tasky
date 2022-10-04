@@ -1,9 +1,11 @@
 package com.andrew.tasky.presentation.agenda_item_detail
 
+import android.app.Dialog
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.view.*
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
@@ -14,6 +16,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.andrew.tasky.R
+import com.andrew.tasky.databinding.DialogDeleteConfirmationBinding
 import com.andrew.tasky.databinding.FragmentAgendaItemDetailBinding
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.EditType
@@ -23,7 +26,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) {
+class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
 
     private val currentDate = LocalDateTime.now()
         .format(DateTimeFormatter.ofPattern("dd MMMM yyyy")).uppercase()
@@ -44,7 +47,6 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
         subscribeToObservables()
         setupAgendaItemType()
         onClickListeners()
-
     }
 
     fun <T> Fragment.collectLatestLifecycleFlow(flow: Flow<T>, onCollect: suspend (T) -> Unit) {
@@ -128,8 +130,28 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
                 showTimePickerFragment()
             }
 
+            timeButton.setOnClickListener{
+                showTimePickerFragment()
+            }
+
             date.setOnClickListener {
                 showDatePickerFragment()
+            }
+
+            dateButton.setOnClickListener {
+                showDatePickerFragment()
+            }
+
+            reminderTextView.setOnClickListener {
+                showReminderOptionsPopupMenu(it)
+            }
+
+            reminderButton.setOnClickListener {
+                showReminderOptionsPopupMenu(it)
+            }
+
+            deleteTaskButton.setOnClickListener{
+                showDeleteDialog()
             }
         }
     }
@@ -240,10 +262,77 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
             descriptionTextView.isClickable = isEditing
 
             time.isClickable = isEditing
+            timeButton.isVisible = isEditing
+            timeButton.isClickable=isEditing
             date.isClickable = isEditing
+            dateButton.isVisible = isEditing
+            dateButton.isClickable = isEditing
 
+            reminderTextView.isClickable = isEditing
             reminderButton.isClickable = isEditing
             reminderButton.isVisible = isEditing
         }
     }
+
+    //View parameter determines which view popup appears under
+    private fun showReminderOptionsPopupMenu(view: View){
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.inflate(R.menu.menu_reminder_time_options)
+        binding.reminderTextView.apply {
+            popupMenu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.tenMinutes -> {
+                        text = getString(R.string.ten_minutes_before)
+                        true
+                    }
+                    R.id.thirtyMinutes -> {
+                        text = getString(R.string.thirty_minutes_before)
+                        true
+                    }
+                    R.id.oneHour -> {
+                        text = getString(R.string.one_hour_before)
+                        true
+                    }
+                    R.id.sixHours -> {
+                        text = getString(R.string.six_hours_before)
+                        true
+                    }
+                    R.id.oneDay -> {
+                        text = getString(R.string.one_day_before)
+                        true
+                    }
+                    else -> true
+                }
+            }
+        }
+        popupMenu.show()
+    }
+
+    private fun showDeleteDialog(){
+        val deleteDialog = Dialog(requireActivity())
+        deleteDialog.setContentView(R.layout.dialog_delete_confirmation)
+        val deleteDialogBinding = DialogDeleteConfirmationBinding.inflate(LayoutInflater.from(context))
+        when(agendaItemType){
+            AgendaItemType.TASK -> {
+                deleteDialogBinding.confirmationTextView.text = getString(R.string.task_delete_confirmation)
+            }
+            AgendaItemType.EVENT -> {
+                deleteDialogBinding.confirmationTextView.text = getString(R.string.event_delete_confirmation)
+            }
+            AgendaItemType.REMINDER -> {
+                deleteDialogBinding.confirmationTextView.text = getString(R.string.reminder_delete_confirmation)
+            }
+        }
+        deleteDialog.setContentView(deleteDialogBinding.root)
+        deleteDialog.show()
+
+        deleteDialogBinding.deleteButton.setOnClickListener{
+            deleteDialog.cancel()
+            navController.popBackStack()
+        }
+        deleteDialogBinding.cancelButton.setOnClickListener{
+            deleteDialog.cancel()
+        }
+    }
+
 }

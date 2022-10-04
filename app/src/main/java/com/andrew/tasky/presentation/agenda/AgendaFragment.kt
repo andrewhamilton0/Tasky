@@ -13,6 +13,7 @@ import com.andrew.tasky.data.AgendaItem
 import com.andrew.tasky.databinding.FragmentAgendaBinding
 import com.andrew.tasky.presentation.adapter.AgendaItemAdapter
 import com.andrew.tasky.util.AgendaItemType
+import java.time.LocalDateTime
 
 class AgendaFragment : Fragment(R.layout.fragment_agenda) {
 
@@ -29,13 +30,15 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
 
         var agendaItemList = mutableListOf(
             AgendaItem(AgendaItemType.EVENT, false, "Meeting",
-                "Project meeting with Abby", "3:00", "Mar 5"),
+                "Project meeting with Abby", LocalDateTime.of(2022, 10, 3, 8,22),
+                LocalDateTime.of(2022, 10, 3, 8,32)),
             AgendaItem(AgendaItemType.REMINDER, false, "Take out trash",
-                "Take trash from inside to outside", "4:00", "Mar 5"),
+                "Take trash from inside to outside", LocalDateTime.of(2022, 10, 3, 8,37)),
             AgendaItem(AgendaItemType.TASK, true, "Code",
-                "Finish coding lesson", "5:00", "Mar 5"),
+                "Finish coding lesson", LocalDateTime.of(2022, 10, 3, 9,22)),
             AgendaItem(AgendaItemType.EVENT, false, "Run",
-                "Go for an evening run", "6:00", "Mar 5"),
+                "Go for an evening run", LocalDateTime.of(2022, 10, 3, 12,22),
+                LocalDateTime.of(2022, 10, 15, 14,22)),
         )
 
         val adapter = AgendaItemAdapter(agendaItemList)
