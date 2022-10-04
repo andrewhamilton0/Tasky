@@ -33,7 +33,7 @@
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/activity_register.xml" value="0.22" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/activity_task_detail.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/email_text_field.xml" value="0.16666666666666666" />
-        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_agenda.xml" value="0.12" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_agenda.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_agenda_item_detail.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_blank.xml" value="0.15104166666666666" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_edit.xml" value="0.17552083333333332" />
@@ -41,6 +41,7 @@
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_login_fragment2.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_register.xml" value="0.16145833333333334" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_task_detail.xml" value="0.22" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/item_agenda.xml" value="0.3333333333333333" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/name_text_field.xml" value="0.15081521739130435" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/password_text_field.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/register_activity.xml" value="0.1" />

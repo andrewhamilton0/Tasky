@@ -17,6 +17,7 @@ import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentAgendaItemDetailBinding
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.EditType
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -43,43 +44,34 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
         subscribeToObservables()
         setupAgendaItemType()
         onClickListeners()
+
+    }
+
+    fun <T> Fragment.collectLatestLifecycleFlow(flow: Flow<T>, onCollect: suspend (T) -> Unit) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                flow.collectLatest {
+                    onCollect(it)
+                }
+            }
+        }
     }
 
     private fun subscribeToObservables() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.selectedDate.collect {
-                    binding.date.text = it
-                }
-            }
+        collectLatestLifecycleFlow(viewModel.selectedDate) { date ->
+            binding.date.text = date
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.selectedTime.collectLatest {
-                    binding.time.text = it
-                }
-            }
+        collectLatestLifecycleFlow(viewModel.selectedTime) { time ->
+            binding.time.text = time
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.title.collectLatest {
-                    binding.taskTitle.text = it
-                }
-            }
+        collectLatestLifecycleFlow(viewModel.title) { taskTitle ->
+            binding.taskTitle.text = taskTitle
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.description.collectLatest {
-                    binding.descriptionTextView.text = it
-                }
-            }
+        collectLatestLifecycleFlow(viewModel.description) { description ->
+            binding.descriptionTextView.text = description
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isInEditMode.collectLatest {
-                    setEditMode(it)
-                }
-            }
+        collectLatestLifecycleFlow(viewModel.isInEditMode) { editMode ->
+            setEditMode(editMode)
         }
     }
 
@@ -117,19 +109,19 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
             }
 
             taskTitle.setOnClickListener {
-                editFragment(EditType.TITLE)
+                navigateToEditFragment(EditType.TITLE)
             }
 
             editTitleButton.setOnClickListener {
-                editFragment(EditType.TITLE)
+                navigateToEditFragment(EditType.TITLE)
             }
 
             editDescriptionButton.setOnClickListener {
-                editFragment(EditType.DESCRIPTION)
+                navigateToEditFragment(EditType.DESCRIPTION)
             }
 
             descriptionTextView.setOnClickListener {
-                editFragment(EditType.DESCRIPTION)
+                navigateToEditFragment(EditType.DESCRIPTION)
             }
 
             time.setOnClickListener {
@@ -142,7 +134,7 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
         }
     }
 
-    private fun editFragment(editType: EditType){
+    private fun navigateToEditFragment(editType: EditType){
         setFragmentResultListener("INPUT_REQUEST_KEY"){
             resultKey, bundle -> if(resultKey == "INPUT_REQUEST_KEY"){
                 val input = bundle.getString("INPUT")
