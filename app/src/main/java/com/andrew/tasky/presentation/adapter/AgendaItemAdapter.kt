@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.R
 import com.andrew.tasky.data.AgendaItem
@@ -36,6 +37,12 @@ class AgendaItemAdapter(
 
             doneButton.setOnClickListener{
                 agendaItems[position].isDone = true
+            }
+
+            optionsButton.setOnClickListener {
+                val popupMenu = PopupMenu(optionsButton.context, it)
+                popupMenu.inflate(R.menu.menu_agenda_item_actions)
+                popupMenu.show()
             }
 
             if (agendaItems[position].isDone){

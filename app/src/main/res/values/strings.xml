@@ -25,13 +25,22 @@
     <string name="at">At</string>
     <string name="delete_task_button">DELETE TASK</string>
 
+    <!--Reminder time options popup menu on agenda item detail screen -->
     <string name="ten_minutes_before">10 minutes before</string>
     <string name="thirty_minutes_before">30 minutes before</string>
     <string name="one_hour_before">1 hour before</string>
     <string name="six_hours_before">6 hours before</string>
     <string name="one_day_before">1 day before</string>
 
+    <!--Delete confirmation options on delete confirmation dialog -->
     <string name="task_delete_confirmation">Are you sure you want to delete this task?</string>
     <string name="event_delete_confirmation">Are you sure you want to delete this event?</string>
     <string name="reminder_delete_confirmation">Are you sure you want to delete this reminder?</string>
+
+    <!--Agenda item options popup menu on agenda screen -->
+    <string name="open">Open</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+
+    <string name="logout">Logout</string>
 </resources>

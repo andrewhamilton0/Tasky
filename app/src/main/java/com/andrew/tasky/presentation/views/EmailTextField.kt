@@ -1,7 +1,6 @@
 package com.andrew.tasky.presentation.views
 
 import android.content.Context
-import android.text.Editable
 import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible

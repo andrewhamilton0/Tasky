@@ -41,7 +41,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentAgendaItemDetailBinding.bind(view)
         navController = Navigation.findNavController(view)
-        viewModel = ViewModelProvider(this).get(AgendaItemDetailViewModel::class.java)
+        viewModel = ViewModelProvider(this)[AgendaItemDetailViewModel::class.java]
         agendaItemType = AgendaItemType.valueOf(args.agendaItemType)
 
         subscribeToObservables()
@@ -49,7 +49,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         onClickListeners()
     }
 
-    fun <T> Fragment.collectLatestLifecycleFlow(flow: Flow<T>, onCollect: suspend (T) -> Unit) {
+    private fun <T> Fragment.collectLatestLifecycleFlow(flow: Flow<T>, onCollect: suspend (T) -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 flow.collectLatest {
@@ -60,11 +60,8 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
     }
 
     private fun subscribeToObservables() {
-        collectLatestLifecycleFlow(viewModel.selectedDate) { date ->
-            binding.date.text = date
-        }
-        collectLatestLifecycleFlow(viewModel.selectedTime) { time ->
-            binding.time.text = time
+        collectLatestLifecycleFlow(viewModel.isInEditMode) { editMode ->
+            setEditMode(editMode)
         }
         collectLatestLifecycleFlow(viewModel.title) { taskTitle ->
             binding.taskTitle.text = taskTitle
@@ -72,8 +69,14 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         collectLatestLifecycleFlow(viewModel.description) { description ->
             binding.descriptionTextView.text = description
         }
-        collectLatestLifecycleFlow(viewModel.isInEditMode) { editMode ->
-            setEditMode(editMode)
+        collectLatestLifecycleFlow(viewModel.selectedTime) { time ->
+            binding.time.text = time
+        }
+        collectLatestLifecycleFlow(viewModel.selectedDate) { date ->
+            binding.date.text = date
+        }
+        collectLatestLifecycleFlow(viewModel.selectedReminderTime) { reminderTime ->
+            binding.reminderTextView.text = reminderTime
         }
     }
 
@@ -282,23 +285,23 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.tenMinutes -> {
-                        text = getString(R.string.ten_minutes_before)
+                        viewModel.setSelectedReminderTime(getString(R.string.ten_minutes_before))
                         true
                     }
                     R.id.thirtyMinutes -> {
-                        text = getString(R.string.thirty_minutes_before)
+                        viewModel.setSelectedReminderTime(getString(R.string.thirty_minutes_before))
                         true
                     }
                     R.id.oneHour -> {
-                        text = getString(R.string.one_hour_before)
+                        viewModel.setSelectedReminderTime(getString(R.string.one_hour_before))
                         true
                     }
                     R.id.sixHours -> {
-                        text = getString(R.string.six_hours_before)
+                        viewModel.setSelectedReminderTime(getString(R.string.six_hours_before))
                         true
                     }
                     R.id.oneDay -> {
-                        text = getString(R.string.one_day_before)
+                        viewModel.setSelectedReminderTime(getString(R.string.one_day_before))
                         true
                     }
                     else -> true
@@ -334,5 +337,4 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
             deleteDialog.cancel()
         }
     }
-
 }
