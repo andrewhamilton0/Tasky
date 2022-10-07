@@ -9,9 +9,10 @@ import com.andrew.tasky.R
 import com.andrew.tasky.data.AgendaItem
 import com.andrew.tasky.databinding.ItemAgendaBinding
 import com.andrew.tasky.util.AgendaItemType
+import java.time.format.DateTimeFormatter
 
 class AgendaItemAdapter(
-    var agendaItems: List<AgendaItem>
+    private var agendaItems: List<AgendaItem>
 ): RecyclerView.Adapter<AgendaItemAdapter.AgendaItemViewHolder>() {
 
     inner class AgendaItemViewHolder(val binding: ItemAgendaBinding) : RecyclerView.ViewHolder(binding.root)
@@ -26,7 +27,12 @@ class AgendaItemAdapter(
         holder.binding.apply {
             agendaItemTitle.text = agendaItems[position].title
             agendaItemDescription.text = agendaItems[position].description
-            agendaItemDate.text = agendaItems[position].fromDate + ", " + agendaItems[position].fromTime
+            agendaItemDate.text = (
+                        agendaItems[position].startDateAndTime
+                        .format(DateTimeFormatter.ofPattern("MMM d, HH:mm")) +
+                        (agendaItems[position].endDateAndTime
+                        ?.format(DateTimeFormatter.ofPattern(" - MMM d, HH:mm")) ?: "")
+                    )
 
             doneButton.setOnClickListener{
                 agendaItems[position].isDone = true

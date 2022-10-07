@@ -24,4 +24,14 @@
     <string name="save_button">Save</string>
     <string name="at">At</string>
     <string name="delete_task_button">DELETE TASK</string>
+
+    <string name="ten_minutes_before">10 minutes before</string>
+    <string name="thirty_minutes_before">30 minutes before</string>
+    <string name="one_hour_before">1 hour before</string>
+    <string name="six_hours_before">6 hours before</string>
+    <string name="one_day_before">1 day before</string>
+
+    <string name="task_delete_confirmation">Are you sure you want to delete this task?</string>
+    <string name="event_delete_confirmation">Are you sure you want to delete this event?</string>
+    <string name="reminder_delete_confirmation">Are you sure you want to delete this reminder?</string>
 </resources>

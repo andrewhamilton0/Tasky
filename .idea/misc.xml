@@ -32,9 +32,10 @@
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/activity_register.xml" value="0.22" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/activity_task_detail.xml" value="0.1" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/dialog_delete_confirmation.xml" value="0.22" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/email_text_field.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_agenda.xml" value="0.1" />
-        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_agenda_item_detail.xml" value="0.17552083333333332" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_agenda_item_detail.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_blank.xml" value="0.15104166666666666" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_edit.xml" value="0.17552083333333332" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_login.xml" value="0.16145833333333334" />
@@ -42,10 +43,12 @@
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_register.xml" value="0.16145833333333334" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/fragment_task_detail.xml" value="0.22" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/item_agenda.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/menu_reminder_time_options.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/name_text_field.xml" value="0.15081521739130435" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/password_text_field.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/register_activity.xml" value="0.1" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/layout/test.xml" value="0.1" />
+        <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/menu/menu_reminder_time_options.xml" value="0.13333333333333333" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1615" />
         <entry key="..\:/Users/acjts/AndroidStudioProjects/Tasky/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1615" />
       </map>
