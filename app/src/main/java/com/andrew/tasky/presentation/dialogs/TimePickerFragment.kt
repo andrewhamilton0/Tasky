@@ -1,4 +1,4 @@
-package com.andrew.tasky.presentation.agenda_item_detail
+package com.andrew.tasky.presentation.dialogs
 
 import android.app.Dialog
 import android.app.TimePickerDialog

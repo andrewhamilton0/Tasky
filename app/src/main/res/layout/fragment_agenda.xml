@@ -17,8 +17,6 @@
         android:layout_marginStart="30dp"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:clickable="true"
-        android:focusable="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/mainBodyLayout">
@@ -46,8 +44,6 @@
         android:background="@drawable/logout_circle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -92,8 +88,7 @@
             android:orientation="horizontal"
             android:gravity="center"
             android:padding="16dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/currentDateTextView">
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.andrew.tasky.presentation.views.MiniCalendarItem
                 android:id="@+id/today"
@@ -134,7 +129,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/currentDateTextView"
+            android:id="@+id/current_date_selected_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Today"
@@ -143,7 +138,6 @@
             android:textSize="25sp"
             android:layout_marginStart="30dp"
             app:layout_constraintTop_toBottomOf="@id/miniCalendar"
-            app:layout_constraintBottom_toTopOf="@id/agendaItemRecyclerView"
             app:layout_constraintStart_toStartOf="parent">
         </TextView>
 
@@ -152,8 +146,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/currentDateTextView"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/current_date_selected_text_view">
     </androidx.recyclerview.widget.RecyclerView>
 
     <ImageButton

@@ -18,6 +18,8 @@ import androidx.navigation.fragment.navArgs
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.DialogDeleteConfirmationBinding
 import com.andrew.tasky.databinding.FragmentAgendaItemDetailBinding
+import com.andrew.tasky.presentation.dialogs.DatePickerFragment
+import com.andrew.tasky.presentation.dialogs.TimePickerFragment
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.EditType
 import kotlinx.coroutines.flow.Flow
@@ -251,28 +253,28 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
             }
 
             saveButton.isVisible = isEditing
-            saveButton.isClickable = isEditing
+            saveButton.isEnabled = isEditing
 
             editButton.isVisible = !isEditing
-            editButton.isClickable = !isEditing
+            editButton.isEnabled = !isEditing
 
             editTitleButton.isVisible = isEditing
-            editTitleButton.isClickable = isEditing
-            taskTitle.isClickable = isEditing
+            editTitleButton.isEnabled = isEditing
+            taskTitle.isEnabled = isEditing
 
             editDescriptionButton.isVisible = isEditing
-            editDescriptionButton.isClickable = isEditing
-            descriptionTextView.isClickable = isEditing
+            editDescriptionButton.isEnabled = isEditing
+            descriptionTextView.isEnabled = isEditing
 
-            time.isClickable = isEditing
+            time.isEnabled = isEditing
             timeButton.isVisible = isEditing
-            timeButton.isClickable=isEditing
-            date.isClickable = isEditing
+            timeButton.isEnabled=isEditing
+            date.isEnabled = isEditing
             dateButton.isVisible = isEditing
-            dateButton.isClickable = isEditing
+            dateButton.isEnabled = isEditing
 
-            reminderTextView.isClickable = isEditing
-            reminderButton.isClickable = isEditing
+            reminderTextView.isEnabled = isEditing
+            reminderButton.isEnabled = isEditing
             reminderButton.isVisible = isEditing
         }
     }
