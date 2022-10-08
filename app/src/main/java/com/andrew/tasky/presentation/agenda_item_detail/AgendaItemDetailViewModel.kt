@@ -1,6 +1,7 @@
 package com.andrew.tasky.presentation.agenda_item_detail
 
 import androidx.lifecycle.ViewModel
+import com.andrew.tasky.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalDateTime
@@ -38,5 +39,11 @@ class AgendaItemDetailViewModel : ViewModel() {
     val selectedTime = _selectedTime.asStateFlow()
     fun setSelectedTime(selectedTime: String?){
         _selectedTime.value = selectedTime
+    }
+
+    private val _selectedReminderTime = MutableStateFlow("10 minutes before")
+    val selectedReminderTime= _selectedReminderTime.asStateFlow()
+    fun setSelectedReminderTime(selectedReminderTime: String){
+        _selectedReminderTime.value = selectedReminderTime
     }
 }

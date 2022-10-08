@@ -31,6 +31,11 @@
         <action
             android:id="@+id/action_agendaFragment_to_agendaItemDetailFragment"
             app:destination="@id/agendaItemDetailFragment" />
+        <action
+            android:id="@+id/action_agendaFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/agendaItemDetailFragment"

@@ -77,7 +77,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="01 MARCH 2022"
         tools:text="01 MARCH 2022" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -163,7 +162,8 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/bottomOfTaskType"
             app:layout_constraintStart_toEndOf="@id/taskColorBox"
-            app:layout_constraintTop_toBottomOf="@+id/topOfTaskType"></TextView>
+            app:layout_constraintTop_toBottomOf="@+id/topOfTaskType">
+        </TextView>
 
         <View
             android:id="@+id/taskDoneCircle"
@@ -181,7 +181,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Project X"
             android:textColor="@color/black"
             android:textSize="30sp"
             android:textStyle="bold"
@@ -220,7 +219,6 @@
             android:layout_marginTop="24dp"
             android:lineSpacingExtra="8sp"
             android:minLines="2"
-            android:text="Weekly plan \nRole distribution\nNow This is a new line"
             android:textAlignment="viewStart"
             android:textColor="@color/black"
             android:textFontWeight="600"
@@ -271,13 +269,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="32dp"
-            android:text="08:00"
             android:textColor="@color/black"
             android:textFontWeight="600"
             app:layout_constraintEnd_toStartOf="@id/date"
             app:layout_constraintStart_toEndOf="@id/atText"
             app:layout_constraintTop_toBottomOf="@id/topOfTimeLine"
-            tools:text="08:00"></TextView>
+            tools:text="08:00">
+        </TextView>
 
         <ImageButton
             android:id="@+id/timeButton"
@@ -297,7 +295,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="24dp"
-            android:text="Jul 21 2022"
             android:textColor="@color/black"
             android:textFontWeight="600"
             app:layout_constraintEnd_toStartOf="@+id/dateButton"
@@ -345,7 +342,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:lineSpacingExtra="8sp"
-            android:text="30 minutes before"
             android:textAlignment="viewStart"
             android:textColor="@color/black"
             android:textFontWeight="600"
