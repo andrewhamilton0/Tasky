@@ -170,7 +170,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:clickable="true"
             android:text="@string/sign_up_button"
             android:textColor="#3F51B5"
             app:layout_constraintTop_toBottomOf="@id/topOfSignUp"

@@ -56,8 +56,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:clickable="true"
-            android:focusable="true"
             android:text="..."
             android:textColor="@color/black"
             android:textSize="25sp"
