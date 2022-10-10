@@ -17,7 +17,5 @@
     <color name="event_yellow">#cced42</color>
     <color name="reminder_grey">#f2f3f7</color>
 
-    <color name="current_date">#fdeda7</color>
-
-
+    <color name="highlighted_mini_calendar">#fdeda7</color>
 </resources>
