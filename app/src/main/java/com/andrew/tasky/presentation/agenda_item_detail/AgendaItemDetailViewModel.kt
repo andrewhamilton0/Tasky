@@ -41,9 +41,9 @@ class AgendaItemDetailViewModel : ViewModel() {
         _selectedTime.value = selectedTime
     }
 
-    private val _selectedReminderTime = MutableStateFlow("10 minutes before")
+    private val _selectedReminderTime = MutableStateFlow(R.string.ten_minutes_before)
     val selectedReminderTime= _selectedReminderTime.asStateFlow()
-    fun setSelectedReminderTime(selectedReminderTime: String){
+    fun setSelectedReminderTime(selectedReminderTime: Int){
         _selectedReminderTime.value = selectedReminderTime
     }
 }

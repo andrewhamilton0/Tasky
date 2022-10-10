@@ -1,6 +1,5 @@
 package com.andrew.tasky.presentation.agenda_item_detail
 
-import android.app.Dialog
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.view.*
@@ -9,22 +8,17 @@ import androidx.fragment.app.Fragment
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.andrew.tasky.R
-import com.andrew.tasky.databinding.DialogDeleteConfirmationBinding
 import com.andrew.tasky.databinding.FragmentAgendaItemDetailBinding
 import com.andrew.tasky.presentation.dialogs.DatePickerFragment
+import com.andrew.tasky.presentation.dialogs.DeleteConfirmationDialogFragment
 import com.andrew.tasky.presentation.dialogs.TimePickerFragment
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.EditType
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import com.andrew.tasky.util.collectLatestLifecycleFlow
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -51,16 +45,6 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         onClickListeners()
     }
 
-    private fun <T> Fragment.collectLatestLifecycleFlow(flow: Flow<T>, onCollect: suspend (T) -> Unit) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                flow.collectLatest {
-                    onCollect(it)
-                }
-            }
-        }
-    }
-
     private fun subscribeToObservables() {
         collectLatestLifecycleFlow(viewModel.isInEditMode) { editMode ->
             setEditMode(editMode)
@@ -78,7 +62,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
             binding.date.text = date
         }
         collectLatestLifecycleFlow(viewModel.selectedReminderTime) { reminderTime ->
-            binding.reminderTextView.text = reminderTime
+            binding.reminderTextView.text = getString(reminderTime)
         }
     }
 
@@ -156,7 +140,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
             }
 
             deleteTaskButton.setOnClickListener{
-                showDeleteDialog()
+                showDeleteConfirmationDialogFragment()
             }
         }
     }
@@ -188,7 +172,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
 
                 setFragmentResult("EDIT_TYPE_AND_TEXT_REQUEST_KEY", bundle)
 
-                navController.navigate(R.id.action_agendaItemDetailFragment_to_editFragment)
+                navController.navigate(AgendaItemDetailFragmentDirections.actionAgendaItemDetailFragmentToEditFragment())
             }
             EditType.DESCRIPTION -> {
                 val text = binding.descriptionTextView.text.toString()
@@ -204,7 +188,6 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
     }
 
     private fun showTimePickerFragment(){
-
         val timePickerFragment = TimePickerFragment()
         val supportFragmentManager = requireActivity().supportFragmentManager
 
@@ -287,23 +270,23 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.tenMinutes -> {
-                        viewModel.setSelectedReminderTime(getString(R.string.ten_minutes_before))
+                        viewModel.setSelectedReminderTime(R.string.ten_minutes_before)
                         true
                     }
                     R.id.thirtyMinutes -> {
-                        viewModel.setSelectedReminderTime(getString(R.string.thirty_minutes_before))
+                        viewModel.setSelectedReminderTime(R.string.thirty_minutes_before)
                         true
                     }
                     R.id.oneHour -> {
-                        viewModel.setSelectedReminderTime(getString(R.string.one_hour_before))
+                        viewModel.setSelectedReminderTime(R.string.one_hour_before)
                         true
                     }
                     R.id.sixHours -> {
-                        viewModel.setSelectedReminderTime(getString(R.string.six_hours_before))
+                        viewModel.setSelectedReminderTime(R.string.six_hours_before)
                         true
                     }
                     R.id.oneDay -> {
-                        viewModel.setSelectedReminderTime(getString(R.string.one_day_before))
+                        viewModel.setSelectedReminderTime(R.string.one_day_before)
                         true
                     }
                     else -> true
@@ -313,30 +296,29 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         popupMenu.show()
     }
 
-    private fun showDeleteDialog(){
-        val deleteDialog = Dialog(requireActivity())
-        deleteDialog.setContentView(R.layout.dialog_delete_confirmation)
-        val deleteDialogBinding = DialogDeleteConfirmationBinding.inflate(LayoutInflater.from(context))
-        when(agendaItemType){
-            AgendaItemType.TASK -> {
-                deleteDialogBinding.confirmationTextView.text = getString(R.string.task_delete_confirmation)
-            }
-            AgendaItemType.EVENT -> {
-                deleteDialogBinding.confirmationTextView.text = getString(R.string.event_delete_confirmation)
-            }
-            AgendaItemType.REMINDER -> {
-                deleteDialogBinding.confirmationTextView.text = getString(R.string.reminder_delete_confirmation)
-            }
-        }
-        deleteDialog.setContentView(deleteDialogBinding.root)
-        deleteDialog.show()
+    private fun showDeleteConfirmationDialogFragment(){
+        val deleteConfirmationDialogFragment = DeleteConfirmationDialogFragment()
+        val supportFragmentManager = requireActivity().supportFragmentManager
 
-        deleteDialogBinding.deleteButton.setOnClickListener{
-            deleteDialog.cancel()
-            navController.popBackStack()
+        //If deleteButton is pressed, deleteAgenda returns true and popBackStack() is ran
+        supportFragmentManager.setFragmentResultListener(
+            "REQUEST_KEY",
+            viewLifecycleOwner
+        ){
+            resultKey, bundle -> if(resultKey == "REQUEST_KEY"){
+                val deleteAgenda = bundle.getBoolean("DELETE_AGENDA_ITEM")
+                if (deleteAgenda){
+                    navController.popBackStack()
+                }
+            }
         }
-        deleteDialogBinding.cancelButton.setOnClickListener{
-            deleteDialog.cancel()
-        }
+
+        //Sends agendaItemType to deleteConfirmationDialogFragment
+        val bundle1 = Bundle()
+        bundle1.putString("AGENDA_ITEM_TYPE", agendaItemType.name)
+        supportFragmentManager.setFragmentResult("DELETE_CONFIRMATION_AGENDA_TYPE_REQUEST_KEY", bundle1)
+
+        //Shows deleteConfirmationDialogFragment
+        deleteConfirmationDialogFragment.show(supportFragmentManager, "DeleteDialogFragment")
     }
 }
