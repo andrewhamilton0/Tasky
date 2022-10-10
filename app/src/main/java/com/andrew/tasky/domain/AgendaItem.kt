@@ -1,6 +1,8 @@
-package com.andrew.tasky.data
+package com.andrew.tasky.domain
 
 import com.andrew.tasky.util.AgendaItemType
+import com.andrew.tasky.util.ReminderTimes
+import java.io.Serializable
 import java.time.LocalDateTime
 
 data class AgendaItem(
@@ -10,4 +12,5 @@ data class AgendaItem(
     val description: String,
     val startDateAndTime: LocalDateTime,
     val endDateAndTime: LocalDateTime? = null,
-)
+    val reminderTime: ReminderTimes
+) : Serializable
