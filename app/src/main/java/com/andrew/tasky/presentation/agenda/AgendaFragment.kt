@@ -12,16 +12,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentAgendaBinding
 import com.andrew.tasky.databinding.ItemMiniCalendarDayBinding
+import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.AgendaItems
 import com.andrew.tasky.presentation.adapter.AgendaItemAdapter
 import com.andrew.tasky.presentation.dialogs.DatePickerFragment
+import com.andrew.tasky.util.AgendaItemActionOptions
 import com.andrew.tasky.util.AgendaItemType
+import com.andrew.tasky.util.FragmentCommunication
 import com.andrew.tasky.util.collectLatestLifecycleFlow
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class AgendaFragment : Fragment(R.layout.fragment_agenda) {
+class AgendaFragment : Fragment(R.layout.fragment_agenda), FragmentCommunication {
 
     private lateinit var navController: NavController
     private lateinit var viewModel: AgendaViewModel
@@ -94,11 +97,11 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
             }
 
             //shows popup menu allowing user to logout and return to login page
-            logoutButton.setOnClickListener {
-                val popupMenu = PopupMenu(requireContext(), it)
+            logoutButton.setOnClickListener { view ->
+                val popupMenu = PopupMenu(requireContext(), view)
                 popupMenu.inflate(R.menu.menu_logout)
-                popupMenu.setOnMenuItemClickListener {
-                    when (it.itemId) {
+                popupMenu.setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
                         R.id.logout -> {
                             navController.navigate(
                                 AgendaFragmentDirections
@@ -113,32 +116,44 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
             }
 
             //shows popup menu allowing user to add different agenda types
-            addAgendaItemFAB.setOnClickListener {
-                val popupMenu = PopupMenu(requireContext(), it)
+            addAgendaItemFAB.setOnClickListener { view ->
+                val popupMenu = PopupMenu(requireContext(), view)
                 popupMenu.inflate(R.menu.menu_add_agenda_item)
-                popupMenu.setOnMenuItemClickListener {
-                    when (it.itemId) {
+                popupMenu.setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
                         R.id.event -> {
-                            val agendaItemType = AgendaItemType.EVENT.name
+                            val agendaItemType = AgendaItemType.EVENT
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToAgendaItemDetailFragment(agendaItemType)
+                                    .actionAgendaFragmentToAgendaItemDetailFragment(
+                                        null,
+                                        agendaItemType,
+                                        true
+                                    )
                             )
                             true
                         }
                         R.id.reminder -> {
-                            val agendaItemType = AgendaItemType.REMINDER.name
+                            val agendaItemType = AgendaItemType.REMINDER
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToAgendaItemDetailFragment(agendaItemType)
+                                    .actionAgendaFragmentToAgendaItemDetailFragment(
+                                        null,
+                                        agendaItemType,
+                                        true
+                                    )
                             )
                             true
                         }
                         R.id.task -> {
-                            val agendaItemType = AgendaItemType.TASK.name
+                            val agendaItemType = AgendaItemType.TASK
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToAgendaItemDetailFragment(agendaItemType)
+                                    .actionAgendaFragmentToAgendaItemDetailFragment(
+                                        null,
+                                        agendaItemType,
+                                        true
+                                    )
                             )
                             true
                         }
@@ -278,11 +293,38 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         //Retrieves agenda items for selected date
         val sortedAgendaItems = AgendaItems.sortByDateSelected(dateSelected)
 
-        //Binds retrieved agenda items to agendaItemRecyclerView
-        val adapter = AgendaItemAdapter(sortedAgendaItems)
+        //Binds retrieved agenda items and FragmentCommunication listener to agendaItemRecyclerView
+        val adapter = AgendaItemAdapter(sortedAgendaItems, this)
         fragmentAgendaBinding.agendaItemRecyclerView.adapter = adapter
         fragmentAgendaBinding.agendaItemRecyclerView.layoutManager =
             LinearLayoutManager(requireContext())
+    }
+
+    //Retrieves data from AgendaItemListRecyclerView and uses it appropriately
+    override fun respond(agendaItem: AgendaItem, actionOption: AgendaItemActionOptions) {
+        val agendaItemType = agendaItem.type
+        when (actionOption){
+            AgendaItemActionOptions.OPEN ->{
+                navController.navigate(
+                    AgendaFragmentDirections
+                        .actionAgendaFragmentToAgendaItemDetailFragment(
+                            agendaItem,
+                            agendaItemType,
+                            false))
+            }
+            AgendaItemActionOptions.EDIT -> {
+                navController.navigate(
+                    AgendaFragmentDirections
+                        .actionAgendaFragmentToAgendaItemDetailFragment(
+                            agendaItem,
+                            agendaItemType,
+                            true
+                        ))
+            }
+            AgendaItemActionOptions.DELETE -> {
+
+            }
+        }
     }
 
     private fun showDatePickerFragment(){

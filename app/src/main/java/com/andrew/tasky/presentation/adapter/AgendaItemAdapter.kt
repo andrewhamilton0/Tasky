@@ -7,13 +7,16 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.R
-import com.andrew.tasky.data.AgendaItem
+import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.databinding.ItemAgendaBinding
+import com.andrew.tasky.util.AgendaItemActionOptions
 import com.andrew.tasky.util.AgendaItemType
+import com.andrew.tasky.util.FragmentCommunication
 import java.time.format.DateTimeFormatter
 
 class AgendaItemAdapter(
-    private var agendaItems: List<AgendaItem>
+    private var agendaItems: List<AgendaItem>,
+    private val listener: FragmentCommunication
 ): RecyclerView.Adapter<AgendaItemAdapter.AgendaItemViewHolder>() {
 
     inner class AgendaItemViewHolder(val binding: ItemAgendaBinding) : RecyclerView.ViewHolder(binding.root)
@@ -39,9 +42,34 @@ class AgendaItemAdapter(
                 agendaItems[position].isDone = true
             }
 
-            optionsButton.setOnClickListener {
-                val popupMenu = PopupMenu(optionsButton.context, it)
+            agendaItemCard.setOnClickListener {
+                val actionOption = AgendaItemActionOptions.OPEN
+                listener.respond(agendaItems[position], actionOption)
+            }
+
+            optionsButton.setOnClickListener { view ->
+                val popupMenu = PopupMenu(optionsButton.context, view)
                 popupMenu.inflate(R.menu.menu_agenda_item_actions)
+                popupMenu.setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
+                        R.id.open ->{
+                            val actionOption = AgendaItemActionOptions.OPEN
+                            listener.respond(agendaItems[position], actionOption)
+                            true
+                        }
+                        R.id.edit -> {
+                            val actionOption = AgendaItemActionOptions.EDIT
+                            listener.respond(agendaItems[position], actionOption)
+                            true
+                        }
+                        R.id.delete -> {
+                            val actionOption = AgendaItemActionOptions.DELETE
+                            listener.respond(agendaItems[position], actionOption)
+                            true
+                        }
+                        else -> true
+                    }
+                }
                 popupMenu.show()
             }
 

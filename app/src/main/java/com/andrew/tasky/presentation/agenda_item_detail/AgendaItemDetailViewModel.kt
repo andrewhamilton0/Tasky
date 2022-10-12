@@ -1,11 +1,11 @@
 package com.andrew.tasky.presentation.agenda_item_detail
 
 import androidx.lifecycle.ViewModel
-import com.andrew.tasky.R
+import com.andrew.tasky.util.ReminderTimes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.time.LocalDate
+import java.time.LocalTime
 
 class AgendaItemDetailViewModel : ViewModel() {
 
@@ -13,6 +13,12 @@ class AgendaItemDetailViewModel : ViewModel() {
     val isInEditMode = _isInEditMode.asStateFlow()
     fun setEditMode(isEditing: Boolean){
         _isInEditMode.value = isEditing
+    }
+
+    private val _isDone = MutableStateFlow(false)
+    val isDone = _isDone.asStateFlow()
+    fun setIsDone(isDone: Boolean){
+        _isDone.value = isDone
     }
 
     private val _title = MutableStateFlow("Blank Title")
@@ -27,23 +33,21 @@ class AgendaItemDetailViewModel : ViewModel() {
         _description.value = description
     }
 
-    private val _selectedDate = MutableStateFlow(LocalDateTime.now()
-        .format(DateTimeFormatter.ofPattern("MMM dd yyyy")))
+    private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate = _selectedDate.asStateFlow()
-    fun setSelectedDate(selectedDate: String?){
+    fun setSelectedDate(selectedDate: LocalDate){
         _selectedDate.value = selectedDate
     }
 
-    private val _selectedTime = MutableStateFlow(LocalDateTime.now()
-        .format(DateTimeFormatter.ofPattern("hh:mm a")))
+    private val _selectedTime = MutableStateFlow(LocalTime.now())
     val selectedTime = _selectedTime.asStateFlow()
-    fun setSelectedTime(selectedTime: String?){
+    fun setSelectedTime(selectedTime: LocalTime){
         _selectedTime.value = selectedTime
     }
 
-    private val _selectedReminderTime = MutableStateFlow(R.string.ten_minutes_before)
+    private val _selectedReminderTime = MutableStateFlow(ReminderTimes.TEN_MINUTES_BEFORE)
     val selectedReminderTime= _selectedReminderTime.asStateFlow()
-    fun setSelectedReminderTime(selectedReminderTime: Int){
+    fun setSelectedReminderTime(selectedReminderTime: ReminderTimes){
         _selectedReminderTime.value = selectedReminderTime
     }
 }

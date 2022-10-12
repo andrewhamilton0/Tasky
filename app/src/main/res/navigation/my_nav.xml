@@ -46,8 +46,18 @@
             android:id="@+id/action_agendaItemDetailFragment_to_editFragment"
             app:destination="@id/editFragment" />
         <argument
+            android:name="agendaItem"
+            app:argType="com.andrew.tasky.domain.AgendaItem"
+            app:nullable="true"
+            />
+        <argument
             android:name="agendaItemType"
-            app:argType="string" />
+            app:argType="com.andrew.tasky.util.AgendaItemType"
+            />
+        <argument
+            android:name="isInEditMode"
+            app:argType="boolean"
+            />
     </fragment>
     <fragment
         android:id="@+id/editFragment"
