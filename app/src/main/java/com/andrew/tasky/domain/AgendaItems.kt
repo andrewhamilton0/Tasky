@@ -52,4 +52,15 @@ object AgendaItems {
                 agendaItemListSorted.add(it)}}
         return agendaItemListSorted
     }
+
+    fun addAgendaItem(newAgendaItem: AgendaItem){
+        agendaItemList.add(newAgendaItem)
+    }
+
+    fun replaceAgendaItem(newAgendaItem: AgendaItem, oldAgendaItem: AgendaItem){
+        agendaItemList[agendaItemList.indexOf(oldAgendaItem)] = newAgendaItem
+    }
+    fun deleteAgendaItem(agendaItem: AgendaItem){
+        agendaItemList.remove(agendaItem)
+    }
 }

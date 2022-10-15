@@ -5,17 +5,17 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="text_white">#FFeeeeee</color>
-    <color name="light_grey">#99DFDFDF</color>
-    <color name="lightish_grey">#95888888</color>
-    <color name="grey">#5c5d5a</color>
-    <color name="tasky_green">#259f70</color>
-    <color name="baby_blue">#5B92BEF0</color>
-
-    <color name="event_yellow">#cced42</color>
-    <color name="reminder_grey">#f2f3f7</color>
-
-    <color name="highlighted_mini_calendar">#fdeda7</color>
+    <color name="black">#16161C</color>
+    <color name="dark_gray">#5C5D5A</color>
+    <color name="gray">#A9B4BE</color>
+    <color name="dark_green">#06572A</color>
+    <color name="green">#279f70</color>
+    <color name="light_green">#CAEF45</color>
+    <color name="light_blue">#B7C6DE</color>
+    <color name="light">#EEF6FF</color>
+    <color name="light_2">#F2F3F7</color>
+    <color name="white">#FFFFFF</color>
+    <color name="brown">#40492D</color>
+    <color name="orange">#FDEFA8</color>
+    <color name="red">#FF0000</color>
 </resources>

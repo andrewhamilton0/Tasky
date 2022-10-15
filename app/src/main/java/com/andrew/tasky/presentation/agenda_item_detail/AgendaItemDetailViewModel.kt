@@ -9,6 +9,12 @@ import java.time.LocalTime
 
 class AgendaItemDetailViewModel : ViewModel() {
 
+    private val _isInitiallySetup = MutableStateFlow(false)
+    val isInitiallySetup = _isInitiallySetup.asStateFlow()
+    fun setInitialSetupToTrue(){
+        _isInitiallySetup.value = true
+    }
+
     private val _isInEditMode = MutableStateFlow(false)
     val isInEditMode = _isInEditMode.asStateFlow()
     fun setEditMode(isEditing: Boolean){

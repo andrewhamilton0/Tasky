@@ -22,8 +22,17 @@
     <string name="edit_description_text">EDIT DESCRIPTION</string>
 
     <string name="save_button">Save</string>
+    <string name="add_photos">Add photos</string>
+    <string name="photos">Photos</string>
     <string name="at">At</string>
-    <string name="delete_task_button">DELETE TASK</string>
+    <string name="to">To</string>
+    <string name="from">From</string>
+    <string name="visitors">Visitors</string>
+    <string name="all">All</string>
+    <string name="going">Going</string>
+    <string name="not_going">Not going</string>
+    <string name="creator">creator</string>
+    <string name="delete_agenda_item_button">DELETE %1$s</string>
 
     <!--Reminder time options popup menu on agenda item detail screen -->
     <string name="ten_minutes_before">10 minutes before</string>
@@ -48,4 +57,5 @@
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="yesterday">Yesterday</string>
+
 </resources>

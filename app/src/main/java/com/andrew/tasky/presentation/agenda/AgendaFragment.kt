@@ -215,7 +215,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda), FragmentCommunication
         //If dateSelected is on miniCalendar, it sets the background color to yellow
         val highlightedColor = ResourcesCompat.getColor(
             resources,
-            R.color.highlighted_mini_calendar,
+            R.color.orange,
             null
         )
         val unselectedColor = ResourcesCompat.getColor(
@@ -310,7 +310,9 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda), FragmentCommunication
                         .actionAgendaFragmentToAgendaItemDetailFragment(
                             agendaItem,
                             agendaItemType,
-                            false))
+                            false
+                        )
+                )
             }
             AgendaItemActionOptions.EDIT -> {
                 navController.navigate(
@@ -319,7 +321,8 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda), FragmentCommunication
                             agendaItem,
                             agendaItemType,
                             true
-                        ))
+                        )
+                )
             }
             AgendaItemActionOptions.DELETE -> {
 
