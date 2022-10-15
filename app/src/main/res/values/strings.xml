@@ -24,6 +24,7 @@
     <string name="save_button">Save</string>
     <string name="add_photos">Add photos</string>
     <string name="photos">Photos</string>
+    <string name="photo">Photo</string>
     <string name="at">At</string>
     <string name="to">To</string>
     <string name="from">From</string>

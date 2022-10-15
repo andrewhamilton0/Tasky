@@ -14,17 +14,17 @@ import com.andrew.tasky.databinding.FragmentAgendaBinding
 import com.andrew.tasky.databinding.ItemMiniCalendarDayBinding
 import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.AgendaItems
-import com.andrew.tasky.presentation.adapter.AgendaItemAdapter
+import com.andrew.tasky.presentation.adapters.AgendaItemAdapter
 import com.andrew.tasky.presentation.dialogs.DatePickerFragment
 import com.andrew.tasky.util.AgendaItemActionOptions
 import com.andrew.tasky.util.AgendaItemType
-import com.andrew.tasky.util.FragmentCommunication
+import com.andrew.tasky.util.AgendaFragmentCommunicationWithRV
 import com.andrew.tasky.util.collectLatestLifecycleFlow
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class AgendaFragment : Fragment(R.layout.fragment_agenda), FragmentCommunication {
+class AgendaFragment : Fragment(R.layout.fragment_agenda), AgendaFragmentCommunicationWithRV {
 
     private lateinit var navController: NavController
     private lateinit var viewModel: AgendaViewModel

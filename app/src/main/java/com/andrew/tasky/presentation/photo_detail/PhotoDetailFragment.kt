@@ -1,32 +1,41 @@
 package com.andrew.tasky.presentation.photo_detail
 
+import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.navArgs
 import com.andrew.tasky.R
+import com.andrew.tasky.databinding.FragmentPhotoDetailBinding
 
-class PhotoDetailFragment : Fragment() {
+class PhotoDetailFragment : Fragment(R.layout.fragment_photo_detail) {
 
-    companion object {
-        fun newInstance() = PhotoDetailFragment()
-    }
-
+    private lateinit var binding: FragmentPhotoDetailBinding
     private lateinit var viewModel: PhotoDetailViewModel
+    private lateinit var navController: NavController
+    private val args: PhotoDetailFragmentArgs by navArgs()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_photo_detail, container, false)
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(PhotoDetailViewModel::class.java)
-        // TODO: Use the ViewModel
+        binding = FragmentPhotoDetailBinding.bind(view)
+        navController = Navigation.findNavController(view)
+
+        binding.photoImageView.setImageURI(Uri.parse(args.photoUriString))
+        binding.closeButton.setOnClickListener {
+            navController.popBackStack()
+        }
+        binding.deleteButton.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putInt("DELETE_PHOTO_INDEX", args.photoIndex)
+            setFragmentResult("REQUEST_KEY1", bundle)
+            navController.popBackStack()
+        }
     }
 
 }

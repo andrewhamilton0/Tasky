@@ -1,9 +1,11 @@
 package com.andrew.tasky.presentation.agenda_item_detail
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.andrew.tasky.util.ReminderTimes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -52,8 +54,26 @@ class AgendaItemDetailViewModel : ViewModel() {
     }
 
     private val _selectedReminderTime = MutableStateFlow(ReminderTimes.TEN_MINUTES_BEFORE)
-    val selectedReminderTime= _selectedReminderTime.asStateFlow()
+    val selectedReminderTime = _selectedReminderTime.asStateFlow()
     fun setSelectedReminderTime(selectedReminderTime: ReminderTimes){
         _selectedReminderTime.value = selectedReminderTime
+    }
+
+    private val _photos = MutableStateFlow(listOf<Uri>())
+    val photos = _photos.asStateFlow()
+    fun addPhoto(uri: Uri){
+        val updatePhotos: List<Uri> = photos.value.toMutableList().apply {
+            add(0, uri)
+        }
+        _photos.value = updatePhotos
+    }
+    fun deletePhoto(index: Int){
+        val updatePhotos: List<Uri> = photos.value.toMutableList().apply {
+            removeAt(index)
+        }
+        _photos.value = updatePhotos
+    }
+    fun setupPhotos(photoList: List<Uri>){
+        _photos.value = photoList
     }
 }

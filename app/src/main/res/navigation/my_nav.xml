@@ -72,5 +72,14 @@
         android:id="@+id/photoDetailFragment"
         android:name="com.andrew.tasky.presentation.photo_detail.PhotoDetailFragment"
         android:label="fragment_photo_detail"
-        tools:layout="@layout/fragment_photo_detail" />
+        tools:layout="@layout/fragment_photo_detail">
+        <argument
+            android:name="photoUriString"
+            app:argType="string">
+        </argument>
+        <argument
+            android:name="photoIndex"
+            app:argType="integer">
+        </argument>
+    </fragment>
 </navigation>
