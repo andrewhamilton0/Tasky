@@ -78,7 +78,7 @@ class AgendaItemAdapter(
                 agendaItemTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             }
             else{
-                doneButton.setImageResource(R.drawable.task_undone_circle)
+                doneButton.setImageResource(R.drawable.ic_undone_circle)
                 agendaItemTitle.paintFlags = Paint.ANTI_ALIAS_FLAG
             }
 

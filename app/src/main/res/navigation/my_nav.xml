@@ -58,6 +58,9 @@
             android:name="isInEditMode"
             app:argType="boolean"
             />
+        <action
+            android:id="@+id/action_agendaItemDetailFragment_to_photoDetailFragment"
+            app:destination="@id/photoDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/editFragment"
@@ -65,4 +68,9 @@
         android:label="fragment_edit"
         tools:layout="@layout/fragment_edit">
     </fragment>
+    <fragment
+        android:id="@+id/photoDetailFragment"
+        android:name="com.andrew.tasky.presentation.photo_detail.PhotoDetailFragment"
+        android:label="fragment_photo_detail"
+        tools:layout="@layout/fragment_photo_detail" />
 </navigation>

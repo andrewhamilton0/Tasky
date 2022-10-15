@@ -1,401 +1,742 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/topOfTaskLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.09" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/startOfMargin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent=".075" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/endOfMargin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent=".925" />
-
-    <ImageButton
-        android:id="@+id/closeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/ic_baseline_close_24"
-        app:layout_constraintBottom_toTopOf="@id/topOfTaskLayout"
-        app:layout_constraintStart_toEndOf="@id/startOfMargin"
-        app:layout_constraintTop_toTopOf="parent">
-    </ImageButton>
-
-    <ImageButton
-        android:id="@+id/editButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/ic_baseline_edit_24"
-        app:layout_constraintBottom_toTopOf="@id/topOfTaskLayout"
-        app:layout_constraintEnd_toStartOf="@id/endOfMargin"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="visible">
-    </ImageButton>
-
-    <TextView
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/save_button"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/topOfTaskLayout"
-        app:layout_constraintEnd_toStartOf="@id/endOfMargin"
-        app:layout_constraintTop_toTopOf="parent">
-    </TextView>
-
-    <TextView
-        android:id="@+id/current_date_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/topOfTaskLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="01 MARCH 2022" />
-
+    android:fillViewport="true">
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/taskLayout"
+        android:id="@+id/headerConstraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/rounded_top"
-        android:backgroundTint="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topOfTaskLayout"
-        app:layout_constraintVertical_bias="0.0">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/startOfMarginTaskLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".075" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/endOfMarginTaskLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".925" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/topOfTaskType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.05" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottomOfTaskType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.10" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/topOfTitleLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.13" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottomOfTitleLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="133dp" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottomOfDescriptionLine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.09" />
-
-        <ImageView
-            android:id="@+id/taskColorBox"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            app:srcCompat="@drawable/reminder_icon_box"
-            app:layout_constraintBottom_toTopOf="@id/bottomOfTaskType"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
-            app:layout_constraintTop_toBottomOf="@id/topOfTaskType">
-        </ImageView>
-
-        <TextView
-            android:id="@+id/taskType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/task"
-            android:textColor="@color/grey"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/bottomOfTaskType"
-            app:layout_constraintStart_toEndOf="@id/taskColorBox"
-            app:layout_constraintTop_toBottomOf="@+id/topOfTaskType">
-        </TextView>
-
-        <View
-            android:id="@+id/taskDoneCircle"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:background="@drawable/task_done_circle"
-            android:backgroundTint="@color/black"
-            app:layout_constraintBottom_toTopOf="@+id/bottomOfTitleLine"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
-            app:layout_constraintTop_toBottomOf="@id/topOfTitleLine">
-        </View>
-
-        <TextView
-            android:id="@+id/taskTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textColor="@color/black"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/bottomOfTitleLine"
-            app:layout_constraintEnd_toStartOf="@+id/editTitleButton"
-            app:layout_constraintStart_toEndOf="@id/taskDoneCircle"
-            app:layout_constraintTop_toBottomOf="@+id/topOfTitleLine"
-            tools:text="Project X">
-        </TextView>
+        android:layout_height="wrap_content"
+        android:background="@color/black">
 
         <ImageButton
-            android:id="@+id/editTitleButton"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:background="@drawable/ic_baseline_arrow_forward_ios_24"
-            android:backgroundTint="@color/black"
-            app:layout_constraintBottom_toTopOf="@id/bottomOfTitleLine"
-            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
-            app:layout_constraintTop_toBottomOf="@id/topOfTitleLine">
+            android:id="@+id/closeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_close_button"
+            android:layout_marginStart="26dp"
+            app:layout_constraintBottom_toTopOf="@+id/mainBodyScrollView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
         </ImageButton>
 
-        <View
-            android:id="@+id/topOfDescriptionLine"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
-            android:background="@color/baby_blue"
-            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
-            app:layout_constraintTop_toBottomOf="@id/taskTitle" />
-
-        <TextView
-            android:id="@+id/descriptionTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:lineSpacingExtra="8sp"
-            android:minLines="2"
-            android:textAlignment="viewStart"
-            android:textColor="@color/black"
-            android:textFontWeight="600"
-            app:layout_constraintEnd_toStartOf="@id/editDescriptionButton"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
-            app:layout_constraintTop_toBottomOf="@id/topOfDescriptionLine"
-            tools:text="Weekly plan \nRole distribution\nNow This is a new line\nand a new one">
-        </TextView>
-
         <ImageButton
-            android:id="@+id/editDescriptionButton"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:background="@drawable/ic_baseline_arrow_forward_ios_24"
-            android:backgroundTint="@color/black"
-            app:layout_constraintBottom_toBottomOf="@id/descriptionTextView"
-            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
-            app:layout_constraintStart_toEndOf="@id/descriptionTextView"
-            app:layout_constraintTop_toTopOf="@id/descriptionTextView">
-        </ImageButton>
-
-        <View
-            android:id="@+id/topOfTimeLine"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
-            android:background="@color/baby_blue"
-            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
-            app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
-
-        <TextView
-            android:id="@+id/atText"
+            android:id="@+id/editButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/at"
-            android:textColor="@color/black"
-            android:textFontWeight="600"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
-            app:layout_constraintTop_toBottomOf="@id/topOfTimeLine">
-        </TextView>
-
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="32dp"
-            android:textColor="@color/black"
-            android:textFontWeight="600"
-            app:layout_constraintEnd_toStartOf="@id/date"
-            app:layout_constraintStart_toEndOf="@id/atText"
-            app:layout_constraintTop_toBottomOf="@id/topOfTimeLine"
-            tools:text="08:00">
-        </TextView>
-
-        <ImageButton
-            android:id="@+id/timeButton"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:background="@drawable/ic_baseline_arrow_forward_ios_24"
-            android:backgroundTint="@color/black"
-            android:layout_marginStart="25dp"
-            app:layout_constraintBottom_toBottomOf="@id/time"
-            app:layout_constraintStart_toEndOf="@id/time"
-            app:layout_constraintTop_toTopOf="@id/time">
+            android:layout_marginEnd="26dp"
+            android:background="@drawable/ic_edit_pencil_button"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/mainBodyScrollView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
         </ImageButton>
 
         <TextView
-            android:id="@+id/date"
+            android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="24dp"
-            android:textColor="@color/black"
-            android:textFontWeight="600"
-            app:layout_constraintEnd_toStartOf="@+id/dateButton"
-            app:layout_constraintStart_toEndOf="@id/timeButton"
-            app:layout_constraintTop_toBottomOf="@id/topOfTimeLine"
-            tools:text="Jul 21 2022">
-        </TextView>
+            android:layout_marginEnd="22dp"
+            android:fontFamily="@font/inter_semi_bold"
+            android:text="@string/save_button"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/mainBodyScrollView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/dateButton"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:background="@drawable/ic_baseline_arrow_forward_ios_24"
-            android:backgroundTint="@color/black"
-            app:layout_constraintBottom_toBottomOf="@id/date"
-            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
-            app:layout_constraintTop_toTopOf="@id/date">
-        </ImageButton>
-
-        <View
-            android:id="@+id/bottomOfTimeLine"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
-            android:background="@color/baby_blue"
-            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
-            app:layout_constraintTop_toBottomOf="@id/date" />
-
-        <ImageView
-            android:id="@+id/notificationIcon"
+        <TextView
+            android:id="@+id/currentDateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="8dp"
-            app:srcCompat="@drawable/ic_baseline_bell_24"
-            app:layout_constraintEnd_toStartOf="@id/reminderTextView"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
-            app:layout_constraintTop_toBottomOf="@id/bottomOfTimeLine">
-        </ImageView>
+            android:fontFamily="@font/inter_semi_bold"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/mainBodyScrollView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="01 MARCH 2022" />
 
-        <TextView
-            android:id="@+id/reminderTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:lineSpacingExtra="8sp"
-            android:textAlignment="viewStart"
-            android:textColor="@color/black"
-            android:textFontWeight="600"
-            app:layout_constraintEnd_toStartOf="@id/reminderButton"
-            app:layout_constraintStart_toEndOf="@id/notificationIcon"
-            app:layout_constraintTop_toTopOf="@id/notificationIcon"
-            app:layout_constraintBottom_toBottomOf="@id/notificationIcon"
-            tools:text="30 minutes before">
-        </TextView>
-
-        <ImageButton
-            android:id="@+id/reminderButton"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:background="@drawable/ic_baseline_arrow_forward_ios_24"
-            android:backgroundTint="@color/black"
-            app:layout_constraintBottom_toBottomOf="@id/reminderTextView"
-            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
-            app:layout_constraintStart_toEndOf="@id/reminderTextView"
-            app:layout_constraintTop_toTopOf="@id/reminderTextView">
-        </ImageButton>
-
-        <View
-            android:id="@+id/bottomOfNotificationLine"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="24dp"
-            android:background="@color/baby_blue"
-            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
-            app:layout_constraintTop_toBottomOf="@id/reminderTextView" />
-
-        <View
-            android:id="@+id/topOfDeleteTaskButton"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/baby_blue"
-            app:layout_constraintBottom_toTopOf="@id/deleteTaskButton"
-            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout" />
-
-        <TextView
-            android:id="@+id/deleteTaskButton"
-            android:layout_width="125dp"
-            android:layout_height="30dp"
-            android:text="@string/delete_task_button"
-            android:textColor="@color/lightish_grey"
-            android:gravity="center"
-            android:textStyle="bold"
+        <ScrollView
+            android:id="@+id/mainBodyScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/endOfMarginTaskLayout"
-            app:layout_constraintStart_toEndOf="@id/startOfMarginTaskLayout"
-            app:layout_constraintTop_toTopOf="@id/topOfDeleteTaskButton">
-        </TextView>
+            android:layout_marginTop="50dp"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/mainBodyConstraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/bg_rounded_top"
+                android:backgroundTint="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/taskColorBox"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="30dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_task_box">
+                </ImageView>
+
+                <TextView
+                    android:id="@+id/agendaItemTypeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/task"
+                    android:textColor="@color/dark_gray"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/inter_semi_bold"
+                    app:layout_constraintStart_toEndOf="@id/taskColorBox"
+                    app:layout_constraintTop_toTopOf="parent">
+                </TextView>
+
+                <View
+                    android:id="@+id/taskDoneCircle"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginTop="33dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/ic_undone_circle"
+                    android:backgroundTint="@color/black"
+                    app:layout_constraintBottom_toTopOf="@+id/topOfDescriptionLine"
+                    app:layout_constraintEnd_toStartOf="@id/agendaItemTitle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/taskColorBox">
+                </View>
+
+                <TextView
+                    android:id="@+id/agendaItemTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="9dp"
+                    android:layout_marginTop="30dp"
+                    android:fontFamily="@font/inter_bold"
+                    android:textColor="@color/black"
+                    android:textSize="26sp"
+                    app:layout_constraintBottom_toTopOf="@id/topOfDescriptionLine"
+                    app:layout_constraintEnd_toStartOf="@id/editTitleButton"
+                    app:layout_constraintStart_toEndOf="@id/taskDoneCircle"
+                    app:layout_constraintTop_toBottomOf="@id/taskColorBox"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    tools:text="Project X">
+                </TextView>
+
+                <ImageButton
+                    android:id="@+id/editTitleButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="30dp"
+                    android:background="@drawable/ic_edit_arrow"
+                    android:backgroundTint="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/agendaItemTitle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/agendaItemTitle"
+                    app:layout_constraintTop_toTopOf="@id/agendaItemTitle">
+                </ImageButton>
+
+                <View
+                    android:id="@+id/topOfDescriptionLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="17dp"
+                    android:background="@color/light"
+                    android:layout_marginTop="22dp"
+                    app:layout_constraintBottom_toTopOf="@id/descriptionTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/agendaItemTitle"/>
+
+                <TextView
+                    android:id="@+id/descriptionTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="15sp"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/inter_regular"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="17dp"
+                    app:layout_constraintBottom_toTopOf="@id/addPhotoLayout"
+                    app:layout_constraintEnd_toStartOf="@id/editDescriptionButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/topOfDescriptionLine"
+                    tools:text="Weekly plan \nRole distribution\nNow This is a new line\nand a new one">
+                </TextView>
+
+                <ImageButton
+                    android:id="@+id/editDescriptionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="30dp"
+                    android:background="@drawable/ic_edit_arrow"
+                    android:backgroundTint="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/descriptionTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/descriptionTextView"
+                    app:layout_constraintTop_toTopOf="@id/descriptionTextView">
+                </ImageButton>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/addPhotoLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="109dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@color/light_2"
+                    app:layout_constraintTop_toBottomOf="@id/descriptionTextView"
+                    app:layout_constraintBottom_toTopOf="@id/topOfTimeLine"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/photosTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/photos"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/inter_semi_bold"
+                        android:textSize="20sp"
+                        android:layout_marginStart="21dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/photosRecyclerView"
+                        app:layout_constraintVertical_chainStyle="packed">
+                    </TextView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/photosRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:orientation="horizontal"
+                        android:layout_marginStart="21dp"
+                        app:layout_constraintTop_toBottomOf="@id/photosTextView"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                    <ImageView
+                        android:id="@+id/addPhotoPlusSign"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_add_photo_plus_sign"
+                        app:layout_constraintEnd_toStartOf="@id/addPhotoTextView"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintHorizontal_chainStyle="packed">
+                    </ImageView>
+
+                    <TextView
+                        android:id="@+id/addPhotoTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add_photos"
+                        android:fontFamily="@font/inter_semi_bold"
+                        android:textColor="@color/gray"
+                        android:textSize="16sp"
+                        android:layout_marginStart="22dp"
+                        app:layout_constraintStart_toEndOf="@id/addPhotoPlusSign"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+                    </TextView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/topOfTimeLine"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="17dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/light"
+                    app:layout_constraintBottom_toTopOf="@id/startTimeAndDateLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/addPhotoLayout" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/startTimeAndDateLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    app:layout_constraintBottom_toTopOf="@id/endTimeAndDateLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/topOfTimeLine">
+
+                    <TextView
+                        android:id="@+id/startTimeAndDateBeginningText"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="@string/from"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:layout_marginStart="25dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/startTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/startOfStartTimeGuideline"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="08:00">
+                    </TextView>
+
+                    <ImageButton
+                        android:id="@+id/startTimeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_edit_arrow"
+                        android:backgroundTint="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/startOfStartTimeButtonGuideline"
+                        app:layout_constraintTop_toTopOf="parent">
+                    </ImageButton>
+
+                    <TextView
+                        android:id="@+id/startDate"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/startOfStartDateGuideline"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Jul 21 2022">
+                    </TextView>
+
+                    <ImageButton
+                        android:id="@+id/startDateButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_edit_arrow"
+                        android:backgroundTint="@color/black"
+                        android:layout_marginEnd="30dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+                    </ImageButton>
+
+                    <View
+                        android:id="@+id/bottomLineOfStartDateAndTime"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="28dp"
+                        android:layout_marginEnd="17dp"
+                        android:background="@color/light"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+                    </View>
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/startOfStartTimeButtonGuideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.46" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/startOfStartTimeGuideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.26" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/startOfStartDateGuideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.57" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/endTimeAndDateLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    app:layout_constraintBottom_toTopOf="@id/reminderIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/startTimeAndDateLayout"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/endTimeAndDateBeginningText"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="@string/to"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:layout_marginStart="25dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/endTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/startOfEndTimeGuideline"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="08:00">
+                    </TextView>
+
+                    <ImageButton
+                        android:id="@+id/endTimeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_edit_arrow"
+                        android:backgroundTint="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/startOfEndTimeButtonGuideline"
+                        app:layout_constraintTop_toTopOf="parent">
+                    </ImageButton>
+
+                    <TextView
+                        android:id="@+id/endDate"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_regular"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/startOfEndDateGuideline"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Jul 21 2022">
+                    </TextView>
+
+                    <ImageButton
+                        android:id="@+id/endDateButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
+                        android:background="@drawable/ic_edit_arrow"
+                        android:backgroundTint="@color/black"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+                    </ImageButton>
+
+                    <View
+                        android:id="@+id/bottomLineOfEndDateAndTime"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="17dp"
+                        android:layout_marginTop="28dp"
+                        android:layout_marginEnd="17dp"
+                        android:background="@color/light"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+                    </View>
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/startOfEndTimeGuideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.26" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/startOfEndDateGuideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.57" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/startOfEndTimeButtonGuideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.46" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <ImageView
+                    android:id="@+id/reminderIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginTop="23dp"
+                    app:layout_constraintBottom_toTopOf="@id/bottomOfReminderLine"
+                    app:layout_constraintEnd_toStartOf="@id/reminderTextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/endTimeAndDateLayout"
+                    app:srcCompat="@drawable/ic_reminder_bell">
+                </ImageView>
+
+                <TextView
+                    android:id="@+id/reminderTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="8sp"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/inter_regular"
+                    android:layout_marginStart="13dp"
+                    app:layout_constraintBottom_toTopOf="@id/bottomOfReminderLine"
+                    app:layout_constraintEnd_toStartOf="@id/reminderButton"
+                    app:layout_constraintStart_toEndOf="@id/reminderIcon"
+                    app:layout_constraintTop_toBottomOf="@id/endTimeAndDateLayout"
+                    tools:text="30 minutes before">
+                </TextView>
+
+                <ImageButton
+                    android:id="@+id/reminderButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="30dp"
+                    android:background="@drawable/ic_edit_arrow"
+                    android:backgroundTint="@color/black"
+                    app:layout_constraintBottom_toTopOf="@id/bottomOfReminderLine"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/reminderTextView"
+                    app:layout_constraintTop_toBottomOf="@id/endTimeAndDateLayout">
+                </ImageButton>
+
+                <View
+                    android:id="@+id/bottomOfReminderLine"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="17dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/light"
+                    app:layout_constraintBottom_toBottomOf="@id/topOfAttendeesLine"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/reminderIcon" />
+
+                <View
+                    android:id="@+id/topOfAttendeesLine"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="17dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@color/light"
+                    app:layout_constraintBottom_toTopOf="@id/attendeesLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/attendeesLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="17dp"
+                    android:layout_marginTop="40dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/deleteAgendaItemButton"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/visitorsTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/visitors"
+                        android:fontFamily="@font/inter_bold"
+                        android:textSize="20sp"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/addAttendeeButton"
+                        app:layout_constraintBottom_toBottomOf="@id/addAttendeeButton">
+                    </TextView>
+
+                    <ImageButton
+                        android:id="@+id/addAttendeeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ic_add_attendee"
+                        android:layout_marginStart="18dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/visitorsTextView">
+                    </ImageButton>
+
+                    <ImageButton
+                        android:id="@+id/showAllButton"
+                        android:layout_width="100dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/rounded_button"
+                        android:backgroundTint="@color/black"
+                        android:layout_marginTop="37dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/visitorsTextView"
+                        app:layout_constraintEnd_toStartOf="@id/showGoingButton"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside">
+                    </ImageButton>
+
+                    <TextView
+                        android:id="@+id/showAllButtonTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/all"
+                        android:fontFamily="@font/inter_medium"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"
+                        app:layout_constraintTop_toTopOf="@id/showAllButton"
+                        app:layout_constraintBottom_toBottomOf="@id/showAllButton"
+                        app:layout_constraintStart_toStartOf="@id/showAllButton"
+                        app:layout_constraintEnd_toEndOf="@id/showAllButton">
+                    </TextView>
+
+                    <ImageButton
+                        android:id="@+id/showGoingButton"
+                        android:layout_width="100dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/rounded_button"
+                        android:backgroundTint="@color/black"
+                        android:layout_marginTop="37dp"
+                        app:layout_constraintStart_toEndOf="@id/showAllButton"
+                        app:layout_constraintTop_toBottomOf="@id/visitorsTextView"
+                        app:layout_constraintEnd_toStartOf="@id/showNotGoingButton">
+                    </ImageButton>
+
+                    <TextView
+                        android:id="@+id/showGoingButtonTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/going"
+                        android:fontFamily="@font/inter_medium"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"
+                        app:layout_constraintTop_toTopOf="@id/showGoingButton"
+                        app:layout_constraintBottom_toBottomOf="@id/showGoingButton"
+                        app:layout_constraintStart_toStartOf="@id/showGoingButton"
+                        app:layout_constraintEnd_toEndOf="@id/showGoingButton">
+                    </TextView>
+
+                    <ImageButton
+                        android:id="@+id/showNotGoingButton"
+                        android:layout_width="100dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/rounded_button"
+                        android:backgroundTint="@color/black"
+                        android:layout_marginTop="37dp"
+                        app:layout_constraintStart_toEndOf="@id/showGoingButton"
+                        app:layout_constraintTop_toBottomOf="@id/visitorsTextView"
+                        app:layout_constraintEnd_toEndOf="parent">
+                    </ImageButton>
+
+                    <TextView
+                        android:id="@+id/showNotGoingButtonTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/not_going"
+                        android:fontFamily="@font/inter_medium"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"
+                        app:layout_constraintTop_toTopOf="@id/showNotGoingButton"
+                        app:layout_constraintBottom_toBottomOf="@id/showNotGoingButton"
+                        app:layout_constraintStart_toStartOf="@id/showNotGoingButton"
+                        app:layout_constraintEnd_toEndOf="@id/showNotGoingButton">
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/goingTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/going"
+                        android:textColor="@color/dark_gray"
+                        android:fontFamily="@font/inter_medium"
+                        android:textSize="16sp"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/showAllButton">
+                    </TextView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/attendeeGoingRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/goingTextView">
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                    <TextView
+                        android:id="@+id/notGoingTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/not_going"
+                        android:textColor="@color/dark_gray"
+                        android:fontFamily="@font/inter_medium"
+                        android:textSize="16sp"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/attendeeGoingRecyclerView">
+                    </TextView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/attendeeNotGoingRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="30dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/notGoingTextView"
+                        app:layout_constraintBottom_toBottomOf="parent">
+                    </androidx.recyclerview.widget.RecyclerView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/deleteAgendaItemButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="35dp"
+                    android:fontFamily="@font/inter_semi_bold"
+                    android:gravity="center"
+                    android:textColor="@color/gray"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:text="DELETE TASK">
+                </TextView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

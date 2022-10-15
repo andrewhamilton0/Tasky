@@ -14,6 +14,8 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentAgendaItemDetailBinding
+import com.andrew.tasky.domain.AgendaItem
+import com.andrew.tasky.domain.AgendaItems
 import com.andrew.tasky.presentation.dialogs.DatePickerFragment
 import com.andrew.tasky.presentation.dialogs.DeleteConfirmationDialogFragment
 import com.andrew.tasky.presentation.dialogs.TimePickerFragment
@@ -42,6 +44,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         agendaItemType = args.agendaItemType
 
         subscribeToObservables()
+        setupAgendaInitialViewModels()
         setupAgendaItemType()
         onClickListeners()
     }
@@ -54,23 +57,23 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
             collectLatestLifecycleFlow(viewModel.isDone) { isDone ->
                 if (isDone) {
                     taskDoneCircle.setBackgroundResource(R.drawable.task_done_circle)
-                    taskTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    agendaItemTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                 } else {
-                    taskDoneCircle.setBackgroundResource(R.drawable.task_undone_circle)
-                    binding.taskTitle.paintFlags = Paint.ANTI_ALIAS_FLAG
+                    taskDoneCircle.setBackgroundResource(R.drawable.ic_undone_circle)
+                    binding.agendaItemTitle.paintFlags = Paint.ANTI_ALIAS_FLAG
                 }
             }
             collectLatestLifecycleFlow(viewModel.title) { title ->
-                taskTitle.text = title
+                agendaItemTitle.text = title
             }
             collectLatestLifecycleFlow(viewModel.description) { description ->
                 descriptionTextView.text = description
             }
             collectLatestLifecycleFlow(viewModel.selectedTime) { selectedTime ->
-                time.text = selectedTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                startTime.text = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"))
             }
             collectLatestLifecycleFlow(viewModel.selectedDate) { selectedDate ->
-                date.text = selectedDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
+                startDate.text = selectedDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
             }
             collectLatestLifecycleFlow(viewModel.selectedReminderTime) { reminderTime ->
                 when (reminderTime) {
@@ -89,32 +92,56 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         }
     }
 
+    private fun setupAgendaInitialViewModels() {
+        if (!viewModel.isInitiallySetup.value) {
+            args.agendaItem?.let {
+                viewModel.setTitle(it.title)
+                viewModel.setDescription(it.description)
+                viewModel.setSelectedDate(it.startDateAndTime.toLocalDate())
+                viewModel.setSelectedTime(it.startDateAndTime.toLocalTime())
+                viewModel.setIsDone(it.isDone)
+                viewModel.setSelectedReminderTime(it.reminderTime)
+            }
+            viewModel.setEditMode(args.isInEditMode)
+            viewModel.setInitialSetupToTrue()
+        }
+    }
+
     private fun setupAgendaItemType(){
         binding.apply {
             when (agendaItemType) {
                 AgendaItemType.TASK -> {
-                    taskColorBox.setImageResource(R.drawable.task_icon_box)
-                    taskType.text = getString(R.string.task)
+                    taskColorBox.setImageResource(R.drawable.ic_task_box)
+                    agendaItemTypeTextView.text = getString(R.string.task)
+                    addPhotoLayout.visibility = View.GONE
+                    startTimeAndDateBeginningText.text = getString(R.string.at)
+                    endTimeAndDateLayout.visibility = View.GONE
+                    attendeesLayout.visibility = View.GONE
+                    deleteAgendaItemButton.text = String.format(resources.
+                    getString(R.string.delete_agenda_item_button), getString(R.string.task)).uppercase()
                 }
                 AgendaItemType.EVENT -> {
-                    taskColorBox.setImageResource(R.drawable.event_icon_box)
-                    taskType.text = getString(R.string.event)
+                    taskColorBox.setImageResource(R.drawable.ic_event_box)
+                    agendaItemTypeTextView.text = getString(R.string.event)
+                    addPhotoLayout.visibility = View.VISIBLE
+                    startTimeAndDateBeginningText.text = getString(R.string.from)
+                    endTimeAndDateLayout.visibility = View.VISIBLE
+                    attendeesLayout.visibility = View.VISIBLE
+                    deleteAgendaItemButton.text = String.format(resources.
+                    getString(R.string.delete_agenda_item_button), getString(R.string.event)).uppercase()
                 }
                 AgendaItemType.REMINDER -> {
-                    taskColorBox.setImageResource(R.drawable.reminder_icon_box)
-                    taskType.text = getString(R.string.reminder)
+                    taskColorBox.setImageResource(R.drawable.ic_reminder_box)
+                    agendaItemTypeTextView.text = getString(R.string.reminder)
+                    addPhotoLayout.visibility = View.GONE
+                    startTimeAndDateBeginningText.text = getString(R.string.from)
+                    endTimeAndDateLayout.visibility = View.GONE
+                    attendeesLayout.visibility = View.GONE
+                    deleteAgendaItemButton.text = String.format(resources.
+                    getString(R.string.delete_agenda_item_button), getString(R.string.reminder)).uppercase()
                 }
             }
         }
-        args.agendaItem?.let {
-            viewModel.setTitle(it.title)
-            viewModel.setDescription(it.description)
-            viewModel.setSelectedDate(it.startDateAndTime.toLocalDate())
-            viewModel.setSelectedTime(it.startDateAndTime.toLocalTime())
-            viewModel.setIsDone(it.isDone)
-            viewModel.setSelectedReminderTime(it.reminderTime)
-        }
-        viewModel.setEditMode(args.isInEditMode)
     }
 
     private fun onClickListeners(){
@@ -128,14 +155,15 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
             }
 
             saveButton.setOnClickListener {
-                viewModel.setEditMode(false)
+                saveAgendaItem()
+                navController.popBackStack()
             }
 
             taskDoneCircle.setOnClickListener{
                 viewModel.setIsDone(!viewModel.isDone.value)
             }
 
-            taskTitle.setOnClickListener {
+            agendaItemTitle.setOnClickListener {
                 navigateToEditFragment(EditType.TITLE)
             }
 
@@ -151,19 +179,11 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                 navigateToEditFragment(EditType.DESCRIPTION)
             }
 
-            time.setOnClickListener {
+            startTime.setOnClickListener {
                 showTimePickerFragment()
             }
 
-            timeButton.setOnClickListener{
-                showTimePickerFragment()
-            }
-
-            date.setOnClickListener {
-                showDatePickerFragment()
-            }
-
-            dateButton.setOnClickListener {
+            startDate.setOnClickListener {
                 showDatePickerFragment()
             }
 
@@ -175,7 +195,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                 showReminderOptionsPopupMenu(it)
             }
 
-            deleteTaskButton.setOnClickListener{
+            deleteAgendaItemButton.setOnClickListener{
                 showDeleteConfirmationDialogFragment()
             }
         }
@@ -201,7 +221,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         }
         when(editType){
             EditType.TITLE -> {
-                val text = binding.taskTitle.text.toString()
+                val text = binding.agendaItemTitle.text.toString()
                 val bundle = Bundle()
                 bundle.putString("TEXT", text)
                 bundle.putString("EDIT_TYPE", editType.name)
@@ -281,18 +301,14 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
 
             editTitleButton.isVisible = isEditing
             editTitleButton.isEnabled = isEditing
-            taskTitle.isEnabled = isEditing
+            agendaItemTitle.isEnabled = isEditing
 
             editDescriptionButton.isVisible = isEditing
             editDescriptionButton.isEnabled = isEditing
             descriptionTextView.isEnabled = isEditing
 
-            time.isEnabled = isEditing
-            timeButton.isVisible = isEditing
-            timeButton.isEnabled=isEditing
-            date.isEnabled = isEditing
-            dateButton.isVisible = isEditing
-            dateButton.isEnabled = isEditing
+            startTime.isEnabled = isEditing
+            startDate.isEnabled = isEditing
 
             reminderTextView.isEnabled = isEditing
             reminderButton.isEnabled = isEditing
@@ -334,18 +350,44 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         popupMenu.show()
     }
 
+    private fun getAgendaItemCurrentInfo(): AgendaItem {
+        return AgendaItem(
+            agendaItemType,
+            viewModel.isDone.value,
+            viewModel.title.value,
+            viewModel.description.value,
+            LocalDateTime.of(viewModel.selectedDate.value, viewModel.selectedTime.value),
+            reminderTime = viewModel.selectedReminderTime.value
+        )
+    }
+
+    private fun saveAgendaItem(){
+        val newAgendaItem = getAgendaItemCurrentInfo()
+        if(args.agendaItem != null) {
+            args.agendaItem?.let { oldAgendaItem ->
+                AgendaItems.replaceAgendaItem(newAgendaItem,oldAgendaItem)
+            }
+        }
+        else{
+            AgendaItems.addAgendaItem(newAgendaItem)
+        }
+    }
+
     private fun showDeleteConfirmationDialogFragment(){
         val deleteConfirmationDialogFragment = DeleteConfirmationDialogFragment()
         val supportFragmentManager = requireActivity().supportFragmentManager
 
-        //If deleteButton is pressed, deleteAgenda returns true and popBackStack() is ran
+        //If deleteButton is pressed, deletes agenda item and pops backstack
         supportFragmentManager.setFragmentResultListener(
             "REQUEST_KEY",
             viewLifecycleOwner
         ){
             resultKey, bundle -> if(resultKey == "REQUEST_KEY"){
-                val deleteAgenda = bundle.getBoolean("DELETE_AGENDA_ITEM")
-                if (deleteAgenda){
+                val deleteAgendaItem = bundle.getBoolean("DELETE_AGENDA_ITEM")
+                if (deleteAgendaItem){
+                    args.agendaItem?.let {
+                        AgendaItems.deleteAgendaItem(it)
+                    }
                     navController.popBackStack()
                 }
             }

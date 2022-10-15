@@ -6,8 +6,8 @@
     android:id="@+id/emailAddressLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/rounded_edit_text"
-    android:backgroundTint="@color/light_grey">
+    android:background="@drawable/bg_rounded_edit_text"
+    android:backgroundTint="@color/light_2">
 
 <androidx.constraintlayout.widget.Guideline
     android:id="@+id/startOfEditText"

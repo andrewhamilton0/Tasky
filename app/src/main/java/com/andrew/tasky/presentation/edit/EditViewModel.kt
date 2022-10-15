@@ -9,9 +9,7 @@ class EditViewModel (): ViewModel() {
 
     private val _editType = MutableStateFlow(EditType.DESCRIPTION)
     val editType = _editType.asStateFlow()
-
     fun setEditType(editType: EditType) {
         _editType.value = editType
     }
-
 }

@@ -3,7 +3,7 @@ package com.andrew.tasky.presentation.views
 import android.content.Context
 import android.util.AttributeSet
 import com.andrew.tasky.R
-import com.andrew.tasky.databinding.PasswordTextFieldBinding
+import com.andrew.tasky.databinding.TextFieldPasswordBinding
 import com.google.android.material.textfield.TextInputLayout
 
 
@@ -12,8 +12,8 @@ class PasswordTextField @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ): TextInputLayout(context, attrs) {
 
-    private val binding = PasswordTextFieldBinding.bind(
-        inflate(context, R.layout.password_text_field, this)
+    private val binding = TextFieldPasswordBinding.bind(
+        inflate(context, R.layout.text_field_password, this)
     )
 
     init {
