@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 object AgendaItems {
 
-    private val agendaItemList = mutableListOf(
+    private var agendaItemList = listOf(
         AgendaItem(
             AgendaItemType.EVENT,
             false,
@@ -54,13 +54,23 @@ object AgendaItems {
     }
 
     fun addAgendaItem(newAgendaItem: AgendaItem){
-        agendaItemList.add(newAgendaItem)
+        val updatedAgendaItemList: List<AgendaItem> = agendaItemList.toMutableList().apply {
+            add(newAgendaItem)
+        }
+        agendaItemList = updatedAgendaItemList
     }
 
     fun replaceAgendaItem(newAgendaItem: AgendaItem, oldAgendaItem: AgendaItem){
-        agendaItemList[agendaItemList.indexOf(oldAgendaItem)] = newAgendaItem
+        val updatedAgendaItemList: List<AgendaItem> = agendaItemList.toMutableList().apply {
+            this[this.indexOf(oldAgendaItem)] = newAgendaItem
+        }
+        agendaItemList = updatedAgendaItemList
     }
+
     fun deleteAgendaItem(agendaItem: AgendaItem){
-        agendaItemList.remove(agendaItem)
+        val updatedAgendaItemList: List<AgendaItem> = agendaItemList.toMutableList().apply {
+            remove(agendaItem)
+        }
+        agendaItemList = updatedAgendaItemList
     }
 }

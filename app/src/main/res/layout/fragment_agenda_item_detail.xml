@@ -199,7 +199,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/addPhotoLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="109dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="5dp"
                     android:background="@color/light_2"
@@ -217,6 +217,7 @@
                         android:fontFamily="@font/inter_semi_bold"
                         android:textSize="20sp"
                         android:layout_marginStart="21dp"
+                        android:layout_marginTop="21dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toTopOf="@id/photosRecyclerView"
@@ -226,9 +227,11 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/photosRecyclerView"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="61dp"
                         android:orientation="horizontal"
-                        android:layout_marginStart="21dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
                         app:layout_constraintTop_toBottomOf="@id/photosTextView"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent">
@@ -239,6 +242,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_add_photo_plus_sign"
+                        android:layout_marginTop="47dp"
+                        android:layout_marginBottom="47dp"
                         app:layout_constraintEnd_toStartOf="@id/addPhotoTextView"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -255,6 +260,8 @@
                         android:textColor="@color/gray"
                         android:textSize="16sp"
                         android:layout_marginStart="22dp"
+                        android:layout_marginTop="46dp"
+                        android:layout_marginBottom="45dp"
                         app:layout_constraintStart_toEndOf="@id/addPhotoPlusSign"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -566,8 +573,7 @@
                     android:layout_marginTop="40dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/deleteAgendaItemButton"
-                    android:visibility="gone">
+                    app:layout_constraintBottom_toTopOf="@id/deleteAgendaItemButton">
 
                     <TextView
                         android:id="@+id/visitorsTextView"
@@ -577,9 +583,9 @@
                         android:fontFamily="@font/inter_bold"
                         android:textSize="20sp"
                         android:textColor="@color/black"
+                        android:layout_marginTop="1dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/addAttendeeButton"
-                        app:layout_constraintBottom_toBottomOf="@id/addAttendeeButton">
+                        app:layout_constraintTop_toTopOf="parent">
                     </TextView>
 
                     <ImageButton
@@ -593,7 +599,7 @@
                     </ImageButton>
 
                     <ImageButton
-                        android:id="@+id/showAllButton"
+                        android:id="@+id/allButton"
                         android:layout_width="100dp"
                         android:layout_height="30dp"
                         android:background="@drawable/rounded_button"
@@ -601,74 +607,74 @@
                         android:layout_marginTop="37dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/visitorsTextView"
-                        app:layout_constraintEnd_toStartOf="@id/showGoingButton"
+                        app:layout_constraintEnd_toStartOf="@id/goingButton"
                         app:layout_constraintHorizontal_chainStyle="spread_inside">
                     </ImageButton>
 
                     <TextView
-                        android:id="@+id/showAllButtonTextView"
+                        android:id="@+id/allButtonTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/all"
                         android:fontFamily="@font/inter_medium"
                         android:textSize="14sp"
                         android:textColor="@color/white"
-                        app:layout_constraintTop_toTopOf="@id/showAllButton"
-                        app:layout_constraintBottom_toBottomOf="@id/showAllButton"
-                        app:layout_constraintStart_toStartOf="@id/showAllButton"
-                        app:layout_constraintEnd_toEndOf="@id/showAllButton">
+                        app:layout_constraintTop_toTopOf="@id/allButton"
+                        app:layout_constraintBottom_toBottomOf="@id/allButton"
+                        app:layout_constraintStart_toStartOf="@id/allButton"
+                        app:layout_constraintEnd_toEndOf="@id/allButton">
                     </TextView>
 
                     <ImageButton
-                        android:id="@+id/showGoingButton"
+                        android:id="@+id/goingButton"
                         android:layout_width="100dp"
                         android:layout_height="30dp"
                         android:background="@drawable/rounded_button"
                         android:backgroundTint="@color/black"
                         android:layout_marginTop="37dp"
-                        app:layout_constraintStart_toEndOf="@id/showAllButton"
+                        app:layout_constraintStart_toEndOf="@id/allButton"
                         app:layout_constraintTop_toBottomOf="@id/visitorsTextView"
-                        app:layout_constraintEnd_toStartOf="@id/showNotGoingButton">
+                        app:layout_constraintEnd_toStartOf="@id/notGoingButton">
                     </ImageButton>
 
                     <TextView
-                        android:id="@+id/showGoingButtonTextView"
+                        android:id="@+id/goingButtonTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/going"
                         android:fontFamily="@font/inter_medium"
                         android:textSize="14sp"
                         android:textColor="@color/white"
-                        app:layout_constraintTop_toTopOf="@id/showGoingButton"
-                        app:layout_constraintBottom_toBottomOf="@id/showGoingButton"
-                        app:layout_constraintStart_toStartOf="@id/showGoingButton"
-                        app:layout_constraintEnd_toEndOf="@id/showGoingButton">
+                        app:layout_constraintTop_toTopOf="@id/goingButton"
+                        app:layout_constraintBottom_toBottomOf="@id/goingButton"
+                        app:layout_constraintStart_toStartOf="@id/goingButton"
+                        app:layout_constraintEnd_toEndOf="@id/goingButton">
                     </TextView>
 
                     <ImageButton
-                        android:id="@+id/showNotGoingButton"
+                        android:id="@+id/notGoingButton"
                         android:layout_width="100dp"
                         android:layout_height="30dp"
                         android:background="@drawable/rounded_button"
                         android:backgroundTint="@color/black"
                         android:layout_marginTop="37dp"
-                        app:layout_constraintStart_toEndOf="@id/showGoingButton"
+                        app:layout_constraintStart_toEndOf="@id/goingButton"
                         app:layout_constraintTop_toBottomOf="@id/visitorsTextView"
                         app:layout_constraintEnd_toEndOf="parent">
                     </ImageButton>
 
                     <TextView
-                        android:id="@+id/showNotGoingButtonTextView"
+                        android:id="@+id/notGoingButtonTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/not_going"
                         android:fontFamily="@font/inter_medium"
                         android:textSize="14sp"
                         android:textColor="@color/white"
-                        app:layout_constraintTop_toTopOf="@id/showNotGoingButton"
-                        app:layout_constraintBottom_toBottomOf="@id/showNotGoingButton"
-                        app:layout_constraintStart_toStartOf="@id/showNotGoingButton"
-                        app:layout_constraintEnd_toEndOf="@id/showNotGoingButton">
+                        app:layout_constraintTop_toTopOf="@id/notGoingButton"
+                        app:layout_constraintBottom_toBottomOf="@id/notGoingButton"
+                        app:layout_constraintStart_toStartOf="@id/notGoingButton"
+                        app:layout_constraintEnd_toEndOf="@id/notGoingButton">
                     </TextView>
 
                     <TextView
@@ -681,11 +687,11 @@
                         android:textSize="16sp"
                         android:layout_marginTop="20dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/showAllButton">
+                        app:layout_constraintTop_toBottomOf="@id/allButton">
                     </TextView>
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/attendeeGoingRecyclerView"
+                        android:id="@+id/goingAttendeeRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
@@ -704,11 +710,11 @@
                         android:textSize="16sp"
                         android:layout_marginTop="20dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/attendeeGoingRecyclerView">
+                        app:layout_constraintTop_toBottomOf="@id/goingAttendeeRecyclerView">
                     </TextView>
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/attendeeNotGoingRecyclerView"
+                        android:id="@+id/notGoingAttendeeRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"

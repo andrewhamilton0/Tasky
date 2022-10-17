@@ -14,5 +14,8 @@ data class AgendaItem(
     val startDateAndTime: LocalDateTime,
     val endDateAndTime: LocalDateTime? = null,
     val reminderTime: ReminderTimes,
-    val photos: List<Uri>? = null
+    val photos: List<Uri>? = null,
+    val isAttendee: Boolean? = false,
+    val attendees: List<String>? = null,
+    val isAttending: Boolean? = true
 ) : Serializable
