@@ -1,10 +1,13 @@
 package com.andrew.tasky.presentation.agenda_item_detail
 
 import android.graphics.Paint
+import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupMenu
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
@@ -12,10 +15,12 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentAgendaItemDetailBinding
 import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.AgendaItems
+import com.andrew.tasky.presentation.adapters.PhotoItemAdapter
 import com.andrew.tasky.presentation.dialogs.DatePickerFragment
 import com.andrew.tasky.presentation.dialogs.DeleteConfirmationDialogFragment
 import com.andrew.tasky.presentation.dialogs.TimePickerFragment
@@ -25,7 +30,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
+class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), AgendaItemDetailFragmentCommunicationWithRV {
 
     private val currentDate = LocalDateTime.now()
         .format(DateTimeFormatter.ofPattern("dd MMMM yyyy")).uppercase()
@@ -34,6 +39,14 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
     private lateinit var navController: NavController
     private lateinit var binding: FragmentAgendaItemDetailBinding
     private lateinit var agendaItemType: AgendaItemType
+    private val addPhotoSearchForResult = registerForActivityResult(
+        ActivityResultContracts.GetContent(),
+        ActivityResultCallback {
+            if (it != null) {
+                viewModel.addPhoto(it)
+            }
+        }
+    )
     private val args: AgendaItemDetailFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,6 +60,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         setupAgendaInitialViewModels()
         setupAgendaItemType()
         onClickListeners()
+
     }
 
     private fun subscribeToObservables() {
@@ -90,7 +104,26 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                 }
             }
         }
+        collectLatestLifecycleFlow(viewModel.photos){
+            val adapter = PhotoItemAdapter(it, this)
+            binding.photosRecyclerView.adapter = adapter
+            binding.photosRecyclerView.layoutManager = LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            if (it.isEmpty()){
+                binding.addPhotoPlusSign.isVisible = true
+                binding.addPhotoTextView.isVisible = true
+                binding.photosTextView.isVisible = false
+                binding.photosRecyclerView.isVisible = false
+            }
+            else{
+                binding.addPhotoPlusSign.isVisible = false
+                binding.addPhotoTextView.isVisible = false
+                binding.photosTextView.isVisible = true
+                binding.photosRecyclerView.isVisible = true
+            }
+        }
     }
+
 
     private fun setupAgendaInitialViewModels() {
         if (!viewModel.isInitiallySetup.value) {
@@ -101,6 +134,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                 viewModel.setSelectedTime(it.startDateAndTime.toLocalTime())
                 viewModel.setIsDone(it.isDone)
                 viewModel.setSelectedReminderTime(it.reminderTime)
+                it.photos?.let { photoList -> viewModel.setupPhotos(photoList) }
             }
             viewModel.setEditMode(args.isInEditMode)
             viewModel.setInitialSetupToTrue()
@@ -113,35 +147,58 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                 AgendaItemType.TASK -> {
                     taskColorBox.setImageResource(R.drawable.ic_task_box)
                     agendaItemTypeTextView.text = getString(R.string.task)
-                    addPhotoLayout.visibility = View.GONE
+                    addPhotoLayout.isVisible = false
                     startTimeAndDateBeginningText.text = getString(R.string.at)
-                    endTimeAndDateLayout.visibility = View.GONE
-                    attendeesLayout.visibility = View.GONE
+                    endTimeAndDateLayout.isVisible = false
+                    attendeesLayout.isVisible = false
                     deleteAgendaItemButton.text = String.format(resources.
                     getString(R.string.delete_agenda_item_button), getString(R.string.task)).uppercase()
                 }
                 AgendaItemType.EVENT -> {
                     taskColorBox.setImageResource(R.drawable.ic_event_box)
                     agendaItemTypeTextView.text = getString(R.string.event)
-                    addPhotoLayout.visibility = View.VISIBLE
+                    addPhotoLayout.isVisible = true
                     startTimeAndDateBeginningText.text = getString(R.string.from)
-                    endTimeAndDateLayout.visibility = View.VISIBLE
-                    attendeesLayout.visibility = View.VISIBLE
+                    endTimeAndDateLayout.isVisible = true
+                    attendeesLayout.isVisible = true
                     deleteAgendaItemButton.text = String.format(resources.
                     getString(R.string.delete_agenda_item_button), getString(R.string.event)).uppercase()
                 }
                 AgendaItemType.REMINDER -> {
                     taskColorBox.setImageResource(R.drawable.ic_reminder_box)
                     agendaItemTypeTextView.text = getString(R.string.reminder)
-                    addPhotoLayout.visibility = View.GONE
+                    addPhotoLayout.isVisible = false
                     startTimeAndDateBeginningText.text = getString(R.string.from)
-                    endTimeAndDateLayout.visibility = View.GONE
-                    attendeesLayout.visibility = View.GONE
+                    endTimeAndDateLayout.isVisible = false
+                    attendeesLayout.isVisible = false
                     deleteAgendaItemButton.text = String.format(resources.
                     getString(R.string.delete_agenda_item_button), getString(R.string.reminder)).uppercase()
                 }
             }
         }
+    }
+
+    override fun addNewPhoto() {
+        super.addNewPhoto()
+        addPhotoSearchForResult.launch("image/*")
+    }
+
+    override fun openPhoto(index: Int) {
+        super.openPhoto(index)
+
+        //Listener to Delete Image
+        val supportFragmentManager = requireActivity().supportFragmentManager
+        setFragmentResultListener("REQUEST_KEY1"){
+            resultKey, bundle -> if(resultKey == "REQUEST_KEY1"){
+                val photoToDelete = bundle.getInt("DELETE_PHOTO_INDEX")
+                viewModel.deletePhoto(photoToDelete)
+            }
+        }
+
+        //Navigate to photoDetailFragment
+        navController.navigate(AgendaItemDetailFragmentDirections
+            .actionAgendaItemDetailFragmentToPhotoDetailFragment(
+                viewModel.photos.value[index].toString(), index))
     }
 
     private fun onClickListeners(){
@@ -195,10 +252,21 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                 showReminderOptionsPopupMenu(it)
             }
 
+            addPhotoTextView.setOnClickListener{
+                addPhoto()
+            }
+            addPhotoPlusSign.setOnClickListener{
+                addPhoto()
+            }
+
             deleteAgendaItemButton.setOnClickListener{
                 showDeleteConfirmationDialogFragment()
             }
         }
+    }
+
+    private fun addPhoto(){
+        addPhotoSearchForResult.launch("image/*")
     }
 
     private fun navigateToEditFragment(editType: EditType){
@@ -357,7 +425,8 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
             viewModel.title.value,
             viewModel.description.value,
             LocalDateTime.of(viewModel.selectedDate.value, viewModel.selectedTime.value),
-            reminderTime = viewModel.selectedReminderTime.value
+            reminderTime = viewModel.selectedReminderTime.value,
+            photos = viewModel.photos.value
         )
     }
 

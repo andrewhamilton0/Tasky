@@ -1,4 +1,4 @@
-package com.andrew.tasky.presentation.adapter
+package com.andrew.tasky.presentation.adapters
 
 import android.graphics.Color
 import android.graphics.Paint
@@ -11,12 +11,12 @@ import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.databinding.ItemAgendaBinding
 import com.andrew.tasky.util.AgendaItemActionOptions
 import com.andrew.tasky.util.AgendaItemType
-import com.andrew.tasky.util.FragmentCommunication
+import com.andrew.tasky.util.AgendaFragmentCommunicationWithRV
 import java.time.format.DateTimeFormatter
 
 class AgendaItemAdapter(
     private var agendaItems: List<AgendaItem>,
-    private val listener: FragmentCommunication
+    private val listener: AgendaFragmentCommunicationWithRV
 ): RecyclerView.Adapter<AgendaItemAdapter.AgendaItemViewHolder>() {
 
     inner class AgendaItemViewHolder(val binding: ItemAgendaBinding) : RecyclerView.ViewHolder(binding.root)

@@ -206,8 +206,7 @@
                     app:layout_constraintTop_toBottomOf="@id/descriptionTextView"
                     app:layout_constraintBottom_toTopOf="@id/topOfTimeLine"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:visibility="gone">
+                    app:layout_constraintEnd_toEndOf="parent">
 
                     <TextView
                         android:id="@+id/photosTextView"
