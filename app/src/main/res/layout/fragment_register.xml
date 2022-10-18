@@ -133,7 +133,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/bg_rounded_edit_text"
-            android:backgroundTint="@color/gray"
+            android:backgroundTint="@color/light_2"
             app:layout_constraintTop_toBottomOf="@+id/topOfTextBoxes"
             app:layout_constraintBottom_toTopOf="@id/bottomOfName"
             app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"

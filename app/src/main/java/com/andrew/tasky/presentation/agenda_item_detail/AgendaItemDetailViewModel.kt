@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import com.andrew.tasky.util.ReminderTimes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -41,16 +40,28 @@ class AgendaItemDetailViewModel : ViewModel() {
         _description.value = description
     }
 
-    private val _selectedDate = MutableStateFlow(LocalDate.now())
-    val selectedDate = _selectedDate.asStateFlow()
-    fun setSelectedDate(selectedDate: LocalDate){
-        _selectedDate.value = selectedDate
+    private val _selectedStartDate = MutableStateFlow(LocalDate.now())
+    val selectedStartDate = _selectedStartDate.asStateFlow()
+    fun setStartDate(selectedStartDate: LocalDate){
+        _selectedStartDate.value = selectedStartDate
     }
 
-    private val _selectedTime = MutableStateFlow(LocalTime.now())
-    val selectedTime = _selectedTime.asStateFlow()
-    fun setSelectedTime(selectedTime: LocalTime){
-        _selectedTime.value = selectedTime
+    private val _selectedStartTime = MutableStateFlow(LocalTime.now())
+    val selectedStartTime = _selectedStartTime.asStateFlow()
+    fun setStartTime(selectedStartTime: LocalTime){
+        _selectedStartTime.value = selectedStartTime
+    }
+
+    private val _selectedEndDate = MutableStateFlow(LocalDate.now())
+    val selectedEndDate = _selectedEndDate.asStateFlow()
+    fun setEndDate(selectedEndDate: LocalDate){
+        _selectedStartDate.value = selectedEndDate
+    }
+
+    private val _selectedEndTime = MutableStateFlow(LocalTime.now())
+    val selectedEndTime = _selectedEndTime.asStateFlow()
+    fun setEndTime(selectedEndTime: LocalTime){
+        _selectedEndTime.value = selectedEndTime
     }
 
     private val _selectedReminderTime = MutableStateFlow(ReminderTimes.TEN_MINUTES_BEFORE)
@@ -75,5 +86,59 @@ class AgendaItemDetailViewModel : ViewModel() {
     }
     fun setupPhotos(photoList: List<Uri>){
         _photos.value = photoList
+    }
+
+    private val _goingAttendees = MutableStateFlow(listOf<String>())
+    val goingAttendees = _goingAttendees.asStateFlow()
+    fun addGoingAttendee(goingAttendee: String){
+        val updateGoingAttendees: List<String> = goingAttendees.value.toMutableList().apply {
+            add(goingAttendee)
+        }
+        _goingAttendees.value = updateGoingAttendees
+    }
+    fun removeGoingAttendee(goingAttendee: String){
+        val updateGoingAttendees: List<String> = goingAttendees.value.toMutableList().apply {
+            remove(goingAttendee)
+        }
+        _goingAttendees.value = updateGoingAttendees
+    }
+
+    private val _notGoingAttendees = MutableStateFlow(listOf<String>())
+    val notGoingAttendees = _notGoingAttendees.asStateFlow()
+    fun addNotGoingAttendee(notGoingAttendee: String){
+        val updateNotGoingAttendees: List<String> = notGoingAttendees.value.toMutableList().apply {
+            add(notGoingAttendee)
+        }
+        _notGoingAttendees.value = updateNotGoingAttendees
+    }
+    fun removeNotGoingAttendee(notGoingAttendee: String){
+        val updateNotGoingAttendees: List<String> = notGoingAttendees.value.toMutableList().apply {
+            remove(notGoingAttendee)
+        }
+        _notGoingAttendees.value = updateNotGoingAttendees
+    }
+
+    private val _selectedAttendeeButton = MutableStateFlow(AttendeeButtonTypes.ALL)
+    val selectedAttendeeButton = _selectedAttendeeButton.asStateFlow()
+    fun showAllAttendees(){
+        _selectedAttendeeButton.value = AttendeeButtonTypes.ALL
+    }
+    fun showGoingAttendees(){
+        _selectedAttendeeButton.value = AttendeeButtonTypes.GOING
+    }
+    fun showNotGoingAttendees(){
+        _selectedAttendeeButton.value = AttendeeButtonTypes.NOT_GOING
+    }
+
+    private val _isAttending = MutableStateFlow(true)
+    val isAttending = _isAttending.asStateFlow()
+    fun switchAttendingStatus(){
+        _isAttending.value = !isAttending.value
+    }
+
+    enum class AttendeeButtonTypes{
+        ALL,
+        GOING,
+        NOT_GOING
     }
 }

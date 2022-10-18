@@ -28,15 +28,13 @@ class PhotoItemAdapter(
                     listener.openPhoto(position)
                 }
             }
-            if(position != 10){
-                if (position == photos.size){
-                    holder.itemView.setOnClickListener {
-                        listener.addNewPhoto()
-                    }
-                }
-            }
             if (position == 10){
                 holder.itemView.layoutParams = RecyclerView.LayoutParams(0,0)
+            }
+            else if(position == photos.size){
+                holder.itemView.setOnClickListener {
+                    listener.addNewPhoto()
+                }
             }
         }
     }

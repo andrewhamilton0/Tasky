@@ -33,6 +33,8 @@
     <string name="going">Going</string>
     <string name="not_going">Not going</string>
     <string name="creator">creator</string>
+    <string name="join_event">JOIN EVENT</string>
+    <string name="leave_event">LEAVE EVENT</string>
     <string name="delete_agenda_item_button">DELETE %1$s</string>
 
     <!--Reminder time options popup menu on agenda item detail screen -->

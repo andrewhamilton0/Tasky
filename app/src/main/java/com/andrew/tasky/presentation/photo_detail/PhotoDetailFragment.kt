@@ -33,7 +33,7 @@ class PhotoDetailFragment : Fragment(R.layout.fragment_photo_detail) {
         binding.deleteButton.setOnClickListener {
             val bundle = Bundle()
             bundle.putInt("DELETE_PHOTO_INDEX", args.photoIndex)
-            setFragmentResult("REQUEST_KEY1", bundle)
+            setFragmentResult("REQUEST_KEY", bundle)
             navController.popBackStack()
         }
     }
