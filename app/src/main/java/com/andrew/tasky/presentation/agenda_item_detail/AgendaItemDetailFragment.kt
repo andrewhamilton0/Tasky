@@ -20,6 +20,8 @@ import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentAgendaItemDetailBinding
 import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.AgendaItems
+import com.andrew.tasky.domain.Attendee
+import com.andrew.tasky.domain.AttendeeType
 import com.andrew.tasky.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.presentation.adapters.PhotoItemAdapter
 import com.andrew.tasky.presentation.dialogs.DatePickerFragment
@@ -33,7 +35,7 @@ import java.time.format.DateTimeFormatter
 
 class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), AgendaItemDetailFragmentCommunicationWithRV {
 
-    private val isAttendee = true
+    private val isAttendee = false
 
     private val currentDate = LocalDateTime.now()
         .format(DateTimeFormatter.ofPattern("dd MMMM yyyy")).uppercase()
@@ -64,16 +66,19 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
         setupAgendaItemType()
         onClickListeners()
 
-        val goingNameList = listOf("Samantha Jones", "Cappuccino Joe", "Autumn Leaves", "Andrew")
-        val notGoingNameList = listOf("Ramsay Beans", "I Heart Lucy", "I Have A Long Name")
+        val attendeesList = listOf(
+            Attendee(name = "Samantha Jones", isAttending = true, attendeeType = AttendeeType.CREATOR),
+            Attendee(name = "Cappuccino Joe", isAttending = true, attendeeType = AttendeeType.ATTENDEE),
+            Attendee(name = "Autumn Leaves", isAttending = true, attendeeType = AttendeeType.ATTENDEE),
+            Attendee(name = "Andrew", isAttending = true, attendeeType = AttendeeType.ATTENDEE),
+            Attendee(name = "Ramsay Beans", isAttending = false, attendeeType = AttendeeType.ATTENDEE),
+            Attendee(name = "I Heart Lucy", isAttending = false, attendeeType = AttendeeType.ATTENDEE),
+            Attendee(name = "I Have A Long name", isAttending = true, attendeeType = AttendeeType.ATTENDEE)
+        )
 
-        for (name in goingNameList){
-            viewModel.addGoingAttendee(name)
+        for (name in attendeesList){
+            viewModel.addAttendee(name)
         }
-        for (name in notGoingNameList){
-            viewModel.addNotGoingAttendee(name)
-        }
-
     }
 
     private fun subscribeToObservables() {
@@ -193,7 +198,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
             }
         }
         collectLatestLifecycleFlow(viewModel.photos){ photoList ->
-            val adapter = PhotoItemAdapter(photoList, this)
+            val adapter = PhotoItemAdapter(photoList, this, isAttendee)
             binding.photosRecyclerView.adapter = adapter
             binding.photosRecyclerView.layoutManager = LinearLayoutManager(
                 requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -204,14 +209,14 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
                 binding.photosTextView.isVisible = photoList.isNotEmpty()
                 binding.photosRecyclerView.isVisible = photoList.isNotEmpty()
         }
-        collectLatestLifecycleFlow(viewModel.goingAttendees){ goingAttendees ->
-            val adapter = AttendeeItemAdapter(goingAttendees)
-            binding.goingAttendeeRecyclerView.adapter = adapter
+        collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
+            val goingAttendeeAdapter = AttendeeItemAdapter(goingAttendees, this)
+            binding.goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
             binding.goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
         collectLatestLifecycleFlow(viewModel.notGoingAttendees){ notGoingAttendees ->
-            val adapter = AttendeeItemAdapter(notGoingAttendees)
-            binding.notGoingAttendeeRecyclerView.adapter = adapter
+            val notGoingAttendeeAdapter = AttendeeItemAdapter(notGoingAttendees, this)
+            binding.notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
             binding.notGoingAttendeeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
     }
@@ -290,7 +295,6 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
         super.openPhoto(index)
 
         //Listener to Delete Image
-        val supportFragmentManager = requireActivity().supportFragmentManager
         setFragmentResultListener("REQUEST_KEY"){
             resultKey, bundle -> if(resultKey == "REQUEST_KEY"){
                 val photoToDelete = bundle.getInt("DELETE_PHOTO_INDEX")
@@ -302,6 +306,11 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
         navController.navigate(AgendaItemDetailFragmentDirections
             .actionAgendaItemDetailFragmentToPhotoDetailFragment(
                 viewModel.photos.value[index].toString(), index))
+    }
+
+    override fun deleteAttendee(attendee: Attendee) {
+        super.deleteAttendee(attendee)
+        viewModel.removeAttendee(attendee)
     }
 
     private fun onClickListeners(){

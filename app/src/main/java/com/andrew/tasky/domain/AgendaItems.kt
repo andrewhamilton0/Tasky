@@ -54,23 +54,18 @@ object AgendaItems {
     }
 
     fun addAgendaItem(newAgendaItem: AgendaItem){
-        val updatedAgendaItemList: List<AgendaItem> = agendaItemList.toMutableList().apply {
-            add(newAgendaItem)
-        }
-        agendaItemList = updatedAgendaItemList
+        agendaItemList += newAgendaItem
     }
 
     fun replaceAgendaItem(newAgendaItem: AgendaItem, oldAgendaItem: AgendaItem){
-        val updatedAgendaItemList: List<AgendaItem> = agendaItemList.toMutableList().apply {
-            this[this.indexOf(oldAgendaItem)] = newAgendaItem
+        val updatedAgendaItemList = agendaItemList.map { item ->
+            if(item == oldAgendaItem) newAgendaItem else item
         }
         agendaItemList = updatedAgendaItemList
     }
 
     fun deleteAgendaItem(agendaItem: AgendaItem){
-        val updatedAgendaItemList: List<AgendaItem> = agendaItemList.toMutableList().apply {
-            remove(agendaItem)
-        }
+        val updatedAgendaItemList = agendaItemList.filter { it != agendaItem }
         agendaItemList = updatedAgendaItemList
     }
 }

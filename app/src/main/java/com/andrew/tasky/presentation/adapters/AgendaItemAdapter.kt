@@ -43,8 +43,7 @@ class AgendaItemAdapter(
             }
 
             agendaItemCard.setOnClickListener {
-                val actionOption = AgendaItemActionOptions.OPEN
-                listener.respond(agendaItems[position], actionOption)
+                listener.respond(agendaItems[position], AgendaItemActionOptions.OPEN)
             }
 
             optionsButton.setOnClickListener { view ->
