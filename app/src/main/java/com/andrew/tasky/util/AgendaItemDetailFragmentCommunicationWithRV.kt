@@ -1,5 +1,7 @@
 package com.andrew.tasky.util
 
+import com.andrew.tasky.domain.Attendee
+
 interface AgendaItemDetailFragmentCommunicationWithRV {
 
     fun openPhoto(index: Int){
@@ -7,6 +9,10 @@ interface AgendaItemDetailFragmentCommunicationWithRV {
     }
 
     fun addNewPhoto(){
+
+    }
+
+    fun deleteAttendee(attendee: Attendee){
 
     }
 

@@ -2,9 +2,10 @@ package com.andrew.tasky.presentation.agenda_item_detail
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.andrew.tasky.domain.Attendee
 import com.andrew.tasky.util.ReminderTimes
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -73,50 +74,35 @@ class AgendaItemDetailViewModel : ViewModel() {
     private val _photos = MutableStateFlow(listOf<Uri>())
     val photos = _photos.asStateFlow()
     fun addPhoto(uri: Uri){
-        val updatePhotos: List<Uri> = photos.value.toMutableList().apply {
-            add(0, uri)
-        }
-        _photos.value = updatePhotos
+        _photos.value += uri
     }
-    fun deletePhoto(index: Int){
-        val updatePhotos: List<Uri> = photos.value.toMutableList().apply {
-            removeAt(index)
-        }
-        _photos.value = updatePhotos
+    fun deletePhoto(index1: Int){
+        val updatedPhotos = photos.value.filterIndexed { index, _ -> index != index1  }
+        _photos.value = updatedPhotos
     }
     fun setupPhotos(photoList: List<Uri>){
         _photos.value = photoList
     }
 
-    private val _goingAttendees = MutableStateFlow(listOf<String>())
-    val goingAttendees = _goingAttendees.asStateFlow()
-    fun addGoingAttendee(goingAttendee: String){
-        val updateGoingAttendees: List<String> = goingAttendees.value.toMutableList().apply {
-            add(goingAttendee)
-        }
-        _goingAttendees.value = updateGoingAttendees
-    }
-    fun removeGoingAttendee(goingAttendee: String){
-        val updateGoingAttendees: List<String> = goingAttendees.value.toMutableList().apply {
-            remove(goingAttendee)
-        }
-        _goingAttendees.value = updateGoingAttendees
+    private val _attendees = MutableStateFlow(listOf<Attendee>())
+    val attendees = _attendees.asStateFlow()
+    fun addAttendee(attendee: Attendee){
+        _attendees.value += attendee
     }
 
-    private val _notGoingAttendees = MutableStateFlow(listOf<String>())
-    val notGoingAttendees = _notGoingAttendees.asStateFlow()
-    fun addNotGoingAttendee(notGoingAttendee: String){
-        val updateNotGoingAttendees: List<String> = notGoingAttendees.value.toMutableList().apply {
-            add(notGoingAttendee)
-        }
-        _notGoingAttendees.value = updateNotGoingAttendees
+    val goingAttendees = attendees.map {
+        it.filter { attendee ->  attendee.isAttending }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val notGoingAttendees = attendees.map {
+        it.filter { attendee ->  !attendee.isAttending }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun removeAttendee(attendee: Attendee){
+        val updatedAttendees = attendees.value.filter { it != attendee }
+        _attendees.value = updatedAttendees
     }
-    fun removeNotGoingAttendee(notGoingAttendee: String){
-        val updateNotGoingAttendees: List<String> = notGoingAttendees.value.toMutableList().apply {
-            remove(notGoingAttendee)
-        }
-        _notGoingAttendees.value = updateNotGoingAttendees
-    }
+
 
     private val _selectedAttendeeButton = MutableStateFlow(AttendeeButtonTypes.ALL)
     val selectedAttendeeButton = _selectedAttendeeButton.asStateFlow()

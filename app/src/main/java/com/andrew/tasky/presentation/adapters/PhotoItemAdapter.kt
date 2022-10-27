@@ -9,7 +9,8 @@ import com.andrew.tasky.util.AgendaItemDetailFragmentCommunicationWithRV
 
 class PhotoItemAdapter(
     private var photos: List<Uri>,
-    private val listener: AgendaItemDetailFragmentCommunicationWithRV
+    private val listener: AgendaItemDetailFragmentCommunicationWithRV,
+    private val userIsAttendee: Boolean
 ):RecyclerView.Adapter<PhotoItemAdapter.PhotoItemViewHolder>() {
 
     inner class PhotoItemViewHolder(val binding: ItemPhotoAdapterCardBinding) : RecyclerView.ViewHolder(binding.root)
@@ -21,6 +22,7 @@ class PhotoItemAdapter(
     }
 
     override fun onBindViewHolder(holder: PhotoItemViewHolder, position: Int) {
+        //Sets photo to appropriate photo card, and sets on click listener to open it
         holder.binding.apply {
             if (position != photos.size) {
                 image.setImageURI(photos[position])
@@ -28,6 +30,8 @@ class PhotoItemAdapter(
                     listener.openPhoto(position)
                 }
             }
+
+            //Gets rid of add photo after 10 photos, and adds click listener to add photo card
             if (position == 10){
                 holder.itemView.layoutParams = RecyclerView.LayoutParams(0,0)
             }
@@ -40,6 +44,11 @@ class PhotoItemAdapter(
     }
 
     override fun getItemCount(): Int {
-        return photos.size+1
+        //If user is attendee and not creator, then user cannot see add photo card
+        return if (userIsAttendee){
+            photos.size
+        } else{
+            photos.size+1
+        }
     }
 }

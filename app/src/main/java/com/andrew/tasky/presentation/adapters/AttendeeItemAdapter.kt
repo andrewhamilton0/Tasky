@@ -5,9 +5,14 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.databinding.ItemAttendeeBinding
+import com.andrew.tasky.domain.Attendee
+import com.andrew.tasky.domain.AttendeeType
+import com.andrew.tasky.domain.StringToInitials
+import com.andrew.tasky.util.AgendaItemDetailFragmentCommunicationWithRV
 
 class AttendeeItemAdapter(
-    private var attendees: List<String>
+    private var attendees: List<Attendee>,
+    private val listener: AgendaItemDetailFragmentCommunicationWithRV
 ): RecyclerView.Adapter<AttendeeItemAdapter.AttendeeItemViewHolder>() {
 
     inner class AttendeeItemViewHolder(val binding: ItemAttendeeBinding) : RecyclerView.ViewHolder(binding.root)
@@ -21,9 +26,8 @@ class AttendeeItemAdapter(
     override fun onBindViewHolder(holder: AttendeeItemViewHolder, position: Int) {
         holder.binding.apply {
 
-            //Todo() setup creator text view for only the creator
-            attendeeFullNameTextView.text = attendees[position]
-            if(position == 0){
+            //Adds and removes deleteAttendeeButtonView, and creatorTV to appropriate attendee
+            if(attendees[position].attendeeType == AttendeeType.CREATOR) {
                 deleteAttendeeButton.isVisible = false
                 creatorTextView.isVisible = true
             }
@@ -32,16 +36,15 @@ class AttendeeItemAdapter(
                 creatorTextView.isVisible = false
             }
 
-            if(attendees[position].contains(" ")){
-                val initials = attendees[position]
-                    .replace("^\\s*([a-zA-Z]).*\\s+([a-zA-Z])\\S+$"
-                        .toRegex(), "$1$2").uppercase()
+            //Adds full name to card
+            attendeeFullNameTextView.text = attendees[position].name
 
-                attendeeInitialsTextView.text = initials
-            }
-            else{
-                val initials = attendees[position].take(2).uppercase()
-                attendeeInitialsTextView.text = initials
+            //Adds initials to card
+            attendeeInitialsTextView.text = StringToInitials().convertStringToInitials(attendees[position].name)
+
+            //Adds on click listener to delete button
+            deleteAttendeeButton.setOnClickListener {
+                listener.deleteAttendee(attendees[position])
             }
         }
     }
