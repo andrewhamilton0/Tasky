@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.R
 import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.databinding.ItemAgendaBinding
-import com.andrew.tasky.util.AgendaItemActionOptions
+import com.andrew.tasky.util.AgendaItemActions
 import com.andrew.tasky.util.AgendaItemType
-import com.andrew.tasky.util.AgendaFragmentCommunicationWithRV
 import java.time.format.DateTimeFormatter
 
 class AgendaItemAdapter(
     private var agendaItems: List<AgendaItem>,
-    private val listener: AgendaFragmentCommunicationWithRV
+    private val onAgendaItemOptionClick: (AgendaItem, AgendaItemActions) -> Unit
 ): RecyclerView.Adapter<AgendaItemAdapter.AgendaItemViewHolder>() {
 
     inner class AgendaItemViewHolder(val binding: ItemAgendaBinding) : RecyclerView.ViewHolder(binding.root)
@@ -43,7 +42,7 @@ class AgendaItemAdapter(
             }
 
             agendaItemCard.setOnClickListener {
-                listener.respond(agendaItems[position], AgendaItemActionOptions.OPEN)
+                onAgendaItemOptionClick(agendaItems[position], AgendaItemActions.OPEN)
             }
 
             optionsButton.setOnClickListener { view ->
@@ -52,18 +51,18 @@ class AgendaItemAdapter(
                 popupMenu.setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
                         R.id.open ->{
-                            val actionOption = AgendaItemActionOptions.OPEN
-                            listener.respond(agendaItems[position], actionOption)
+                            val actionOption = AgendaItemActions.OPEN
+                            onAgendaItemOptionClick(agendaItems[position], actionOption)
                             true
                         }
                         R.id.edit -> {
-                            val actionOption = AgendaItemActionOptions.EDIT
-                            listener.respond(agendaItems[position], actionOption)
+                            val actionOption = AgendaItemActions.EDIT
+                            onAgendaItemOptionClick(agendaItems[position], actionOption)
                             true
                         }
                         R.id.delete -> {
-                            val actionOption = AgendaItemActionOptions.DELETE
-                            listener.respond(agendaItems[position], actionOption)
+                            val actionOption = AgendaItemActions.DELETE
+                            onAgendaItemOptionClick(agendaItems[position], actionOption)
                             true
                         }
                         else -> true

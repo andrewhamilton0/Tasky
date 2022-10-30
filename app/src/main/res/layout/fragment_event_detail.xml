@@ -89,7 +89,7 @@
                     android:layout_marginTop="30dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_task_box">
+                    app:srcCompat="@drawable/ic_event_box">
                 </ImageView>
 
                 <TextView
@@ -98,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="30dp"
-                    android:text="@string/task"
+                    android:text="@string/event"
                     android:textColor="@color/dark_gray"
                     android:textSize="16sp"
                     android:fontFamily="@font/inter_semi_bold"
@@ -500,7 +500,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    tools:text="DELETE TASK">
+                    tools:text="DELETE EVENT">
                 </TextView>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>

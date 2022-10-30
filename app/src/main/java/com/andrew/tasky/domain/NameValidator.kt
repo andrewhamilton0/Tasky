@@ -3,12 +3,7 @@ package com.andrew.tasky.domain
 class NameValidator {
 
     fun validate(name: String): Boolean {
-        //Verifies name is valid
-        if(name.trim().length < MIN_NAME_LENGTH || name.trim().length > MAX_NAME_LENGTH ) {
-            return false
-        }
-
-        return true
+        return(name.trim().length in MIN_NAME_LENGTH..MAX_NAME_LENGTH)
     }
 
     companion object {

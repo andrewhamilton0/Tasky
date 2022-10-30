@@ -1,4 +1,4 @@
-package com.andrew.tasky.presentation.agenda_item_detail
+package com.andrew.tasky.presentation.event_detail
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -9,8 +9,7 @@ import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 import java.time.LocalTime
 
-class AgendaItemDetailViewModel : ViewModel() {
-
+class EventDetailViewModel : ViewModel() {
     private val _isInitiallySetup = MutableStateFlow(false)
     val isInitiallySetup = _isInitiallySetup.asStateFlow()
     fun setInitialSetupToTrue(){
@@ -56,7 +55,7 @@ class AgendaItemDetailViewModel : ViewModel() {
     private val _selectedEndDate = MutableStateFlow(LocalDate.now())
     val selectedEndDate = _selectedEndDate.asStateFlow()
     fun setEndDate(selectedEndDate: LocalDate){
-        _selectedStartDate.value = selectedEndDate
+        _selectedEndDate.value = selectedEndDate
     }
 
     private val _selectedEndTime = MutableStateFlow(LocalTime.now())
@@ -104,16 +103,16 @@ class AgendaItemDetailViewModel : ViewModel() {
     }
 
 
-    private val _selectedAttendeeButton = MutableStateFlow(AttendeeButtonTypes.ALL)
-    val selectedAttendeeButton = _selectedAttendeeButton.asStateFlow()
+    private val _selectedAttendeeButton = MutableStateFlow(ShowListOfAttendeesButtonTypes.ALL)
+    val selectedShowListOfAttendeesButton = _selectedAttendeeButton.asStateFlow()
     fun showAllAttendees(){
-        _selectedAttendeeButton.value = AttendeeButtonTypes.ALL
+        _selectedAttendeeButton.value = ShowListOfAttendeesButtonTypes.ALL
     }
     fun showGoingAttendees(){
-        _selectedAttendeeButton.value = AttendeeButtonTypes.GOING
+        _selectedAttendeeButton.value = ShowListOfAttendeesButtonTypes.GOING
     }
     fun showNotGoingAttendees(){
-        _selectedAttendeeButton.value = AttendeeButtonTypes.NOT_GOING
+        _selectedAttendeeButton.value = ShowListOfAttendeesButtonTypes.NOT_GOING
     }
 
     private val _isAttending = MutableStateFlow(true)
@@ -122,7 +121,7 @@ class AgendaItemDetailViewModel : ViewModel() {
         _isAttending.value = !isAttending.value
     }
 
-    enum class AttendeeButtonTypes{
+    enum class ShowListOfAttendeesButtonTypes{
         ALL,
         GOING,
         NOT_GOING

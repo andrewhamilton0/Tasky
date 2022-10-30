@@ -17,6 +17,8 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
+import com.andrew.tasky.databinding.CvReminderLayoutBinding
+import com.andrew.tasky.databinding.CvTimeDateSelectorBinding
 import com.andrew.tasky.databinding.FragmentAgendaItemDetailBinding
 import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.AgendaItems
@@ -33,7 +35,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), AgendaItemDetailFragmentCommunicationWithRV {
+class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
 
     private val isAttendee = false
 
@@ -43,6 +45,9 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
     private lateinit var viewModel: AgendaItemDetailViewModel
     private lateinit var navController: NavController
     private lateinit var binding: FragmentAgendaItemDetailBinding
+    private lateinit var startTimeDateBinding: CvTimeDateSelectorBinding
+    private lateinit var endTimeDateBinding: CvTimeDateSelectorBinding
+    private lateinit var reminderLayoutBinding: CvReminderLayoutBinding
     private lateinit var agendaItemType: AgendaItemType
     private val addPhotoSearchForResult = registerForActivityResult(
         ActivityResultContracts.GetContent(),
@@ -57,6 +62,9 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentAgendaItemDetailBinding.bind(view)
+        startTimeDateBinding = CvTimeDateSelectorBinding.bind(binding.startTimeAndDateLayout)
+        endTimeDateBinding = CvTimeDateSelectorBinding.bind(binding.endTimeAndDateLayout)
+        reminderLayoutBinding = CvReminderLayoutBinding.bind(binding.reminderLayout)
         navController = Navigation.findNavController(view)
         viewModel = ViewModelProvider(this)[AgendaItemDetailViewModel::class.java]
         agendaItemType = args.agendaItemType
@@ -67,13 +75,13 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
         onClickListeners()
 
         val attendeesList = listOf(
-            Attendee(name = "Samantha Jones", isAttending = true, attendeeType = AttendeeType.CREATOR),
-            Attendee(name = "Cappuccino Joe", isAttending = true, attendeeType = AttendeeType.ATTENDEE),
-            Attendee(name = "Autumn Leaves", isAttending = true, attendeeType = AttendeeType.ATTENDEE),
-            Attendee(name = "Andrew", isAttending = true, attendeeType = AttendeeType.ATTENDEE),
-            Attendee(name = "Ramsay Beans", isAttending = false, attendeeType = AttendeeType.ATTENDEE),
-            Attendee(name = "I Heart Lucy", isAttending = false, attendeeType = AttendeeType.ATTENDEE),
-            Attendee(name = "I Have A Long name", isAttending = true, attendeeType = AttendeeType.ATTENDEE)
+            Attendee(name = "Samantha Jones", isAttending = true, attendeeType = AttendeeType.CREATOR, email = "random@gmail.com"),
+            Attendee(name = "Cappuccino Joe", isAttending = true, attendeeType = AttendeeType.ATTENDEE, email = "random1@gmail.com"),
+            Attendee(name = "Autumn Leaves", isAttending = true, attendeeType = AttendeeType.ATTENDEE, email = "random2@gmail.com"),
+            Attendee(name = "Andrew", isAttending = true, attendeeType = AttendeeType.ATTENDEE, email = "random3@gmail.com"),
+            Attendee(name = "Ramsay Beans", isAttending = false, attendeeType = AttendeeType.ATTENDEE, email = "random4@gmail.com"),
+            Attendee(name = "I Heart Lucy", isAttending = false, attendeeType = AttendeeType.ATTENDEE, email = "random5@gmail.com"),
+            Attendee(name = "I Have A Long name", isAttending = true, attendeeType = AttendeeType.ATTENDEE, email = "random6@gmail.com")
         )
 
         for (name in attendeesList){
@@ -89,42 +97,46 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
             collectLatestLifecycleFlow(viewModel.isDone) { isDone ->
                 if (isDone) {
                     taskDoneCircle.setBackgroundResource(R.drawable.task_done_circle)
-                    agendaItemTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    titleTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                 } else {
                     taskDoneCircle.setBackgroundResource(R.drawable.ic_undone_circle)
-                    binding.agendaItemTitle.paintFlags = Paint.ANTI_ALIAS_FLAG
+                    titleTextView.paintFlags = Paint.ANTI_ALIAS_FLAG
                 }
             }
             collectLatestLifecycleFlow(viewModel.title) { title ->
-                agendaItemTitle.text = title
+                titleTextView.text = title
             }
             collectLatestLifecycleFlow(viewModel.description) { description ->
                 descriptionTextView.text = description
             }
             collectLatestLifecycleFlow(viewModel.selectedStartTime) { selectedStartTime ->
-                startTime.text = selectedStartTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                startTimeDateBinding.timeTextView.text = selectedStartTime
+                    .format(DateTimeFormatter.ofPattern("HH:mm"))
             }
             collectLatestLifecycleFlow(viewModel.selectedStartDate) { selectedStartDate ->
-                startDate.text = selectedStartDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
+                startTimeDateBinding.dateTextView.text = selectedStartDate
+                    .format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
             }
             collectLatestLifecycleFlow(viewModel.selectedEndTime) { selectedEndTime ->
-                endTime.text = selectedEndTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                endTimeDateBinding.timeTextView.text = selectedEndTime
+                    .format(DateTimeFormatter.ofPattern("HH:mm"))
             }
             collectLatestLifecycleFlow(viewModel.selectedEndDate) { selectedEndDate ->
-                endDate.text = selectedEndDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
+                endTimeDateBinding.dateTextView.text = selectedEndDate
+                    .format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
             }
             collectLatestLifecycleFlow(viewModel.selectedReminderTime) { reminderTime ->
                 when (reminderTime) {
                     ReminderTimes.TEN_MINUTES_BEFORE ->
-                        reminderTextView.text = getString(R.string.ten_minutes_before)
+                        reminderLayoutBinding.reminderTextView.text = getString(R.string.ten_minutes_before)
                     ReminderTimes.THIRTY_MINUTES_BEFORE ->
-                        reminderTextView.text = getString(R.string.thirty_minutes_before)
+                        reminderLayoutBinding.reminderTextView.text = getString(R.string.thirty_minutes_before)
                     ReminderTimes.ONE_HOUR_BEFORE ->
-                        reminderTextView.text = getString(R.string.one_hour_before)
+                        reminderLayoutBinding.reminderTextView.text = getString(R.string.one_hour_before)
                     ReminderTimes.SIX_HOURS_BEFORE ->
-                        reminderTextView.text = getString(R.string.six_hours_before)
+                        reminderLayoutBinding.reminderTextView.text = getString(R.string.six_hours_before)
                     ReminderTimes.ONE_DAY_BEFORE ->
-                        reminderTextView.text = getString(R.string.one_day_before)
+                        reminderLayoutBinding.reminderTextView.text = getString(R.string.one_day_before)
                 }
             }
             collectLatestLifecycleFlow(viewModel.selectedAttendeeButton){
@@ -198,24 +210,31 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
             }
         }
         collectLatestLifecycleFlow(viewModel.photos){ photoList ->
-            val adapter = PhotoItemAdapter(photoList, this, isAttendee)
+            val adapter = PhotoItemAdapter(photoList,
+                onPhotoClick = {index -> openPhoto(index)},
+                onAddPhotoClick = { addPhoto() },
+                userIsAttendee = isAttendee)
             binding.photosRecyclerView.adapter = adapter
             binding.photosRecyclerView.layoutManager = LinearLayoutManager(
                 requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
-                //If there are photos, shows the recyclerView and makes original add photo disappear
                 binding.addPhotoPlusSign.isVisible = photoList.isEmpty()
                 binding.addPhotoTextView.isVisible = photoList.isEmpty()
                 binding.photosTextView.isVisible = photoList.isNotEmpty()
                 binding.photosRecyclerView.isVisible = photoList.isNotEmpty()
         }
         collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
-            val goingAttendeeAdapter = AttendeeItemAdapter(goingAttendees, this)
+            val goingAttendeeAdapter = AttendeeItemAdapter(goingAttendees,
+                isAttendee,
+                onDeleteIconClick = {attendee ->  viewModel.deleteAttendee(attendee)})
             binding.goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
             binding.goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
         collectLatestLifecycleFlow(viewModel.notGoingAttendees){ notGoingAttendees ->
-            val notGoingAttendeeAdapter = AttendeeItemAdapter(notGoingAttendees, this)
+            val notGoingAttendeeAdapter = AttendeeItemAdapter(
+                notGoingAttendees,
+                isAttendee,
+                onDeleteIconClick = {attendee ->  viewModel.deleteAttendee(attendee)})
             binding.notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
             binding.notGoingAttendeeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
@@ -252,20 +271,21 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
         binding.apply {
             when (agendaItemType) {
                 AgendaItemType.TASK -> {
-                    taskColorBox.setImageResource(R.drawable.ic_task_box)
+                    eventIcon.setImageResource(R.drawable.ic_task_box)
                     agendaItemTypeTextView.text = getString(R.string.task)
                     addPhotoLayout.isVisible = false
-                    startTimeAndDateBeginningText.text = getString(R.string.at)
+                    startTimeDateBinding.timeAndDateBeginningText.text = getString(R.string.at)
                     endTimeAndDateLayout.isVisible = false
                     attendeesLayout.isVisible = false
                     deleteAgendaItemButton.text = String.format(resources.
                     getString(R.string.delete_agenda_item_button), getString(R.string.task)).uppercase()
                 }
                 AgendaItemType.EVENT -> {
-                    taskColorBox.setImageResource(R.drawable.ic_event_box)
+                    eventIcon.setImageResource(R.drawable.ic_event_box)
                     agendaItemTypeTextView.text = getString(R.string.event)
                     addPhotoLayout.isVisible = true
-                    startTimeAndDateBeginningText.text = getString(R.string.from)
+                    startTimeDateBinding.timeAndDateBeginningText.text = getString(R.string.from)
+                    endTimeDateBinding.timeAndDateBeginningText.text = getString(R.string.to)
                     endTimeAndDateLayout.isVisible = true
                     attendeesLayout.isVisible = true
                     deleteAgendaItemButton.text = String.format(resources.
@@ -273,10 +293,10 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
                     setupAttendeeAndCreatorView()
                 }
                 AgendaItemType.REMINDER -> {
-                    taskColorBox.setImageResource(R.drawable.ic_reminder_box)
+                    eventIcon.setImageResource(R.drawable.ic_reminder_box)
                     agendaItemTypeTextView.text = getString(R.string.reminder)
                     addPhotoLayout.isVisible = false
-                    startTimeAndDateBeginningText.text = getString(R.string.from)
+                    startTimeDateBinding.timeAndDateBeginningText.text = getString(R.string.from)
                     endTimeAndDateLayout.isVisible = false
                     attendeesLayout.isVisible = false
                     deleteAgendaItemButton.text = String.format(resources.
@@ -286,15 +306,12 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
         }
     }
 
-    override fun addNewPhoto() {
-        super.addNewPhoto()
+    private fun addPhoto(){
         addPhotoSearchForResult.launch("image/*")
     }
 
-    override fun openPhoto(index: Int) {
-        super.openPhoto(index)
+    private fun openPhoto(index: Int) {
 
-        //Listener to Delete Image
         setFragmentResultListener("REQUEST_KEY"){
             resultKey, bundle -> if(resultKey == "REQUEST_KEY"){
                 val photoToDelete = bundle.getInt("DELETE_PHOTO_INDEX")
@@ -302,15 +319,11 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
             }
         }
 
-        //Navigate to photoDetailFragment
         navController.navigate(AgendaItemDetailFragmentDirections
             .actionAgendaItemDetailFragmentToPhotoDetailFragment(
-                viewModel.photos.value[index].toString(), index))
-    }
-
-    override fun deleteAttendee(attendee: Attendee) {
-        super.deleteAttendee(attendee)
-        viewModel.removeAttendee(attendee)
+                viewModel.photos.value[index].toString(), index
+            )
+        )
     }
 
     private fun onClickListeners(){
@@ -332,7 +345,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
                 viewModel.setIsDone(!viewModel.isDone.value)
             }
 
-            agendaItemTitle.setOnClickListener {
+            titleTextView.setOnClickListener {
                 navigateToEditFragment(EditType.TITLE)
             }
 
@@ -348,37 +361,37 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
                 navigateToEditFragment(EditType.DESCRIPTION)
             }
 
-            startTime.setOnClickListener {
+            startTimeDateBinding.timeTextView.setOnClickListener {
                 showTimePickerFragment(it)
             }
-            startTimeButton.setOnClickListener {
+            startTimeDateBinding.timeButton.setOnClickListener {
                 showTimePickerFragment(it)
             }
-            endTime.setOnClickListener {
+            endTimeDateBinding.timeTextView.setOnClickListener {
                 showTimePickerFragment(it)
             }
-            endTimeButton.setOnClickListener {
+            endTimeDateBinding.timeButton.setOnClickListener {
                 showTimePickerFragment(it)
             }
 
-            startDate.setOnClickListener {
+            startTimeDateBinding.dateTextView.setOnClickListener {
                 showDatePickerFragment(it)
             }
-            startDateButton.setOnClickListener {
+            startTimeDateBinding.dateButton.setOnClickListener {
                 showDatePickerFragment(it)
             }
-            endDate.setOnClickListener {
+            endTimeDateBinding.dateTextView.setOnClickListener {
                 showDatePickerFragment(it)
             }
-            endDateButton.setOnClickListener {
+            endTimeDateBinding.dateButton.setOnClickListener {
                 showDatePickerFragment(it)
             }
 
-            reminderTextView.setOnClickListener {
+            reminderLayoutBinding.reminderTextView.setOnClickListener {
                 showReminderOptionsPopupMenu(it)
             }
 
-            reminderButton.setOnClickListener {
+            reminderLayoutBinding.reminderButton.setOnClickListener {
                 showReminderOptionsPopupMenu(it)
             }
 
@@ -410,10 +423,6 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
         }
     }
 
-    private fun addPhoto(){
-        addPhotoSearchForResult.launch("image/*")
-    }
-
     private fun navigateToEditFragment(editType: EditType){
         setFragmentResultListener("INPUT_REQUEST_KEY"){
             resultKey, bundle -> if(resultKey == "INPUT_REQUEST_KEY"){
@@ -434,7 +443,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
         }
         when(editType){
             EditType.TITLE -> {
-                val text = binding.agendaItemTitle.text.toString()
+                val text = binding.titleTextView.text.toString()
                 val bundle = Bundle()
                 bundle.putString("TEXT", text)
                 bundle.putString("EDIT_TYPE", editType.name)
@@ -467,10 +476,10 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
             resultKey, bundle -> if(resultKey == "REQUEST_KEY"){
                 val time = bundle.getString("SELECTED_TIME")
                 val formatter = DateTimeFormatter.ofPattern("hh:mm a")
-                if(view == binding.startTime || view == binding.startTimeButton){
+                if(view == startTimeDateBinding.timeTextView || view == startTimeDateBinding.timeButton){
                     viewModel.setStartTime(LocalTime.parse(time, formatter))
                 }
-                else if(view == binding.endTime || view == binding.endTimeButton){
+                else if(view == endTimeDateBinding.timeTextView  || view == endTimeDateBinding.timeButton){
                     viewModel.setEndTime(LocalTime.parse(time, formatter))
                 }
             }
@@ -490,10 +499,10 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
                 val date = bundle.getString("SELECTED_DATE")
                 val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
 
-                if(view == binding.startDate || view == binding.startDateButton){
+                if(view == startTimeDateBinding.dateTextView || view == startTimeDateBinding.dateButton){
                     viewModel.setStartDate(LocalDate.parse(date, formatter))
                 }
-                else if(view == binding.endDate || view == binding.endDateButton){
+                else if(view == endTimeDateBinding.dateTextView  || view == endTimeDateBinding.dateButton){
                     viewModel.setEndDate(LocalDate.parse(date, formatter))
                 }
             }
@@ -530,18 +539,18 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
 
             editTitleButton.isVisible = isEditing
             editTitleButton.isEnabled = isEditing
-            agendaItemTitle.isEnabled = isEditing
+            titleTextView.isEnabled = isEditing
 
             editDescriptionButton.isVisible = isEditing
             editDescriptionButton.isEnabled = isEditing
             descriptionTextView.isEnabled = isEditing
 
-            startTime.isEnabled = isEditing
-            startDate.isEnabled = isEditing
+            startTimeDateBinding.timeTextView.isEnabled = isEditing
+            startTimeDateBinding.dateTextView.isEnabled = isEditing
 
-            reminderTextView.isEnabled = isEditing
-            reminderButton.isEnabled = isEditing
-            reminderButton.isVisible = isEditing
+            reminderLayoutBinding.reminderTextView.isEnabled = isEditing
+            reminderLayoutBinding.reminderButton.isEnabled = isEditing
+            reminderLayoutBinding.reminderButton.isVisible = isEditing
         }
     }
 
@@ -549,7 +558,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
     private fun showReminderOptionsPopupMenu(view: View){
         val popupMenu = PopupMenu(requireContext(), view)
         popupMenu.inflate(R.menu.menu_reminder_time_options)
-        binding.reminderTextView.apply {
+        reminderLayoutBinding.reminderTextView.apply {
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.tenMinutes -> {
@@ -607,7 +616,6 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
         val deleteConfirmationDialogFragment = DeleteConfirmationDialogFragment()
         val supportFragmentManager = requireActivity().supportFragmentManager
 
-        //If deleteButton is pressed, deletes agenda item and pops backstack
         supportFragmentManager.setFragmentResultListener(
             "REQUEST_KEY",
             viewLifecycleOwner
@@ -623,12 +631,10 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail), 
             }
         }
 
-        //Sends agendaItemType to deleteConfirmationDialogFragment
         val bundle = Bundle()
         bundle.putString("AGENDA_ITEM_TYPE", agendaItemType.name)
         supportFragmentManager.setFragmentResult("DELETE_CONFIRMATION_AGENDA_TYPE_REQUEST_KEY", bundle)
 
-        //Shows deleteConfirmationDialogFragment
         deleteConfirmationDialogFragment.show(supportFragmentManager, "DeleteDialogFragment")
     }
 }

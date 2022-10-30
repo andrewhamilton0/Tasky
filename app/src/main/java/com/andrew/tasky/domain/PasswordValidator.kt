@@ -6,11 +6,8 @@ class PasswordValidator {
         val containsLowerCase = password.any { it.isLowerCase() }
         val containsUpperCase = password.any { it.isUpperCase() }
         val containsNumber = password.any { it.isDigit() }
-        if(password.length < MIN_PASSWORD_LENGTH || !containsLowerCase  || !containsUpperCase || !containsNumber) {
-            return false
-        }
-
-        return true
+        return (password.length >= MIN_PASSWORD_LENGTH && containsLowerCase
+                && containsUpperCase && containsNumber)
     }
 
     companion object {
