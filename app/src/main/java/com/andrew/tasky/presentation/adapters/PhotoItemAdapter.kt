@@ -5,11 +5,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.databinding.ItemPhotoAdapterCardBinding
-import com.andrew.tasky.util.AgendaItemDetailFragmentCommunicationWithRV
 
 class PhotoItemAdapter(
     private var photos: List<Uri>,
-    private val listener: AgendaItemDetailFragmentCommunicationWithRV,
+    private val onPhotoClick: (Int) -> Unit,
+    private val onAddPhotoClick: () -> Unit,
     private val userIsAttendee: Boolean
 ):RecyclerView.Adapter<PhotoItemAdapter.PhotoItemViewHolder>() {
 
@@ -22,12 +22,11 @@ class PhotoItemAdapter(
     }
 
     override fun onBindViewHolder(holder: PhotoItemViewHolder, position: Int) {
-        //Sets photo to appropriate photo card, and sets on click listener to open it
         holder.binding.apply {
             if (position != photos.size) {
                 image.setImageURI(photos[position])
                 holder.itemView.setOnClickListener {
-                    listener.openPhoto(position)
+                    onPhotoClick(position)
                 }
             }
 
@@ -37,7 +36,7 @@ class PhotoItemAdapter(
             }
             else if(position == photos.size){
                 holder.itemView.setOnClickListener {
-                    listener.addNewPhoto()
+                    onAddPhotoClick()
                 }
             }
         }

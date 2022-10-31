@@ -1,6 +1,6 @@
 package com.andrew.tasky.util
 
-enum class AgendaItemActionOptions {
+enum class AgendaItemActions {
     OPEN,
     EDIT,
     DELETE

@@ -36,6 +36,15 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_agendaFragment_to_eventDetailFragment"
+            app:destination="@id/eventDetailFragment" />
+        <action
+            android:id="@+id/action_agendaFragment_to_reminderDetailFragment"
+            app:destination="@id/reminderDetailFragment" />
+        <action
+            android:id="@+id/action_agendaFragment_to_taskDetailFragment"
+            app:destination="@id/taskDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/agendaItemDetailFragment"
@@ -61,6 +70,70 @@
         <action
             android:id="@+id/action_agendaItemDetailFragment_to_photoDetailFragment"
             app:destination="@id/photoDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventDetailFragment"
+        android:name="com.andrew.tasky.presentation.event_detail.EventDetailFragment"
+        android:label="EventDetailFragment" >
+        <action
+            android:id="@+id/action_eventDetailFragment_to_editFragment"
+            app:destination="@id/editFragment" />
+        <argument
+            android:name="agendaItem"
+            app:argType="com.andrew.tasky.domain.AgendaItem"
+            app:nullable="true"
+            />
+        <argument
+            android:name="isInEditMode"
+            app:argType="boolean"
+            />
+        <action
+            android:id="@+id/action_eventDetailFragment_to_photoDetailFragment"
+            app:destination="@id/photoDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reminderDetailFragment"
+        android:name="com.andrew.tasky.presentation.reminder_detail.ReminderDetailFragment"
+        android:label="fragment_reminder_detail"
+        tools:layout="@layout/fragment_reminder_detail" >
+        <action
+            android:id="@+id/action_reminderDetailFragment_to_editFragment"
+            app:destination="@id/editFragment" />
+        <argument
+            android:name="agendaItem"
+            app:argType="com.andrew.tasky.domain.AgendaItem"
+            app:nullable="true"
+            />
+        <argument
+            android:name="agendaItemType"
+            app:argType="com.andrew.tasky.util.AgendaItemType"
+            />
+        <argument
+            android:name="isInEditMode"
+            app:argType="boolean"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/taskDetailFragment"
+        android:name="com.andrew.tasky.presentation.task_detail.TaskDetailFragment"
+        android:label="fragment_task_detail"
+        tools:layout="@layout/fragment_task_detail" >
+        <action
+            android:id="@+id/action_taskDetailFragment_to_editFragment"
+            app:destination="@id/editFragment" />
+        <argument
+            android:name="agendaItem"
+            app:argType="com.andrew.tasky.domain.AgendaItem"
+            app:nullable="true"
+            />
+        <argument
+            android:name="agendaItemType"
+            app:argType="com.andrew.tasky.util.AgendaItemType"
+            />
+        <argument
+            android:name="isInEditMode"
+            app:argType="boolean"
+            />
     </fragment>
     <fragment
         android:id="@+id/editFragment"

@@ -1,6 +1,6 @@
 package com.andrew.tasky.domain
 
-class StringToInitials {
+object StringToInitials {
 
     fun convertStringToInitials(name: String):String {
         // Trims name for crash safety

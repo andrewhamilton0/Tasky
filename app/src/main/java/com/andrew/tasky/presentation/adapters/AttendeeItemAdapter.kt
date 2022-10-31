@@ -8,11 +8,11 @@ import com.andrew.tasky.databinding.ItemAttendeeBinding
 import com.andrew.tasky.domain.Attendee
 import com.andrew.tasky.domain.AttendeeType
 import com.andrew.tasky.domain.StringToInitials
-import com.andrew.tasky.util.AgendaItemDetailFragmentCommunicationWithRV
 
 class AttendeeItemAdapter(
     private var attendees: List<Attendee>,
-    private val listener: AgendaItemDetailFragmentCommunicationWithRV
+    private var isAttendee: Boolean,
+    private val onDeleteIconClick: (Attendee) -> Unit
 ): RecyclerView.Adapter<AttendeeItemAdapter.AttendeeItemViewHolder>() {
 
     inner class AttendeeItemViewHolder(val binding: ItemAttendeeBinding) : RecyclerView.ViewHolder(binding.root)
@@ -25,26 +25,25 @@ class AttendeeItemAdapter(
 
     override fun onBindViewHolder(holder: AttendeeItemViewHolder, position: Int) {
         holder.binding.apply {
-
-            //Adds and removes deleteAttendeeButtonView, and creatorTV to appropriate attendee
             if(attendees[position].attendeeType == AttendeeType.CREATOR) {
                 deleteAttendeeButton.isVisible = false
                 creatorTextView.isVisible = true
             }
-            else{
+            else if (!isAttendee){
                 deleteAttendeeButton.isVisible = true
                 creatorTextView.isVisible = false
             }
+            else{
+                deleteAttendeeButton.isVisible = false
+                creatorTextView.isVisible = false
+            }
 
-            //Adds full name to card
             attendeeFullNameTextView.text = attendees[position].name
 
-            //Adds initials to card
-            attendeeInitialsTextView.text = StringToInitials().convertStringToInitials(attendees[position].name)
+            attendeeInitialsTextView.text = StringToInitials.convertStringToInitials(attendees[position].name)
 
-            //Adds on click listener to delete button
             deleteAttendeeButton.setOnClickListener {
-                listener.deleteAttendee(attendees[position])
+                onDeleteIconClick(attendees[position])
             }
         }
     }

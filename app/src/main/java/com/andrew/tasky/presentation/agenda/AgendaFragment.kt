@@ -16,15 +16,14 @@ import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.AgendaItems
 import com.andrew.tasky.presentation.adapters.AgendaItemAdapter
 import com.andrew.tasky.presentation.dialogs.DatePickerFragment
-import com.andrew.tasky.util.AgendaItemActionOptions
+import com.andrew.tasky.util.AgendaItemActions
 import com.andrew.tasky.util.AgendaItemType
-import com.andrew.tasky.util.AgendaFragmentCommunicationWithRV
 import com.andrew.tasky.util.collectLatestLifecycleFlow
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class AgendaFragment : Fragment(R.layout.fragment_agenda), AgendaFragmentCommunicationWithRV {
+class AgendaFragment : Fragment(R.layout.fragment_agenda) {
 
     private lateinit var navController: NavController
     private lateinit var viewModel: AgendaViewModel
@@ -122,12 +121,10 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda), AgendaFragmentCommuni
                 popupMenu.setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
                         R.id.event -> {
-                            val agendaItemType = AgendaItemType.EVENT
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToAgendaItemDetailFragment(
+                                    .actionAgendaFragmentToEventDetailFragment(
                                         null,
-                                        agendaItemType,
                                         true
                                     )
                             )
@@ -290,21 +287,22 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda), AgendaFragmentCommuni
     }
 
     private fun setupAgendaItemListRecyclerView(dateSelected: LocalDate){
-        //Retrieves agenda items for selected date
         val sortedAgendaItems = AgendaItems.sortByDateSelected(dateSelected)
 
-        //Binds retrieved agenda items and FragmentCommunication listener to agendaItemRecyclerView
-        val adapter = AgendaItemAdapter(sortedAgendaItems, this)
+        val adapter = AgendaItemAdapter(agendaItems = sortedAgendaItems,
+            onAgendaItemOptionClick = {agendaItem, agendaItemActionOptions ->
+                agendaItemOptions(agendaItem, agendaItemActionOptions)
+            }
+        )
         fragmentAgendaBinding.agendaItemRecyclerView.adapter = adapter
         fragmentAgendaBinding.agendaItemRecyclerView.layoutManager =
             LinearLayoutManager(requireContext())
     }
 
-    //Retrieves data from AgendaItemListRecyclerView and uses it appropriately
-    override fun respond(agendaItem: AgendaItem, actionOption: AgendaItemActionOptions) {
+    private fun agendaItemOptions(agendaItem: AgendaItem, selectedAgendaItemAction: AgendaItemActions) {
         val agendaItemType = agendaItem.type
-        when (actionOption){
-            AgendaItemActionOptions.OPEN ->{
+        when (selectedAgendaItemAction){
+            AgendaItemActions.OPEN ->{
                 navController.navigate(
                     AgendaFragmentDirections
                         .actionAgendaFragmentToAgendaItemDetailFragment(
@@ -314,7 +312,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda), AgendaFragmentCommuni
                         )
                 )
             }
-            AgendaItemActionOptions.EDIT -> {
+            AgendaItemActions.EDIT -> {
                 navController.navigate(
                     AgendaFragmentDirections
                         .actionAgendaFragmentToAgendaItemDetailFragment(
@@ -324,7 +322,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda), AgendaFragmentCommuni
                         )
                 )
             }
-            AgendaItemActionOptions.DELETE -> {
+            AgendaItemActions.DELETE -> {
 
             }
         }

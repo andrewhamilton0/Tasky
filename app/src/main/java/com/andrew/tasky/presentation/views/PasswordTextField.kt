@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.Toast
 import com.andrew.tasky.R
-import com.andrew.tasky.databinding.TextFieldPasswordBinding
+import com.andrew.tasky.databinding.CvTextFieldPasswordBinding
 import com.andrew.tasky.domain.PasswordValidator
 import com.google.android.material.textfield.TextInputLayout
 
@@ -14,8 +14,8 @@ class PasswordTextField @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ): TextInputLayout(context, attrs) {
 
-    private val binding = TextFieldPasswordBinding.bind(
-        inflate(context, R.layout.text_field_password, this)
+    private val binding = CvTextFieldPasswordBinding.bind(
+        inflate(context, R.layout.cv_text_field_password, this)
     )
 
     fun isPasswordValid(): Boolean{
