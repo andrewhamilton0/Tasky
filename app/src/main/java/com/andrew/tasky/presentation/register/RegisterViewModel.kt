@@ -8,7 +8,7 @@ class RegisterViewModel : ViewModel() {
 
     private val _isNameValid = MutableStateFlow(false)
     val isNameValid = _isNameValid.asStateFlow()
-    fun setIsNameValid(nameValidity: Boolean){
+    fun setIsNameValid(nameValidity: Boolean) {
         _isNameValid.value = nameValidity
     }
 }

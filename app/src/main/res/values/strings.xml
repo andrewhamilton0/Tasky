@@ -61,8 +61,11 @@
     <string name="tomorrow">Tomorrow</string>
     <string name="yesterday">Yesterday</string>
 
+    <!--Add attendee dialog box -->
+    <string name="add_visitor">Add visitor</string>
+    <string name="add">Add</string>
+
     <!--error messages -->
     <string name="error_invalid_password_format">Password must contain at least %1$d characters,
         one number, one uppercase, and one lowercase letter</string>
-
 </resources>

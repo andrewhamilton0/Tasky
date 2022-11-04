@@ -1,9 +1,9 @@
 package com.andrew.tasky.presentation.login
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
@@ -21,10 +21,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         navController = Navigation.findNavController(view)
         viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
 
-        binding.signUpButton.setOnClickListener(){
+        binding.signUpButton.setOnClickListener() {
             navController.navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment())
         }
-        binding.loginButton.setOnClickListener(){
+        binding.loginButton.setOnClickListener() {
             navController.navigate(LoginFragmentDirections.actionLoginFragmentToAgendaFragment())
         }
     }

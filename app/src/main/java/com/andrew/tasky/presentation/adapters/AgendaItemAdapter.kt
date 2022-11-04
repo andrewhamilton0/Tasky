@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.R
-import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.databinding.ItemAgendaBinding
+import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.util.AgendaItemActions
 import com.andrew.tasky.util.AgendaItemType
 import java.time.format.DateTimeFormatter
@@ -16,9 +16,10 @@ import java.time.format.DateTimeFormatter
 class AgendaItemAdapter(
     private var agendaItems: List<AgendaItem>,
     private val onAgendaItemOptionClick: (AgendaItem, AgendaItemActions) -> Unit
-): RecyclerView.Adapter<AgendaItemAdapter.AgendaItemViewHolder>() {
+) : RecyclerView.Adapter<AgendaItemAdapter.AgendaItemViewHolder>() {
 
-    inner class AgendaItemViewHolder(val binding: ItemAgendaBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class AgendaItemViewHolder(val binding: ItemAgendaBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AgendaItemViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -31,13 +32,15 @@ class AgendaItemAdapter(
             agendaItemTitle.text = agendaItems[position].title
             agendaItemDescription.text = agendaItems[position].description
             agendaItemDate.text = (
-                        agendaItems[position].startDateAndTime
-                        .format(DateTimeFormatter.ofPattern("MMM d, HH:mm")) +
-                        (agendaItems[position].endDateAndTime
-                        ?.format(DateTimeFormatter.ofPattern(" - MMM d, HH:mm")) ?: "")
-                    )
+                agendaItems[position].startDateAndTime
+                    .format(DateTimeFormatter.ofPattern("MMM d, HH:mm")) +
+                    (
+                        agendaItems[position].endDateAndTime
+                            ?.format(DateTimeFormatter.ofPattern(" - MMM d, HH:mm")) ?: ""
+                        )
+                )
 
-            doneButton.setOnClickListener{
+            doneButton.setOnClickListener {
                 agendaItems[position].isDone = true
             }
 
@@ -50,7 +53,7 @@ class AgendaItemAdapter(
                 popupMenu.inflate(R.menu.menu_agenda_item_actions)
                 popupMenu.setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
-                        R.id.open ->{
+                        R.id.open -> {
                             val actionOption = AgendaItemActions.OPEN
                             onAgendaItemOptionClick(agendaItems[position], actionOption)
                             true
@@ -71,16 +74,15 @@ class AgendaItemAdapter(
                 popupMenu.show()
             }
 
-            if (agendaItems[position].isDone){
+            if (agendaItems[position].isDone) {
                 doneButton.setImageResource(R.drawable.task_done_circle)
                 agendaItemTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-            }
-            else{
+            } else {
                 doneButton.setImageResource(R.drawable.ic_undone_circle)
                 agendaItemTitle.paintFlags = Paint.ANTI_ALIAS_FLAG
             }
 
-            when(agendaItems[position].type){
+            when (agendaItems[position].type) {
                 AgendaItemType.TASK -> {
                     agendaItemCard.setCardBackgroundColor(Color.parseColor("#259f70"))
                     doneButton.setColorFilter(Color.parseColor("#FFeeeeee"))
@@ -89,8 +91,12 @@ class AgendaItemAdapter(
                     agendaItemDescription.setTextColor(Color.parseColor("#FFeeeeee"))
                     agendaItemDate.setTextColor(Color.parseColor("#FFeeeeee"))
                 }
-                AgendaItemType.EVENT -> agendaItemCard.setCardBackgroundColor(Color.parseColor("#cced42"))
-                AgendaItemType.REMINDER -> agendaItemCard.setCardBackgroundColor(Color.parseColor("#f2f3f7"))
+                AgendaItemType.EVENT -> agendaItemCard.setCardBackgroundColor(
+                    Color.parseColor("#cced42")
+                )
+                AgendaItemType.REMINDER -> agendaItemCard.setCardBackgroundColor(
+                    Color.parseColor("#f2f3f7")
+                )
             }
         }
     }

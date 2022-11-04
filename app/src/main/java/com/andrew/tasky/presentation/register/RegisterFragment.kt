@@ -1,11 +1,11 @@
 package com.andrew.tasky.presentation.register
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
@@ -25,13 +25,13 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         navController = Navigation.findNavController(view)
         viewModel = ViewModelProvider(this).get(RegisterViewModel::class.java)
 
-        binding.backButton.setOnClickListener(){
+        binding.backButton.setOnClickListener() {
             navController.popBackStack()
         }
 
-        binding.nameEditText.addTextChangedListener{
+        binding.nameEditText.addTextChangedListener {
             if (it != null) {
-                 viewModel.setIsNameValid(NameValidator().validate(it.toString()))
+                viewModel.setIsNameValid(NameValidator().validate(it.toString()))
             }
         }
 
@@ -39,7 +39,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             binding.passwordTextField.isPasswordValid()
         }
 
-        collectLatestLifecycleFlow(viewModel.isNameValid){ isNameValid ->
+        collectLatestLifecycleFlow(viewModel.isNameValid) { isNameValid ->
             binding.nameCheckBox.isVisible = isNameValid
         }
     }

@@ -44,27 +44,30 @@ object AgendaItems {
         )
     )
 
-    //Returns a sorted list of agendaItems by start time and only those of dateSelected
-    fun sortByDateSelected(dateSelected: LocalDate): MutableList<AgendaItem>{
+    // Returns a sorted list of agendaItems by start time and only those of dateSelected
+    fun sortByDateSelected(dateSelected: LocalDate): MutableList<AgendaItem> {
         val agendaItemListSorted = mutableListOf<AgendaItem>()
-        agendaItemList.sortedBy{ agendaItem -> agendaItem.startDateAndTime }
-            .forEach{if (it.startDateAndTime.toLocalDate() == dateSelected){
-                agendaItemListSorted.add(it)}}
+        agendaItemList.sortedBy { agendaItem -> agendaItem.startDateAndTime }
+            .forEach {
+                if (it.startDateAndTime.toLocalDate() == dateSelected) {
+                    agendaItemListSorted.add(it)
+                }
+            }
         return agendaItemListSorted
     }
 
-    fun addAgendaItem(newAgendaItem: AgendaItem){
+    fun addAgendaItem(newAgendaItem: AgendaItem) {
         agendaItemList += newAgendaItem
     }
 
-    fun replaceAgendaItem(newAgendaItem: AgendaItem, oldAgendaItem: AgendaItem){
+    fun replaceAgendaItem(newAgendaItem: AgendaItem, oldAgendaItem: AgendaItem) {
         val updatedAgendaItemList = agendaItemList.map { item ->
-            if(item == oldAgendaItem) newAgendaItem else item
+            if (item == oldAgendaItem) newAgendaItem else item
         }
         agendaItemList = updatedAgendaItemList
     }
 
-    fun deleteAgendaItem(agendaItem: AgendaItem){
+    fun deleteAgendaItem(agendaItem: AgendaItem) {
         val updatedAgendaItemList = agendaItemList.filter { it != agendaItem }
         agendaItemList = updatedAgendaItemList
     }

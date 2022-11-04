@@ -7,11 +7,11 @@ import com.andrew.tasky.R
 import com.andrew.tasky.databinding.CvTimeDateSelectorBinding
 
 class TimeDateSelectorCustomView@JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null
-    ): ConstraintLayout(context, attrs) {
+    context: Context,
+    attrs: AttributeSet? = null
+) : ConstraintLayout(context, attrs) {
 
-        private val binding = CvTimeDateSelectorBinding.bind(
-            inflate(context, R.layout.cv_time_date_selector, this)
-        )
-    }
+    private val binding = CvTimeDateSelectorBinding.bind(
+        inflate(context, R.layout.cv_time_date_selector, this)
+    )
+}

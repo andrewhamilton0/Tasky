@@ -1,12 +1,12 @@
 package com.andrew.tasky.presentation.edit
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
@@ -53,9 +53,11 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                     when (it) {
                         EditType.DESCRIPTION -> {
                             binding.editTypeTitle.text = getString(R.string.edit_description_text)
+                            binding.inputEditText.textSize = 16F
                         }
                         EditType.TITLE -> {
                             binding.editTypeTitle.text = getString(R.string.edit_title_text)
+                            binding.inputEditText.textSize = 26F
                         }
                     }
                 }

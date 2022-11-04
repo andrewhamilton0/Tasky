@@ -9,7 +9,7 @@ import com.andrew.tasky.databinding.CvReminderLayoutBinding
 class ReminderLayoutCustomView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-): ConstraintLayout(context, attrs) {
+) : ConstraintLayout(context, attrs) {
 
     private val binding = CvReminderLayoutBinding.bind(
         inflate(context, R.layout.cv_reminder_layout, this)

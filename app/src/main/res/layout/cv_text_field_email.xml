@@ -31,7 +31,6 @@
     android:hint="@string/email_address_preview"
     android:singleLine="true"
     android:textAlignment="viewStart"
-    android:textColorHighlight="@color/black"
     android:textCursorDrawable="@null"
     app:layout_constraintStart_toEndOf="@id/startOfEditText"
     app:layout_constraintEnd_toStartOf="@id/endOfEditText"
