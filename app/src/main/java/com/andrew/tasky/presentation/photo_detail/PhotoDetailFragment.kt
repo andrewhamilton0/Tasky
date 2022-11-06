@@ -1,11 +1,11 @@
 package com.andrew.tasky.presentation.photo_detail
 
 import android.net.Uri
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
@@ -15,14 +15,13 @@ import com.andrew.tasky.databinding.FragmentPhotoDetailBinding
 class PhotoDetailFragment : Fragment(R.layout.fragment_photo_detail) {
 
     private lateinit var binding: FragmentPhotoDetailBinding
-    private lateinit var viewModel: PhotoDetailViewModel
+    private val viewModel: PhotoDetailViewModel by viewModels()
     private lateinit var navController: NavController
     private val args: PhotoDetailFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this).get(PhotoDetailViewModel::class.java)
         binding = FragmentPhotoDetailBinding.bind(view)
         navController = Navigation.findNavController(view)
 
@@ -37,5 +36,4 @@ class PhotoDetailFragment : Fragment(R.layout.fragment_photo_detail) {
             navController.popBackStack()
         }
     }
-
 }

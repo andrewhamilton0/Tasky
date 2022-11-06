@@ -13,9 +13,10 @@ class AttendeeItemAdapter(
     private var attendees: List<Attendee>,
     private var isAttendee: Boolean,
     private val onDeleteIconClick: (Attendee) -> Unit
-): RecyclerView.Adapter<AttendeeItemAdapter.AttendeeItemViewHolder>() {
+) : RecyclerView.Adapter<AttendeeItemAdapter.AttendeeItemViewHolder>() {
 
-    inner class AttendeeItemViewHolder(val binding: ItemAttendeeBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class AttendeeItemViewHolder(val binding: ItemAttendeeBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttendeeItemViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -25,22 +26,15 @@ class AttendeeItemAdapter(
 
     override fun onBindViewHolder(holder: AttendeeItemViewHolder, position: Int) {
         holder.binding.apply {
-            if(attendees[position].attendeeType == AttendeeType.CREATOR) {
-                deleteAttendeeButton.isVisible = false
-                creatorTextView.isVisible = true
-            }
-            else if (!isAttendee){
-                deleteAttendeeButton.isVisible = true
-                creatorTextView.isVisible = false
-            }
-            else{
-                deleteAttendeeButton.isVisible = false
-                creatorTextView.isVisible = false
-            }
+
+            val isCreatorHolder = attendees[position].attendeeType == AttendeeType.CREATOR
+            deleteAttendeeButton.isVisible = !isCreatorHolder && !isAttendee
+            creatorTextView.isVisible = isCreatorHolder
 
             attendeeFullNameTextView.text = attendees[position].name
 
-            attendeeInitialsTextView.text = StringToInitials.convertStringToInitials(attendees[position].name)
+            attendeeInitialsTextView.text = StringToInitials
+                .convertStringToInitials(attendees[position].name)
 
             deleteAttendeeButton.setOnClickListener {
                 onDeleteIconClick(attendees[position])

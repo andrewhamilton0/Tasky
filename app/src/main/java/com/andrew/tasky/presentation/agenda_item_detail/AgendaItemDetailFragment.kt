@@ -1,17 +1,17 @@
 package com.andrew.tasky.presentation.agenda_item_detail
 
 import android.graphics.Paint
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupMenu
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.Fragment
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
@@ -26,16 +26,16 @@ import com.andrew.tasky.domain.Attendee
 import com.andrew.tasky.domain.AttendeeType
 import com.andrew.tasky.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.presentation.adapters.PhotoItemAdapter
-import com.andrew.tasky.presentation.dialogs.DatePickerFragment
-import com.andrew.tasky.presentation.dialogs.DeleteConfirmationDialogFragment
-import com.andrew.tasky.presentation.dialogs.TimePickerFragment
+import com.andrew.tasky.presentation.dialogs.DatePickerDialog
+import com.andrew.tasky.presentation.dialogs.DeleteConfirmationDialog
+import com.andrew.tasky.presentation.dialogs.TimePickerDialog
 import com.andrew.tasky.util.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
+class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) {
 
     private val isAttendee = false
 
@@ -75,16 +75,37 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         onClickListeners()
 
         val attendeesList = listOf(
-            Attendee(name = "Samantha Jones", isAttending = true, attendeeType = AttendeeType.CREATOR, email = "random@gmail.com"),
-            Attendee(name = "Cappuccino Joe", isAttending = true, attendeeType = AttendeeType.ATTENDEE, email = "random1@gmail.com"),
-            Attendee(name = "Autumn Leaves", isAttending = true, attendeeType = AttendeeType.ATTENDEE, email = "random2@gmail.com"),
-            Attendee(name = "Andrew", isAttending = true, attendeeType = AttendeeType.ATTENDEE, email = "random3@gmail.com"),
-            Attendee(name = "Ramsay Beans", isAttending = false, attendeeType = AttendeeType.ATTENDEE, email = "random4@gmail.com"),
-            Attendee(name = "I Heart Lucy", isAttending = false, attendeeType = AttendeeType.ATTENDEE, email = "random5@gmail.com"),
-            Attendee(name = "I Have A Long name", isAttending = true, attendeeType = AttendeeType.ATTENDEE, email = "random6@gmail.com")
+            Attendee(
+                name = "Samantha Jones", isAttending = true,
+                attendeeType = AttendeeType.CREATOR, email = "random@gmail.com"
+            ),
+            Attendee(
+                name = "Cappuccino Joe", isAttending = true,
+                attendeeType = AttendeeType.ATTENDEE, email = "random1@gmail.com"
+            ),
+            Attendee(
+                name = "Autumn Leaves", isAttending = true,
+                attendeeType = AttendeeType.ATTENDEE, email = "random2@gmail.com"
+            ),
+            Attendee(
+                name = "Andrew", isAttending = true,
+                attendeeType = AttendeeType.ATTENDEE, email = "random3@gmail.com"
+            ),
+            Attendee(
+                name = "Ramsay Beans", isAttending = false,
+                attendeeType = AttendeeType.ATTENDEE, email = "random4@gmail.com"
+            ),
+            Attendee(
+                name = "I Heart Lucy", isAttending = false,
+                attendeeType = AttendeeType.ATTENDEE, email = "random5@gmail.com"
+            ),
+            Attendee(
+                name = "I Have A Long name", isAttending = true,
+                attendeeType = AttendeeType.ATTENDEE, email = "random6@gmail.com"
+            )
         )
 
-        for (name in attendeesList){
+        for (name in attendeesList) {
             viewModel.addAttendee(name)
         }
     }
@@ -128,123 +149,171 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
             collectLatestLifecycleFlow(viewModel.selectedReminderTime) { reminderTime ->
                 when (reminderTime) {
                     ReminderTimes.TEN_MINUTES_BEFORE ->
-                        reminderLayoutBinding.reminderTextView.text = getString(R.string.ten_minutes_before)
+                        reminderLayoutBinding.reminderTextView.text =
+                            getString(R.string.ten_minutes_before)
                     ReminderTimes.THIRTY_MINUTES_BEFORE ->
-                        reminderLayoutBinding.reminderTextView.text = getString(R.string.thirty_minutes_before)
+                        reminderLayoutBinding.reminderTextView.text =
+                            getString(R.string.thirty_minutes_before)
                     ReminderTimes.ONE_HOUR_BEFORE ->
-                        reminderLayoutBinding.reminderTextView.text = getString(R.string.one_hour_before)
+                        reminderLayoutBinding.reminderTextView.text =
+                            getString(R.string.one_hour_before)
                     ReminderTimes.SIX_HOURS_BEFORE ->
-                        reminderLayoutBinding.reminderTextView.text = getString(R.string.six_hours_before)
+                        reminderLayoutBinding.reminderTextView.text =
+                            getString(R.string.six_hours_before)
                     ReminderTimes.ONE_DAY_BEFORE ->
-                        reminderLayoutBinding.reminderTextView.text = getString(R.string.one_day_before)
+                        reminderLayoutBinding.reminderTextView.text =
+                            getString(R.string.one_day_before)
                 }
             }
-            collectLatestLifecycleFlow(viewModel.selectedAttendeeButton){
-                when(it){
+            collectLatestLifecycleFlow(viewModel.selectedAttendeeButton) {
+                when (it) {
                     AgendaItemDetailViewModel.AttendeeButtonTypes.ALL -> {
                         goingTextView.isVisible = true
                         goingAttendeeRecyclerView.isVisible = true
                         notGoingTextView.isVisible = true
                         notGoingAttendeeRecyclerView.isVisible = true
-                        allButtonTextView.setTextColor(ResourcesCompat
-                            .getColor(resources, R.color.white, null))
-                        allButton.background.setTint((ResourcesCompat
-                            .getColor(resources, R.color.black, null)))
-                        goingButtonTextView.setTextColor(ResourcesCompat
-                            .getColor(resources, R.color.dark_gray, null))
-                        goingButton.background.setTint(ResourcesCompat
-                            .getColor(resources, R.color.light_2, null))
-                        notGoingButtonTextView.setTextColor(ResourcesCompat
-                            .getColor(resources, R.color.dark_gray, null))
-                        notGoingButton.background.setTint(ResourcesCompat
-                            .getColor(resources, R.color.light_2, null))
+                        allButtonTextView.setTextColor(
+                            ResourcesCompat
+                                .getColor(resources, R.color.white, null)
+                        )
+                        allButton.background.setTint(
+                            (
+                                ResourcesCompat
+                                    .getColor(resources, R.color.black, null)
+                                )
+                        )
+                        goingButtonTextView.setTextColor(
+                            ResourcesCompat
+                                .getColor(resources, R.color.dark_gray, null)
+                        )
+                        goingButton.background.setTint(
+                            ResourcesCompat
+                                .getColor(resources, R.color.light_2, null)
+                        )
+                        notGoingButtonTextView.setTextColor(
+                            ResourcesCompat
+                                .getColor(resources, R.color.dark_gray, null)
+                        )
+                        notGoingButton.background.setTint(
+                            ResourcesCompat
+                                .getColor(resources, R.color.light_2, null)
+                        )
                     }
                     AgendaItemDetailViewModel.AttendeeButtonTypes.GOING -> {
                         goingTextView.isVisible = true
                         goingAttendeeRecyclerView.isVisible = true
                         notGoingTextView.isVisible = false
                         notGoingAttendeeRecyclerView.isVisible = false
-                        allButtonTextView.setTextColor(ResourcesCompat
-                            .getColor(resources, R.color.dark_gray, null))
-                        allButton.background.setTint(ResourcesCompat
-                            .getColor(resources, R.color.light_2, null))
-                        goingButtonTextView.setTextColor(ResourcesCompat
-                            .getColor(resources, R.color.white, null))
-                        goingButton.background.setTint(ResourcesCompat
-                            .getColor(resources, R.color.black, null))
-                        notGoingButtonTextView.setTextColor(ResourcesCompat
-                            .getColor(resources, R.color.dark_gray, null))
-                        notGoingButton.background.setTint(ResourcesCompat
-                            .getColor(resources, R.color.light_2, null))
+                        allButtonTextView.setTextColor(
+                            ResourcesCompat
+                                .getColor(resources, R.color.dark_gray, null)
+                        )
+                        allButton.background.setTint(
+                            ResourcesCompat
+                                .getColor(resources, R.color.light_2, null)
+                        )
+                        goingButtonTextView.setTextColor(
+                            ResourcesCompat
+                                .getColor(resources, R.color.white, null)
+                        )
+                        goingButton.background.setTint(
+                            ResourcesCompat
+                                .getColor(resources, R.color.black, null)
+                        )
+                        notGoingButtonTextView.setTextColor(
+                            ResourcesCompat
+                                .getColor(resources, R.color.dark_gray, null)
+                        )
+                        notGoingButton.background.setTint(
+                            ResourcesCompat
+                                .getColor(resources, R.color.light_2, null)
+                        )
                     }
                     AgendaItemDetailViewModel.AttendeeButtonTypes.NOT_GOING -> {
                         goingTextView.isVisible = false
                         goingAttendeeRecyclerView.isVisible = false
                         notGoingTextView.isVisible = true
                         notGoingAttendeeRecyclerView.isVisible = true
-                        allButtonTextView.setTextColor(ResourcesCompat
-                            .getColor(resources, R.color.dark_gray, null))
-                        allButton.background.setTint(ResourcesCompat
-                            .getColor(resources, R.color.light_2, null))
-                        goingButtonTextView.setTextColor(ResourcesCompat
-                            .getColor(resources, R.color.dark_gray, null))
-                        goingButton.background.setTint(ResourcesCompat
-                            .getColor(resources, R.color.light_2, null))
-                        notGoingButtonTextView.setTextColor(ResourcesCompat
-                            .getColor(resources, R.color.white, null))
-                        notGoingButton.background.setTint(ResourcesCompat
-                            .getColor(resources, R.color.black, null))
-
+                        allButtonTextView.setTextColor(
+                            ResourcesCompat
+                                .getColor(resources, R.color.dark_gray, null)
+                        )
+                        allButton.background.setTint(
+                            ResourcesCompat
+                                .getColor(resources, R.color.light_2, null)
+                        )
+                        goingButtonTextView.setTextColor(
+                            ResourcesCompat
+                                .getColor(resources, R.color.dark_gray, null)
+                        )
+                        goingButton.background.setTint(
+                            ResourcesCompat
+                                .getColor(resources, R.color.light_2, null)
+                        )
+                        notGoingButtonTextView.setTextColor(
+                            ResourcesCompat
+                                .getColor(resources, R.color.white, null)
+                        )
+                        notGoingButton.background.setTint(
+                            ResourcesCompat
+                                .getColor(resources, R.color.black, null)
+                        )
                     }
                 }
             }
-            if(isAttendee){
-                collectLatestLifecycleFlow(viewModel.isAttending){isAttending ->
-                    if(isAttending){
+            if (isAttendee) {
+                collectLatestLifecycleFlow(viewModel.isAttending) { isAttending ->
+                    if (isAttending) {
                         deleteAgendaItemButton.text = getString(R.string.join_event)
-                    }
-                    else{
+                    } else {
                         deleteAgendaItemButton.text = getString(R.string.leave_event)
                     }
                 }
             }
         }
-        collectLatestLifecycleFlow(viewModel.photos){ photoList ->
-            val adapter = PhotoItemAdapter(photoList,
-                onPhotoClick = {index -> openPhoto(index)},
+        collectLatestLifecycleFlow(viewModel.photos) { photoList ->
+            val adapter = PhotoItemAdapter(
+                photoList,
+                onPhotoClick = { index -> openPhoto(index) },
                 onAddPhotoClick = { addPhoto() },
-                userIsAttendee = isAttendee)
+                userIsAttendee = isAttendee
+            )
             binding.photosRecyclerView.adapter = adapter
             binding.photosRecyclerView.layoutManager = LinearLayoutManager(
-                requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                requireContext(), LinearLayoutManager.HORIZONTAL, false
+            )
 
-                binding.addPhotoPlusSign.isVisible = photoList.isEmpty()
-                binding.addPhotoTextView.isVisible = photoList.isEmpty()
-                binding.photosTextView.isVisible = photoList.isNotEmpty()
-                binding.photosRecyclerView.isVisible = photoList.isNotEmpty()
+            binding.addPhotoPlusSign.isVisible = photoList.isEmpty()
+            binding.addPhotoTextView.isVisible = photoList.isEmpty()
+            binding.photosTextView.isVisible = photoList.isNotEmpty()
+            binding.photosRecyclerView.isVisible = photoList.isNotEmpty()
         }
         collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
-            val goingAttendeeAdapter = AttendeeItemAdapter(goingAttendees,
+            val goingAttendeeAdapter = AttendeeItemAdapter(
+                goingAttendees,
                 isAttendee,
-                onDeleteIconClick = {attendee ->  viewModel.deleteAttendee(attendee)})
+                onDeleteIconClick = { attendee -> viewModel.deleteAttendee(attendee) }
+            )
             binding.goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
             binding.goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
-        collectLatestLifecycleFlow(viewModel.notGoingAttendees){ notGoingAttendees ->
+        collectLatestLifecycleFlow(viewModel.notGoingAttendees) { notGoingAttendees ->
             val notGoingAttendeeAdapter = AttendeeItemAdapter(
                 notGoingAttendees,
                 isAttendee,
-                onDeleteIconClick = {attendee ->  viewModel.deleteAttendee(attendee)})
+                onDeleteIconClick = { attendee -> viewModel.deleteAttendee(attendee) }
+            )
             binding.notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
-            binding.notGoingAttendeeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+            binding.notGoingAttendeeRecyclerView.layoutManager =
+                LinearLayoutManager(requireContext())
         }
     }
 
-    private fun setupAttendeeAndCreatorView(){
+    private fun setupAttendeeAndCreatorView() {
         binding.apply {
-            if(isAttendee){
+            if (isAttendee) {
                 addAttendeeButton.isVisible = false
-                if(viewModel.photos.value.isEmpty()){
+                if (viewModel.photos.value.isEmpty()) {
                     addPhotoLayout.isVisible = false
                 }
             }
@@ -267,7 +336,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         }
     }
 
-    private fun setupAgendaItemType(){
+    private fun setupAgendaItemType() {
         binding.apply {
             when (agendaItemType) {
                 AgendaItemType.TASK -> {
@@ -277,8 +346,11 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                     startTimeDateBinding.timeAndDateBeginningText.text = getString(R.string.at)
                     endTimeAndDateLayout.isVisible = false
                     attendeesLayout.isVisible = false
-                    deleteAgendaItemButton.text = String.format(resources.
-                    getString(R.string.delete_agenda_item_button), getString(R.string.task)).uppercase()
+                    deleteAgendaItemButton.text = String.format(
+                        resources
+                            .getString(R.string.delete_agenda_item_button),
+                        getString(R.string.task)
+                    ).uppercase()
                 }
                 AgendaItemType.EVENT -> {
                     eventIcon.setImageResource(R.drawable.ic_event_box)
@@ -288,8 +360,11 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                     endTimeDateBinding.timeAndDateBeginningText.text = getString(R.string.to)
                     endTimeAndDateLayout.isVisible = true
                     attendeesLayout.isVisible = true
-                    deleteAgendaItemButton.text = String.format(resources.
-                    getString(R.string.delete_agenda_item_button), getString(R.string.event)).uppercase()
+                    deleteAgendaItemButton.text = String.format(
+                        resources
+                            .getString(R.string.delete_agenda_item_button),
+                        getString(R.string.event)
+                    ).uppercase()
                     setupAttendeeAndCreatorView()
                 }
                 AgendaItemType.REMINDER -> {
@@ -299,34 +374,39 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                     startTimeDateBinding.timeAndDateBeginningText.text = getString(R.string.from)
                     endTimeAndDateLayout.isVisible = false
                     attendeesLayout.isVisible = false
-                    deleteAgendaItemButton.text = String.format(resources.
-                    getString(R.string.delete_agenda_item_button), getString(R.string.reminder)).uppercase()
+                    deleteAgendaItemButton.text = String.format(
+                        resources
+                            .getString(R.string.delete_agenda_item_button),
+                        getString(R.string.reminder)
+                    ).uppercase()
                 }
             }
         }
     }
 
-    private fun addPhoto(){
+    private fun addPhoto() {
         addPhotoSearchForResult.launch("image/*")
     }
 
     private fun openPhoto(index: Int) {
 
-        setFragmentResultListener("REQUEST_KEY"){
-            resultKey, bundle -> if(resultKey == "REQUEST_KEY"){
+        setFragmentResultListener("REQUEST_KEY") {
+            resultKey, bundle ->
+            if (resultKey == "REQUEST_KEY") {
                 val photoToDelete = bundle.getInt("DELETE_PHOTO_INDEX")
                 viewModel.deletePhoto(photoToDelete)
             }
         }
 
-        navController.navigate(AgendaItemDetailFragmentDirections
-            .actionAgendaItemDetailFragmentToPhotoDetailFragment(
-                viewModel.photos.value[index].toString(), index
-            )
+        navController.navigate(
+            AgendaItemDetailFragmentDirections
+                .actionAgendaItemDetailFragmentToPhotoDetailFragment(
+                    viewModel.photos.value[index].toString(), index
+                )
         )
     }
 
-    private fun onClickListeners(){
+    private fun onClickListeners() {
         binding.apply {
             closeButton.setOnClickListener {
                 navController.popBackStack()
@@ -341,7 +421,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                 navController.popBackStack()
             }
 
-            taskDoneCircle.setOnClickListener{
+            taskDoneCircle.setOnClickListener {
                 viewModel.setIsDone(!viewModel.isDone.value)
             }
 
@@ -395,18 +475,17 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                 showReminderOptionsPopupMenu(it)
             }
 
-            addPhotoTextView.setOnClickListener{
+            addPhotoTextView.setOnClickListener {
                 addPhoto()
             }
-            addPhotoPlusSign.setOnClickListener{
+            addPhotoPlusSign.setOnClickListener {
                 addPhoto()
             }
 
-            deleteAgendaItemButton.setOnClickListener{
-                if (isAttendee){
+            deleteAgendaItemButton.setOnClickListener {
+                if (isAttendee) {
                     viewModel.switchAttendingStatus()
-                }
-                else{
+                } else {
                     showDeleteConfirmationDialogFragment()
                 }
             }
@@ -423,11 +502,12 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         }
     }
 
-    private fun navigateToEditFragment(editType: EditType){
-        setFragmentResultListener("INPUT_REQUEST_KEY"){
-            resultKey, bundle -> if(resultKey == "INPUT_REQUEST_KEY"){
+    private fun navigateToEditFragment(editType: EditType) {
+        setFragmentResultListener("INPUT_REQUEST_KEY") {
+            resultKey, bundle ->
+            if (resultKey == "INPUT_REQUEST_KEY") {
                 val input = bundle.getString("INPUT")
-                when(editType){
+                when (editType) {
                     EditType.TITLE -> {
                         if (input != null) {
                             viewModel.setTitle(input)
@@ -441,7 +521,7 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                 }
             }
         }
-        when(editType){
+        when (editType) {
             EditType.TITLE -> {
                 val text = binding.titleTextView.text.toString()
                 val bundle = Bundle()
@@ -450,7 +530,10 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
 
                 setFragmentResult("EDIT_TYPE_AND_TEXT_REQUEST_KEY", bundle)
 
-                navController.navigate(AgendaItemDetailFragmentDirections.actionAgendaItemDetailFragmentToEditFragment())
+                navController.navigate(
+                    AgendaItemDetailFragmentDirections
+                        .actionAgendaItemDetailFragmentToEditFragment()
+                )
             }
             EditType.DESCRIPTION -> {
                 val text = binding.descriptionTextView.text.toString()
@@ -460,49 +543,60 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
 
                 setFragmentResult("EDIT_TYPE_AND_TEXT_REQUEST_KEY", bundle)
 
-                navController.navigate(AgendaItemDetailFragmentDirections.actionAgendaItemDetailFragmentToEditFragment())
+                navController.navigate(
+                    AgendaItemDetailFragmentDirections
+                        .actionAgendaItemDetailFragmentToEditFragment()
+                )
             }
         }
     }
 
-    private fun showTimePickerFragment(view: View){
-        val timePickerFragment = TimePickerFragment()
+    private fun showTimePickerFragment(view: View) {
+        val timePickerDialog = TimePickerDialog()
         val supportFragmentManager = requireActivity().supportFragmentManager
 
         supportFragmentManager.setFragmentResultListener(
             "REQUEST_KEY",
             viewLifecycleOwner
-        ){
-            resultKey, bundle -> if(resultKey == "REQUEST_KEY"){
+        ) {
+            resultKey, bundle ->
+            if (resultKey == "REQUEST_KEY") {
                 val time = bundle.getString("SELECTED_TIME")
                 val formatter = DateTimeFormatter.ofPattern("hh:mm a")
-                if(view == startTimeDateBinding.timeTextView || view == startTimeDateBinding.timeButton){
+                if (view == startTimeDateBinding.timeTextView ||
+                    view == startTimeDateBinding.timeButton
+                ) {
                     viewModel.setStartTime(LocalTime.parse(time, formatter))
-                }
-                else if(view == endTimeDateBinding.timeTextView  || view == endTimeDateBinding.timeButton){
+                } else if (view == endTimeDateBinding.timeTextView ||
+                    view == endTimeDateBinding.timeButton
+                ) {
                     viewModel.setEndTime(LocalTime.parse(time, formatter))
                 }
             }
         }
-        timePickerFragment.show(supportFragmentManager, "TimePickerFragment")
+        timePickerDialog.show(supportFragmentManager, "TimePickerFragment")
     }
 
-    private fun showDatePickerFragment(view: View){
-        val datePickerFragment = DatePickerFragment()
+    private fun showDatePickerFragment(view: View) {
+        val datePickerFragment = DatePickerDialog()
         val supportFragmentManager = requireActivity().supportFragmentManager
 
         supportFragmentManager.setFragmentResultListener(
             "REQUEST_KEY",
             viewLifecycleOwner
-        ){
-            resultKey, bundle -> if(resultKey == "REQUEST_KEY"){
+        ) {
+            resultKey, bundle ->
+            if (resultKey == "REQUEST_KEY") {
                 val date = bundle.getString("SELECTED_DATE")
                 val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
 
-                if(view == startTimeDateBinding.dateTextView || view == startTimeDateBinding.dateButton){
+                if (view == startTimeDateBinding.dateTextView ||
+                    view == startTimeDateBinding.dateButton
+                ) {
                     viewModel.setStartDate(LocalDate.parse(date, formatter))
-                }
-                else if(view == endTimeDateBinding.dateTextView  || view == endTimeDateBinding.dateButton){
+                } else if (view == endTimeDateBinding.dateTextView ||
+                    view == endTimeDateBinding.dateButton
+                ) {
                     viewModel.setEndDate(LocalDate.parse(date, formatter))
                 }
             }
@@ -510,11 +604,11 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         datePickerFragment.show(supportFragmentManager, "DatePickerFragment")
     }
 
-    private fun setEditMode(isEditing: Boolean){
+    private fun setEditMode(isEditing: Boolean) {
         binding.apply {
-            //Changes label at top from current date to EDIT + agenda type
-            if (isEditing){
-                when(agendaItemType){
+            // Changes label at top from current date to EDIT + agenda type
+            if (isEditing) {
+                when (agendaItemType) {
                     AgendaItemType.TASK ->
                         currentDateTextView.text = getString(R.string.edit_task_text)
                     AgendaItemType.EVENT ->
@@ -522,12 +616,11 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
                     AgendaItemType.REMINDER ->
                         currentDateTextView.text = getString(R.string.edit_reminder_text)
                 }
-            }
-            else{
+            } else {
                 currentDateTextView.text = currentDate
             }
 
-            if(!isAttendee){
+            if (!isAttendee) {
                 addAttendeeButton.isVisible = isEditing
             }
 
@@ -554,8 +647,8 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         }
     }
 
-    //View parameter determines which view popup appears under
-    private fun showReminderOptionsPopupMenu(view: View){
+    // View parameter determines which view popup appears under
+    private fun showReminderOptionsPopupMenu(view: View) {
         val popupMenu = PopupMenu(requireContext(), view)
         popupMenu.inflate(R.menu.menu_reminder_time_options)
         reminderLayoutBinding.reminderTextView.apply {
@@ -600,29 +693,29 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
         )
     }
 
-    private fun saveAgendaItem(){
+    private fun saveAgendaItem() {
         val newAgendaItem = getAgendaItemCurrentInfo()
-        if(args.agendaItem != null) {
+        if (args.agendaItem != null) {
             args.agendaItem?.let { oldAgendaItem ->
-                AgendaItems.replaceAgendaItem(newAgendaItem,oldAgendaItem)
+                AgendaItems.replaceAgendaItem(newAgendaItem, oldAgendaItem)
             }
-        }
-        else{
+        } else {
             AgendaItems.addAgendaItem(newAgendaItem)
         }
     }
 
-    private fun showDeleteConfirmationDialogFragment(){
-        val deleteConfirmationDialogFragment = DeleteConfirmationDialogFragment()
+    private fun showDeleteConfirmationDialogFragment() {
+        val deleteConfirmationDialog = DeleteConfirmationDialog()
         val supportFragmentManager = requireActivity().supportFragmentManager
 
         supportFragmentManager.setFragmentResultListener(
             "REQUEST_KEY",
             viewLifecycleOwner
-        ){
-            resultKey, bundle -> if(resultKey == "REQUEST_KEY"){
+        ) {
+            resultKey, bundle ->
+            if (resultKey == "REQUEST_KEY") {
                 val deleteAgendaItem = bundle.getBoolean("DELETE_AGENDA_ITEM")
-                if (deleteAgendaItem){
+                if (deleteAgendaItem) {
                     args.agendaItem?.let {
                         AgendaItems.deleteAgendaItem(it)
                     }
@@ -633,8 +726,10 @@ class AgendaItemDetailFragment: Fragment(R.layout.fragment_agenda_item_detail) {
 
         val bundle = Bundle()
         bundle.putString("AGENDA_ITEM_TYPE", agendaItemType.name)
-        supportFragmentManager.setFragmentResult("DELETE_CONFIRMATION_AGENDA_TYPE_REQUEST_KEY", bundle)
+        supportFragmentManager.setFragmentResult(
+            "DELETE_CONFIRMATION_AGENDA_TYPE_REQUEST_KEY", bundle
+        )
 
-        deleteConfirmationDialogFragment.show(supportFragmentManager, "DeleteDialogFragment")
+        deleteConfirmationDialog.show(supportFragmentManager, "DeleteDialogFragment")
     }
 }

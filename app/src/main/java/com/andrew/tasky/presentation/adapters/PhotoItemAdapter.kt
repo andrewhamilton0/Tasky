@@ -11,13 +11,14 @@ class PhotoItemAdapter(
     private val onPhotoClick: (Int) -> Unit,
     private val onAddPhotoClick: () -> Unit,
     private val userIsAttendee: Boolean
-):RecyclerView.Adapter<PhotoItemAdapter.PhotoItemViewHolder>() {
+) : RecyclerView.Adapter<PhotoItemAdapter.PhotoItemViewHolder>() {
 
-    inner class PhotoItemViewHolder(val binding: ItemPhotoAdapterCardBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class PhotoItemViewHolder(val binding: ItemPhotoAdapterCardBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoItemViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = ItemPhotoAdapterCardBinding.inflate(layoutInflater)
+        val binding = ItemPhotoAdapterCardBinding.inflate(layoutInflater, parent, false)
         return PhotoItemViewHolder(binding)
     }
 
@@ -30,11 +31,10 @@ class PhotoItemAdapter(
                 }
             }
 
-            //Gets rid of add photo after 10 photos, and adds click listener to add photo card
-            if (position == 10){
-                holder.itemView.layoutParams = RecyclerView.LayoutParams(0,0)
-            }
-            else if(position == photos.size){
+            // Gets rid of add photo after 10 photos, and adds click listener to add photo card
+            if (position == 10) {
+                holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
+            } else if (position == photos.size) {
                 holder.itemView.setOnClickListener {
                     onAddPhotoClick()
                 }
@@ -43,11 +43,11 @@ class PhotoItemAdapter(
     }
 
     override fun getItemCount(): Int {
-        //If user is attendee and not creator, then user cannot see add photo card
-        return if (userIsAttendee){
+        // If user is attendee and not creator, then user cannot see add photo card
+        return if (userIsAttendee) {
             photos.size
-        } else{
-            photos.size+1
+        } else {
+            photos.size + 1
         }
     }
 }

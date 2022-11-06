@@ -10,14 +10,14 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class DatePickerFragment: DialogFragment(), DatePickerDialog.OnDateSetListener {
+class DatePickerDialog : DialogFragment(), DatePickerDialog.OnDateSetListener {
 
     private val currentDateTime = LocalDateTime.now()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val year = currentDateTime.year
-        //-1 to show the correct month, otherwise shows a month ahead
-        val month = currentDateTime.monthValue-1
+        // -1 fixes error where calendar shows a month ahead
+        val month = currentDateTime.monthValue - 1
         val day = currentDateTime.dayOfMonth
 
         return DatePickerDialog(requireActivity(), this, year, month, day)
@@ -25,8 +25,8 @@ class DatePickerFragment: DialogFragment(), DatePickerDialog.OnDateSetListener {
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
 
-        //+1 to return the correct month, otherwise returns one month before
-        val selectedDate = LocalDate.of(year, month+1, dayOfMonth)
+        // +1 fixes error where returns a month before
+        val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
             .format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
 
         val selectedDateBundle = Bundle()

@@ -12,7 +12,7 @@ import com.andrew.tasky.databinding.CvTextFieldEmailBinding
 class EmailTextField @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-): ConstraintLayout(context, attrs) {
+) : ConstraintLayout(context, attrs) {
 
     private val binding = CvTextFieldEmailBinding.bind(
         inflate(context, R.layout.cv_text_field_email, this)

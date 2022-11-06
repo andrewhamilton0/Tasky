@@ -145,7 +145,7 @@
             android:id="@+id/loginButton"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/rounded_button"
+            android:background="@drawable/bg_rounded_button"
             android:text="@string/login_button"
             app:layout_constraintTop_toBottomOf="@id/topOfLoginButton"
             app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"

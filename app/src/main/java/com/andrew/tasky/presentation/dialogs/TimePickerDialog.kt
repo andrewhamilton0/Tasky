@@ -9,7 +9,7 @@ import androidx.fragment.app.setFragmentResult
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class TimePickerFragment: DialogFragment(), TimePickerDialog.OnTimeSetListener {
+class TimePickerDialog : DialogFragment(), TimePickerDialog.OnTimeSetListener {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 

@@ -1,21 +1,20 @@
 package com.andrew.tasky.presentation.agenda
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.PopupMenu
-import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentAgendaBinding
-import com.andrew.tasky.databinding.ItemMiniCalendarDayBinding
 import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.AgendaItems
 import com.andrew.tasky.presentation.adapters.AgendaItemAdapter
-import com.andrew.tasky.presentation.dialogs.DatePickerFragment
+import com.andrew.tasky.presentation.adapters.MiniCalendarAdapter
+import com.andrew.tasky.presentation.dialogs.DatePickerDialog
 import com.andrew.tasky.util.AgendaItemActions
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.collectLatestLifecycleFlow
@@ -44,50 +43,27 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
     }
 
     private fun subscribeToObservables() {
-        //miniCalendarSetup function call, passing the currently selected date
+        fragmentAgendaBinding.miniCalendar.layoutManager = LinearLayoutManager(
+            requireContext(), LinearLayoutManager.HORIZONTAL, false
+        )
         collectLatestLifecycleFlow(viewModel.dateSelected) { dateSelected ->
-            setupMiniCalendar(dateSelected)
             setupCurrentDateSelectedTextView(dateSelected)
             setupAgendaItemListRecyclerView(dateSelected)
+
+            val adapter = MiniCalendarAdapter(
+                startDate = currentDate,
+                calendarSize = 6,
+                dateSelected = dateSelected,
+                onHolderClick = { dateClicked -> viewModel.setDateSelected(dateClicked) }
+            )
+            fragmentAgendaBinding.miniCalendar.adapter = adapter
         }
     }
 
     private fun setOnClickListeners() {
 
-        //On click listeners for miniCalendar allowing user to quickly change to near future dates
         fragmentAgendaBinding.apply {
-            today.setOnClickListener {
-                viewModel.setDateSelected(
-                    currentDate
-                )
-            }
-            tomorrow.setOnClickListener {
-                viewModel.setDateSelected(
-                    currentDate.plusDays(1)
-                )
-            }
-            thirdDay.setOnClickListener {
-                viewModel.setDateSelected(
-                    currentDate.plusDays(2)
-                )
-            }
-            fourthDay.setOnClickListener {
-                viewModel.setDateSelected(
-                    currentDate.plusDays(3)
-                )
-            }
-            fifthDay.setOnClickListener {
-                viewModel.setDateSelected(
-                    currentDate.plusDays(4)
-                )
-            }
-            sixthDay.setOnClickListener {
-                viewModel.setDateSelected(
-                    currentDate.plusDays(5)
-                )
-            }
 
-            //Will pop up dialog
             calendarMonth.setOnClickListener {
                 showDatePickerFragment()
             }
@@ -95,7 +71,6 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                 showDatePickerFragment()
             }
 
-            //shows popup menu allowing user to logout and return to login page
             logoutButton.setOnClickListener { view ->
                 val popupMenu = PopupMenu(requireContext(), view)
                 popupMenu.inflate(R.menu.menu_logout)
@@ -114,7 +89,6 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                 popupMenu.show()
             }
 
-            //shows popup menu allowing user to add different agenda types
             addAgendaItemFAB.setOnClickListener { view ->
                 val popupMenu = PopupMenu(requireContext(), view)
                 popupMenu.inflate(R.menu.menu_add_agenda_item)
@@ -162,122 +136,24 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         }
     }
 
-    private fun setupCurrentMonthTextView(){
+    private fun setupCurrentMonthTextView() {
         fragmentAgendaBinding.calendarMonth.text = currentDate
             .format(DateTimeFormatter.ofPattern("MMMM")).uppercase()
     }
 
-    //miniCalendar is declared in subscribeToObservables function
-    //miniCalendar onClickListeners can be found in onClickListeners function
-    private fun setupMiniCalendar(dateSelected: LocalDate) {
-
-        // sets up dates of miniCalendar
-        val todayDate = currentDate
-        val tomorrowDate = currentDate.plusDays(1)
-        val thirdDayDate = currentDate.plusDays(2)
-        val fourthDayDate = currentDate.plusDays(3)
-        val fifthDayDate = currentDate.plusDays(4)
-        val sixthDayDate = currentDate.plusDays(5)
-
-        //sets up dateNumber text view in the mini calendar
-        val dateNumberFormatter = DateTimeFormatter.ofPattern("d")
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.today).dateNumber.text =
-            todayDate.format(dateNumberFormatter)
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.tomorrow).dateNumber.text =
-            tomorrowDate.format(dateNumberFormatter)
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.thirdDay).dateNumber.text =
-            thirdDayDate.format(dateNumberFormatter)
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.fourthDay).dateNumber.text =
-            fourthDayDate.format(dateNumberFormatter)
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.fifthDay).dateNumber.text =
-            fifthDayDate.format(dateNumberFormatter)
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.sixthDay).dateNumber.text =
-            sixthDayDate.format(dateNumberFormatter)
-
-        //sets up dayOfWeek text view in mini calendar
-        val dayOfWeekFormatter = DateTimeFormatter.ofPattern("eeeee")
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.today).dayOfWeek.text =
-            todayDate.format(dayOfWeekFormatter)
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.tomorrow).dayOfWeek.text =
-            tomorrowDate.format(dayOfWeekFormatter)
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.thirdDay).dayOfWeek.text =
-            thirdDayDate.format(dayOfWeekFormatter)
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.fourthDay).dayOfWeek.text =
-            fourthDayDate.format(dayOfWeekFormatter)
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.fifthDay).dayOfWeek.text =
-            fifthDayDate.format(dayOfWeekFormatter)
-        ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.sixthDay).dayOfWeek.text =
-            sixthDayDate.format(dayOfWeekFormatter)
-
-        //If dateSelected is on miniCalendar, it sets the background color to yellow
-        val highlightedColor = ResourcesCompat.getColor(
-            resources,
-            R.color.orange,
-            null
-        )
-        val unselectedColor = ResourcesCompat.getColor(
-            resources,
-            R.color.white,
-            null
-        )
-        if (dateSelected == todayDate) {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.today).miniCalendarCard
-                .setCardBackgroundColor(highlightedColor)
-        } else {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.today).miniCalendarCard
-                .setCardBackgroundColor(unselectedColor)
-        }
-        if (dateSelected == tomorrowDate) {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.tomorrow).miniCalendarCard
-                .setCardBackgroundColor(highlightedColor)
-        } else {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.tomorrow).miniCalendarCard
-                .setCardBackgroundColor(unselectedColor)
-        }
-        if (dateSelected == thirdDayDate) {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.thirdDay).miniCalendarCard
-                .setCardBackgroundColor(highlightedColor)
-        } else {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.thirdDay).miniCalendarCard
-                .setCardBackgroundColor(unselectedColor)
-        }
-        if (dateSelected == fourthDayDate) {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.fourthDay).miniCalendarCard
-                .setCardBackgroundColor(highlightedColor)
-        } else {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.fourthDay).miniCalendarCard
-                .setCardBackgroundColor(unselectedColor)
-        }
-        if (dateSelected == fifthDayDate) {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.fifthDay).miniCalendarCard
-                .setCardBackgroundColor(highlightedColor)
-        } else {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.fifthDay).miniCalendarCard
-                .setCardBackgroundColor(unselectedColor)
-        }
-        if (dateSelected == sixthDayDate) {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.sixthDay).miniCalendarCard
-                .setCardBackgroundColor(highlightedColor)
-        } else {
-            ItemMiniCalendarDayBinding.bind(fragmentAgendaBinding.sixthDay).miniCalendarCard
-                .setCardBackgroundColor(unselectedColor)
-        }
-    }
-
-    //Changes currentDateSelectedTextView to yesterday, today, tomorrow, or formatted date
-    private fun setupCurrentDateSelectedTextView(dateSelected: LocalDate){
-        val yesterdayDate = currentDate.minusDays(1)
-        val tomorrowDate = currentDate.plusDays(1)
+    private fun setupCurrentDateSelectedTextView(dateSelected: LocalDate) {
 
         when (dateSelected) {
-            yesterdayDate -> {
-                fragmentAgendaBinding.currentDateSelectedTextView.text = getString(R.string.yesterday)
+            currentDate.minusDays(1) -> {
+                fragmentAgendaBinding.currentDateSelectedTextView.text =
+                    getString(R.string.yesterday)
             }
             currentDate -> {
                 fragmentAgendaBinding.currentDateSelectedTextView.text = getString(R.string.today)
             }
-            tomorrowDate -> {
-                fragmentAgendaBinding.currentDateSelectedTextView.text = getString(R.string.tomorrow)
+            currentDate.plusDays(1) -> {
+                fragmentAgendaBinding.currentDateSelectedTextView.text =
+                    getString(R.string.tomorrow)
             }
             else -> {
                 fragmentAgendaBinding.currentDateSelectedTextView.text = dateSelected
@@ -286,11 +162,12 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         }
     }
 
-    private fun setupAgendaItemListRecyclerView(dateSelected: LocalDate){
+    private fun setupAgendaItemListRecyclerView(dateSelected: LocalDate) {
         val sortedAgendaItems = AgendaItems.sortByDateSelected(dateSelected)
 
-        val adapter = AgendaItemAdapter(agendaItems = sortedAgendaItems,
-            onAgendaItemOptionClick = {agendaItem, agendaItemActionOptions ->
+        val adapter = AgendaItemAdapter(
+            agendaItems = sortedAgendaItems,
+            onAgendaItemOptionClick = { agendaItem, agendaItemActionOptions ->
                 agendaItemOptions(agendaItem, agendaItemActionOptions)
             }
         )
@@ -299,15 +176,17 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
             LinearLayoutManager(requireContext())
     }
 
-    private fun agendaItemOptions(agendaItem: AgendaItem, selectedAgendaItemAction: AgendaItemActions) {
+    private fun agendaItemOptions(
+        agendaItem: AgendaItem,
+        selectedAgendaItemAction: AgendaItemActions
+    ) {
         val agendaItemType = agendaItem.type
-        when (selectedAgendaItemAction){
-            AgendaItemActions.OPEN ->{
+        when (selectedAgendaItemAction) {
+            AgendaItemActions.OPEN -> {
                 navController.navigate(
                     AgendaFragmentDirections
-                        .actionAgendaFragmentToAgendaItemDetailFragment(
+                        .actionAgendaFragmentToEventDetailFragment(
                             agendaItem,
-                            agendaItemType,
                             false
                         )
                 )
@@ -315,28 +194,27 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
             AgendaItemActions.EDIT -> {
                 navController.navigate(
                     AgendaFragmentDirections
-                        .actionAgendaFragmentToAgendaItemDetailFragment(
+                        .actionAgendaFragmentToEventDetailFragment(
                             agendaItem,
-                            agendaItemType,
                             true
                         )
                 )
             }
             AgendaItemActions.DELETE -> {
-
             }
         }
     }
 
-    private fun showDatePickerFragment(){
-        val datePickerFragment = DatePickerFragment()
+    private fun showDatePickerFragment() {
+        val datePickerFragment = DatePickerDialog()
         val supportFragmentManager = requireActivity().supportFragmentManager
 
         supportFragmentManager.setFragmentResultListener(
             "REQUEST_KEY",
             viewLifecycleOwner
         ) {
-            resultKey, bundle -> if(resultKey == "REQUEST_KEY"){
+            resultKey, bundle ->
+            if (resultKey == "REQUEST_KEY") {
                 val date = bundle.getString("SELECTED_DATE")
                 val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
                 viewModel.setDateSelected(LocalDate.parse(date, formatter))

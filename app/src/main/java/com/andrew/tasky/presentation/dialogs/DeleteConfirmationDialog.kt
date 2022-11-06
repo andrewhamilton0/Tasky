@@ -1,5 +1,7 @@
 package com.andrew.tasky.presentation.dialogs
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
@@ -9,25 +11,29 @@ import com.andrew.tasky.R
 import com.andrew.tasky.databinding.DialogDeleteConfirmationBinding
 import com.andrew.tasky.util.AgendaItemType
 
-class DeleteConfirmationDialogFragment(): DialogFragment(R.layout.dialog_delete_confirmation) {
+class DeleteConfirmationDialog() : DialogFragment(R.layout.dialog_delete_confirmation) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val deleteDialogBinding = DialogDeleteConfirmationBinding.bind(view)
 
-        //Sets confirmationTextView to appropriate AgendaType
-        setFragmentResultListener("DELETE_CONFIRMATION_AGENDA_TYPE_REQUEST_KEY") { resultKey, bundle ->
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        setFragmentResultListener("DELETE_CONFIRMATION_AGENDA_TYPE_REQUEST_KEY") {
+            resultKey, bundle ->
             if (resultKey == "DELETE_CONFIRMATION_AGENDA_TYPE_REQUEST_KEY") {
                 val agendaItemType = bundle.getString("AGENDA_ITEM_TYPE")
                     ?.let { AgendaItemType.valueOf(it) }
                 when (agendaItemType) {
                     AgendaItemType.TASK -> {
-                        deleteDialogBinding.confirmationTextView.text =
-                            getString(R.string.task_delete_confirmation)
+                        deleteDialogBinding.confirmationTextView.text = getString(
+                            R.string.task_delete_confirmation
+                        )
                     }
                     AgendaItemType.EVENT -> {
-                        deleteDialogBinding.confirmationTextView.text =
-                            getString(R.string.event_delete_confirmation)
+                        deleteDialogBinding.confirmationTextView.text = getString(
+                            R.string.event_delete_confirmation
+                        )
                     }
                     AgendaItemType.REMINDER -> {
                         deleteDialogBinding.confirmationTextView.text =
@@ -39,14 +45,14 @@ class DeleteConfirmationDialogFragment(): DialogFragment(R.layout.dialog_delete_
             }
         }
 
-        deleteDialogBinding.deleteButton.setOnClickListener{
+        deleteDialogBinding.deleteButton.setOnClickListener {
             dismiss()
             val bundle = Bundle()
             bundle.putBoolean("DELETE_AGENDA_ITEM", true)
             setFragmentResult("REQUEST_KEY", bundle)
         }
 
-        deleteDialogBinding.cancelButton.setOnClickListener{
+        deleteDialogBinding.cancelButton.setOnClickListener {
             dismiss()
         }
     }

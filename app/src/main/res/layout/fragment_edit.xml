@@ -1,91 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".presentation.edit.EditFragment">
+    android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presentation.edit.EditFragment">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/topOfEditLineGuideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.10" />
+        <View
+            android:id="@+id/topOfEditLine"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/light_blue"
+            android:layout_marginStart="17dp"
+            android:layout_marginEnd="17dp"
+            android:layout_marginTop="70dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/startOfMargin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent=".075" />
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_back_arrow"
+            android:backgroundTint="@color/black"
+            android:layout_marginStart="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/topOfEditLine">
+        </ImageButton>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/endOfMargin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent=".925" />
+        <TextView
+            android:id="@+id/editTypeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_description_text"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:fontFamily="@font/inter_semi_bold"
+            app:layout_constraintBottom_toTopOf="@id/topOfEditLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+        </TextView>
 
-    <View
-        android:id="@+id/topOfEditLine"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="24dp"
-        android:background="@color/light_blue"
-        app:layout_constraintEnd_toStartOf="@id/endOfMargin"
-        app:layout_constraintStart_toEndOf="@id/startOfMargin"
-        app:layout_constraintTop_toTopOf="@id/topOfEditLineGuideline"
-        app:layout_constraintBottom_toBottomOf="@id/topOfEditLineGuideline"
-        />
+        <TextView
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/save_button"
+            android:textColor="@color/green"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="17dp"
+            app:layout_constraintBottom_toTopOf="@id/topOfEditLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+        </TextView>
 
-    <ImageButton
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ic_baseline_arrow_back_ios_new_24"
-        android:backgroundTint="@color/black"
-        app:layout_constraintStart_toEndOf="@id/startOfMargin"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/topOfEditLineGuideline">
-    </ImageButton>
-
-    <TextView
-        android:id="@+id/editTypeTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/edit_description_text"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/topOfEditLineGuideline"
-        app:layout_constraintEnd_toStartOf="@id/saveButton"
-        app:layout_constraintStart_toEndOf="@id/backButton"
-        app:layout_constraintTop_toTopOf="parent">
-    </TextView>
-
-    <TextView
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/save_button"
-        android:textColor="@color/green"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/topOfEditLineGuideline"
-        app:layout_constraintEnd_toStartOf="@id/endOfMargin"
-        app:layout_constraintTop_toTopOf="parent">
-    </TextView>
-
-    <EditText
-        android:id="@+id/inputEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:textAppearance="@android:style/TextAppearance.Material.Small"
-        app:layout_constraintEnd_toStartOf="@id/endOfMargin"
-        app:layout_constraintStart_toEndOf="@id/startOfMargin"
-        app:layout_constraintTop_toBottomOf="@id/topOfEditLineGuideline"
-        tools:text="hello"></EditText>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <EditText
+            android:id="@+id/inputEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="17dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="17dp"
+            android:background="@null"
+            android:fontFamily="@font/inter_regular"
+            android:gravity="top"
+            android:lineSpacingExtra="15sp"
+            android:minLines="7"
+            android:textColor="@color/black"
+            android:textCursorDrawable="@null"
+            android:textSize="26sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/topOfEditLine"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="Project X">
+        </EditText>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
