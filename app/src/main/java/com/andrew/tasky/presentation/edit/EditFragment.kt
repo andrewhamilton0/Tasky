@@ -1,6 +1,7 @@
 package com.andrew.tasky.presentation.edit
 
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
@@ -53,11 +54,11 @@ class EditFragment : Fragment(R.layout.fragment_edit) {
                     when (it) {
                         EditType.DESCRIPTION -> {
                             binding.editTypeTitle.text = getString(R.string.edit_description_text)
-                            binding.inputEditText.textSize = 16F
+                            binding.inputEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
                         }
                         EditType.TITLE -> {
                             binding.editTypeTitle.text = getString(R.string.edit_title_text)
-                            binding.inputEditText.textSize = 26F
+                            binding.inputEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24F)
                         }
                     }
                 }

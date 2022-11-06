@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/attendeesLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="17dp"
+    android:layout_marginEnd="17dp">
+
+    <TextView
+        android:id="@+id/visitorsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/visitors"
+        android:fontFamily="@font/inter_bold"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
+
+    <ImageButton
+        android:id="@+id/addAttendeeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_add_attendee"
+        android:layout_marginStart="18dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/visitorsTextView">
+    </ImageButton>
+
+    <ImageButton
+        android:id="@+id/allButton"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:background="@drawable/bg_rounded_button"
+        android:backgroundTint="@color/black"
+        android:layout_marginTop="37dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/visitorsTextView"
+        app:layout_constraintEnd_toStartOf="@id/goingButton"
+        app:layout_constraintHorizontal_chainStyle="spread_inside">
+    </ImageButton>
+
+    <TextView
+        android:id="@+id/allButtonTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/all"
+        android:fontFamily="@font/inter_medium"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toTopOf="@id/allButton"
+        app:layout_constraintBottom_toBottomOf="@id/allButton"
+        app:layout_constraintStart_toStartOf="@id/allButton"
+        app:layout_constraintEnd_toEndOf="@id/allButton">
+    </TextView>
+
+    <ImageButton
+        android:id="@+id/goingButton"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:background="@drawable/bg_rounded_button"
+        android:backgroundTint="@color/black"
+        android:layout_marginTop="37dp"
+        app:layout_constraintStart_toEndOf="@id/allButton"
+        app:layout_constraintTop_toBottomOf="@id/visitorsTextView"
+        app:layout_constraintEnd_toStartOf="@id/notGoingButton">
+    </ImageButton>
+
+    <TextView
+        android:id="@+id/goingButtonTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/going"
+        android:fontFamily="@font/inter_medium"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toTopOf="@id/goingButton"
+        app:layout_constraintBottom_toBottomOf="@id/goingButton"
+        app:layout_constraintStart_toStartOf="@id/goingButton"
+        app:layout_constraintEnd_toEndOf="@id/goingButton">
+    </TextView>
+
+    <ImageButton
+        android:id="@+id/notGoingButton"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:background="@drawable/bg_rounded_button"
+        android:backgroundTint="@color/black"
+        android:layout_marginTop="37dp"
+        app:layout_constraintStart_toEndOf="@id/goingButton"
+        app:layout_constraintTop_toBottomOf="@id/visitorsTextView"
+        app:layout_constraintEnd_toEndOf="parent">
+    </ImageButton>
+
+    <TextView
+        android:id="@+id/notGoingButtonTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/not_going"
+        android:fontFamily="@font/inter_medium"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toTopOf="@id/notGoingButton"
+        app:layout_constraintBottom_toBottomOf="@id/notGoingButton"
+        app:layout_constraintStart_toStartOf="@id/notGoingButton"
+        app:layout_constraintEnd_toEndOf="@id/notGoingButton">
+    </TextView>
+
+    <TextView
+        android:id="@+id/goingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/going"
+        android:textColor="@color/dark_gray"
+        android:fontFamily="@font/inter_medium"
+        android:textSize="16sp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/allButton">
+    </TextView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/goingAttendeeRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        android:layout_marginTop="15dp"
+        app:layout_constraintBottom_toTopOf="@id/notGoingTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/goingTextView">
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/notGoingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/not_going"
+        android:textColor="@color/dark_gray"
+        android:fontFamily="@font/inter_medium"
+        android:textSize="16sp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toTopOf="@id/notGoingAttendeeRecyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/goingAttendeeRecyclerView">
+    </TextView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notGoingAttendeeRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/notGoingTextView"
+        app:layout_constraintBottom_toBottomOf="parent">
+    </androidx.recyclerview.widget.RecyclerView>
+</androidx.constraintlayout.widget.ConstraintLayout>

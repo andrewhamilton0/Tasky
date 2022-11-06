@@ -61,7 +61,7 @@ class StringToInitialsTest {
     }
 
     @Test
-    fun `Only whitespace inputted gives blank string`() {
+    fun `Only whitespace inputted gives empty string`() {
         val name = "     "
 
         val actual = StringToInitials.convertStringToInitials(name)

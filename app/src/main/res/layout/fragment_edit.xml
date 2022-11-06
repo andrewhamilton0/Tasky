@@ -27,12 +27,13 @@
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="4dp"
             android:background="@drawable/ic_back_arrow"
             android:backgroundTint="@color/black"
-            android:layout_marginStart="30dp"
+            app:layout_constraintBottom_toBottomOf="@id/editTypeTitle"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/topOfEditLine">
+            app:layout_constraintTop_toTopOf="@id/editTypeTitle">
         </ImageButton>
 
         <TextView
@@ -58,9 +59,9 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginEnd="17dp"
-            app:layout_constraintBottom_toTopOf="@id/topOfEditLine"
+            app:layout_constraintBottom_toBottomOf="@id/editTypeTitle"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="@id/editTypeTitle">
         </TextView>
 
         <EditText

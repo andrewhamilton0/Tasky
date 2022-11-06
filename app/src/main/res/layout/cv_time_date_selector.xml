@@ -74,19 +74,6 @@
         app:layout_constraintTop_toTopOf="parent">
     </ImageButton>
 
-    <View
-        android:id="@+id/bottomBorderLine"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="17dp"
-        android:layout_marginStart="17dp"
-        android:background="@color/light"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-    </View>
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/startOfTimeButtonGuideline"
         android:layout_width="wrap_content"

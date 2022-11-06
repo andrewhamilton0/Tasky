@@ -11,6 +11,7 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor">@color/white</item>
         <!-- datePickerTheme -->
         <item name="android:datePickerDialogTheme">@style/MyDateAndTimePickerDialogTheme</item>
         <!-- timePickerTheme -->
