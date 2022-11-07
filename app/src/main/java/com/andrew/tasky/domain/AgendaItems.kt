@@ -44,16 +44,12 @@ object AgendaItems {
         )
     )
 
-    // Returns a sorted list of agendaItems by start time and only those of dateSelected
-    fun sortByDateSelected(dateSelected: LocalDate): MutableList<AgendaItem> {
-        val agendaItemListSorted = mutableListOf<AgendaItem>()
-        agendaItemList.sortedBy { agendaItem -> agendaItem.startDateAndTime }
-            .forEach {
-                if (it.startDateAndTime.toLocalDate() == dateSelected) {
-                    agendaItemListSorted.add(it)
-                }
-            }
-        return agendaItemListSorted
+    fun sortByDateSelected(dateSelected: LocalDate): List<AgendaItem> {
+        return agendaItemList.sortedBy { agendaItem ->
+            agendaItem.startDateAndTime
+        }.filter {
+            it.startDateAndTime.toLocalDate() == dateSelected
+        }
     }
 
     fun addAgendaItem(newAgendaItem: AgendaItem) {

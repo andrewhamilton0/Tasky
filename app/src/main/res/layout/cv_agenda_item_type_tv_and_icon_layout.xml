@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/eventIcon"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_event_box">
+    </ImageView>
+
+    <TextView
+        android:id="@+id/agendaItemTypeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="@string/event"
+        android:textColor="@color/dark_gray"
+        android:textSize="16sp"
+        android:fontFamily="@font/inter_semi_bold"
+        app:layout_constraintStart_toEndOf="@id/eventIcon"
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
+</androidx.constraintlayout.widget.ConstraintLayout>
