@@ -100,13 +100,18 @@
                     layout="@layout/cv_empty_divider"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"/>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+                </FrameLayout>
                 <include
                     android:id="@+id/btm_action_tv_btn"
                     layout= "@layout/cv_agenda_item_screen_btm_action_tv_btn" />
                 <include
                     layout="@layout/cv_empty_divider"
                     android:layout_width="match_parent"
-                    android:layout_height="6dp"/>
+                    android:layout_height="15dp"/>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
