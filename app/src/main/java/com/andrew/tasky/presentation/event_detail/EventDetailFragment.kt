@@ -51,7 +51,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         }
     )
     private val args: EventDetailFragmentArgs by navArgs()
-    private val isAttendee = false
+    private val isAttendee = true
     private val agendaItemType = AgendaItemType.EVENT
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,16 +59,8 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         binding = FragmentEventDetailBinding.bind(view)
         navController = Navigation.findNavController(view)
 
-        setupHeader()
-        setupDoneButton()
-        setupTitleLayout()
-        setupDescriptionLayout()
-        setupPhotoLayout()
-        setupStartTimeLayout()
-        setupEndTimeLayout()
-        setupReminderTimesLayout()
-        setupAttendeeLayout()
-        setupDeleteJoinLeaveEventButton()
+        setupViewsAndOnClickListeners()
+        subscribeToObservables()
 
         val attendeesList = listOf(
             Attendee(
@@ -106,448 +98,120 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         }
     }
 
-    private fun setupHeader() {
-        binding.header.apply {
+    private fun setupViewsAndOnClickListeners() {
+        binding.apply {
 
-            currentDateTextView.text = currentDate
-
-            collectLatestLifecycleFlow(viewModel.isInEditMode) { isEditing ->
-                saveButton.isVisible = isEditing
-                saveButton.isEnabled = isEditing
-                editButton.isVisible = !isEditing
-                editButton.isEnabled = !isEditing
-            }
-
-            closeButton.setOnClickListener {
+            header.currentDateTextView.text = currentDate
+            header.closeButton.setOnClickListener {
                 navController.popBackStack()
             }
-            editButton.setOnClickListener {
+            header.editButton.setOnClickListener {
                 viewModel.setEditMode(true)
             }
-            saveButton.setOnClickListener {
+            header.saveButton.setOnClickListener {
                 saveEvent()
                 navController.popBackStack()
             }
-        }
-    }
 
-    private fun setupDoneButton() {
-        binding.addTitleAndDoneButtonLayout.apply {
-            collectLatestLifecycleFlow(viewModel.isDone) { isDone ->
-                if (isDone) {
-                    taskDoneCircle.setBackgroundResource(R.drawable.task_done_circle)
-                    titleTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-                } else {
-                    taskDoneCircle.setBackgroundResource(R.drawable.ic_undone_circle)
-                    titleTextView.paintFlags = Paint.ANTI_ALIAS_FLAG
-                }
-            }
-            taskDoneCircle.setOnClickListener {
+            addTitleAndDoneButtonLayout.taskDoneCircle.setOnClickListener {
                 viewModel.setIsDone(!viewModel.isDone.value)
             }
-        }
-    }
-
-    private fun setupTitleLayout() {
-        binding.addTitleAndDoneButtonLayout.apply {
-
-            collectLatestLifecycleFlow(viewModel.title) { title ->
-                titleTextView.text = title
+            addTitleAndDoneButtonLayout.editTitleButton.isVisible = !isAttendee
+            addTitleAndDoneButtonLayout.editTitleButton.isEnabled = !isAttendee
+            addTitleAndDoneButtonLayout.titleTextView.isEnabled = !isAttendee
+            addTitleAndDoneButtonLayout.titleTextView.setOnClickListener {
+                navigateToEditFragment(EditType.TITLE)
+            }
+            addTitleAndDoneButtonLayout.editTitleButton.setOnClickListener {
+                navigateToEditFragment(EditType.TITLE)
             }
 
-            if (!isAttendee) {
-                collectLatestLifecycleFlow(viewModel.isInEditMode) { isEditing ->
-                    editTitleButton.isVisible = isEditing
-                    editTitleButton.isEnabled = isEditing
-                    titleTextView.isEnabled = isEditing
-                }
-                titleTextView.setOnClickListener {
-                    navigateToEditFragment(EditType.TITLE)
-                }
-                editTitleButton.setOnClickListener {
-                    navigateToEditFragment(EditType.TITLE)
-                }
-            } else {
-                editTitleButton.isVisible = false
-                editTitleButton.isEnabled = false
-                titleTextView.isEnabled = false
+            addDescriptionLayout.editDescriptionButton.isVisible = !isAttendee
+            addDescriptionLayout.editDescriptionButton.isEnabled = !isAttendee
+            addDescriptionLayout.descriptionTextView.isEnabled = !isAttendee
+            addDescriptionLayout.editDescriptionButton.setOnClickListener {
+                navigateToEditFragment(EditType.DESCRIPTION)
             }
-        }
-    }
-
-    private fun setupDescriptionLayout() {
-        binding.addDescriptionLayout.apply {
-
-            collectLatestLifecycleFlow(viewModel.description) { description ->
-                descriptionTextView.text = description
+            addDescriptionLayout.descriptionTextView.setOnClickListener {
+                navigateToEditFragment(EditType.DESCRIPTION)
             }
 
-            if (!isAttendee) {
-                collectLatestLifecycleFlow(viewModel.isInEditMode) { isEditing ->
-                    editDescriptionButton.isVisible = isEditing
-                    editDescriptionButton.isEnabled = isEditing
-                    descriptionTextView.isEnabled = isEditing
-                }
-                editDescriptionButton.setOnClickListener {
-                    navigateToEditFragment(EditType.DESCRIPTION)
-                }
-                descriptionTextView.setOnClickListener {
-                    navigateToEditFragment(EditType.DESCRIPTION)
-                }
-            } else {
-                editDescriptionButton.isVisible = false
-                editDescriptionButton.isEnabled = false
-                descriptionTextView.isEnabled = false
-            }
-        }
-    }
-
-    private fun setupPhotoLayout() {
-        fun addPhoto() {
-            addPhotoSearchForResult.launch("image/*")
-        }
-
-        fun openPhoto(index: Int) {
-            setFragmentResultListener("REQUEST_KEY") { resultKey, bundle ->
-                if (resultKey == "REQUEST_KEY") {
-                    val photoToDelete = bundle.getInt("DELETE_PHOTO_INDEX")
-                    viewModel.deletePhoto(photoToDelete)
-                }
-            }
-            navController.navigate(
-                EventDetailFragmentDirections
-                    .actionEventDetailFragmentToPhotoDetailFragment(
-                        viewModel.photos.value[index].toString(), index
-                    )
-            )
-        }
-
-        binding.addPhotoLayout.apply {
-            collectLatestLifecycleFlow(viewModel.photos) { photoList ->
-                addPhotoLayout.isVisible = !isAttendee || photoList.isNotEmpty()
-
-                val adapter = PhotoItemAdapter(
-                    photoList,
-                    onPhotoClick = { index -> openPhoto(index) },
-                    onAddPhotoClick = { addPhoto() },
-                    userIsAttendee = isAttendee
-                )
-                photosRecyclerView.adapter = adapter
-                photosRecyclerView.layoutManager = LinearLayoutManager(
-                    requireContext(), LinearLayoutManager.HORIZONTAL, false
-                )
-
-                addPhotoPlusSign.isVisible = photoList.isEmpty()
-                addPhotoTextView.isVisible = photoList.isEmpty()
-                photosTextView.isVisible = photoList.isNotEmpty()
-                photosRecyclerView.isVisible = photoList.isNotEmpty()
-            }
-            addPhotoTextView.setOnClickListener {
+            addPhotoLayout.addPhotoTextView.setOnClickListener {
                 addPhoto()
             }
-            addPhotoPlusSign.setOnClickListener {
+            addPhotoLayout.addPhotoPlusSign.setOnClickListener {
                 addPhoto()
             }
-        }
-    }
 
-    private fun setupStartTimeLayout() {
-        binding.startTimeAndDateLayout.apply {
-
-            timeAndDateBeginningText.text = getString(R.string.from)
-
-            collectLatestLifecycleFlow(viewModel.selectedStartTime) { selectedStartTime ->
-                timeTextView.text = selectedStartTime.format(
-                    DateTimeFormatter.ofPattern("HH:mm")
-                )
+            startTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.from)
+            startTimeAndDateLayout.timeTextView.isEnabled = !isAttendee
+            startTimeAndDateLayout.timeButton.isEnabled = !isAttendee
+            startTimeAndDateLayout.timeButton.isVisible = !isAttendee
+            startTimeAndDateLayout.dateTextView.isEnabled = !isAttendee
+            startTimeAndDateLayout.dateButton.isEnabled = !isAttendee
+            startTimeAndDateLayout.dateButton.isVisible = !isAttendee
+            startTimeAndDateLayout.timeTextView.setOnClickListener {
+                showTimePickerDialog(it)
             }
-            collectLatestLifecycleFlow(viewModel.selectedStartDate) { selectedStartDate ->
-                dateTextView.text = selectedStartDate.format(
-                    DateTimeFormatter.ofPattern("MMM dd yyyy")
-                )
+            startTimeAndDateLayout.timeButton.setOnClickListener {
+                showTimePickerDialog(it)
             }
-
-            if (!isAttendee) {
-                collectLatestLifecycleFlow(viewModel.isInEditMode) { isEditing ->
-                    timeTextView.isEnabled = isEditing
-                    timeButton.isEnabled = isEditing
-                    timeButton.isVisible = isEditing
-                    dateTextView.isEnabled = isEditing
-                    dateButton.isEnabled = isEditing
-                    dateButton.isVisible = isEditing
-                }
-
-                timeTextView.setOnClickListener {
-                    showTimePickerDialog(it)
-                }
-                timeButton.setOnClickListener {
-                    showTimePickerDialog(it)
-                }
-                dateTextView.setOnClickListener {
-                    showDatePickerDialog(it)
-                }
-                dateButton.setOnClickListener {
-                    showDatePickerDialog(it)
-                }
-            } else {
-                timeTextView.isEnabled = false
-                timeButton.isEnabled = false
-                timeButton.isVisible = false
-                dateTextView.isEnabled = false
-                dateButton.isEnabled = false
-                dateButton.isVisible = false
+            startTimeAndDateLayout.dateTextView.setOnClickListener {
+                showDatePickerDialog(it)
             }
-        }
-    }
-
-    private fun setupEndTimeLayout() {
-        binding.endTimeAndDateLayout.apply {
-
-            timeAndDateBeginningText.text = getString(R.string.to)
-
-            collectLatestLifecycleFlow(viewModel.selectedEndTime) { selectedEndTime ->
-                timeTextView.text = selectedEndTime.format(
-                    DateTimeFormatter.ofPattern("HH:mm")
-                )
-            }
-            collectLatestLifecycleFlow(viewModel.selectedEndDate) { selectedEndDate ->
-                dateTextView.text = selectedEndDate.format(
-                    DateTimeFormatter.ofPattern("MMM dd yyyy")
-                )
+            startTimeAndDateLayout.dateButton.setOnClickListener {
+                showDatePickerDialog(it)
             }
 
-            if (!isAttendee) {
-                collectLatestLifecycleFlow(viewModel.isInEditMode) { isEditing ->
-                    timeTextView.isEnabled = isEditing
-                    timeButton.isEnabled = isEditing
-                    timeButton.isVisible = isEditing
-                    dateTextView.isEnabled = isEditing
-                    dateButton.isEnabled = isEditing
-                    dateButton.isVisible = isEditing
-                }
-
-                timeTextView.setOnClickListener {
-                    showTimePickerDialog(it)
-                }
-                timeButton.setOnClickListener {
-                    showTimePickerDialog(it)
-                }
-                dateTextView.setOnClickListener {
-                    showDatePickerDialog(it)
-                }
-                dateButton.setOnClickListener {
-                    showDatePickerDialog(it)
-                }
-            } else {
-                timeTextView.isEnabled = false
-                timeButton.isEnabled = false
-                timeButton.isVisible = false
-                dateTextView.isEnabled = false
-                dateButton.isEnabled = false
-                dateButton.isVisible = false
+            endTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.to)
+            endTimeAndDateLayout.timeTextView.isEnabled = !isAttendee
+            endTimeAndDateLayout.timeButton.isEnabled = !isAttendee
+            endTimeAndDateLayout.timeButton.isVisible = !isAttendee
+            endTimeAndDateLayout.dateTextView.isEnabled = !isAttendee
+            endTimeAndDateLayout.dateButton.isEnabled = !isAttendee
+            endTimeAndDateLayout.dateButton.isVisible = !isAttendee
+            endTimeAndDateLayout.timeTextView.setOnClickListener {
+                showTimePickerDialog(it)
             }
-        }
-    }
-
-    private fun setupReminderTimesLayout() {
-        binding.reminderLayout.apply {
-
-            collectLatestLifecycleFlow(viewModel.isInEditMode) { isEditing ->
-                reminderTextView.isEnabled = isEditing
-                reminderButton.isEnabled = isEditing
-                reminderButton.isVisible = isEditing
+            endTimeAndDateLayout.timeButton.setOnClickListener {
+                showTimePickerDialog(it)
             }
-            collectLatestLifecycleFlow(viewModel.selectedReminderTime) { reminderTime ->
-                when (reminderTime) {
-                    ReminderTimes.TEN_MINUTES_BEFORE ->
-                        reminderTextView.text =
-                            getString(R.string.ten_minutes_before)
-                    ReminderTimes.THIRTY_MINUTES_BEFORE ->
-                        reminderTextView.text =
-                            getString(R.string.thirty_minutes_before)
-                    ReminderTimes.ONE_HOUR_BEFORE ->
-                        reminderTextView.text =
-                            getString(R.string.one_hour_before)
-                    ReminderTimes.SIX_HOURS_BEFORE ->
-                        reminderTextView.text =
-                            getString(R.string.six_hours_before)
-                    ReminderTimes.ONE_DAY_BEFORE ->
-                        reminderTextView.text =
-                            getString(R.string.one_day_before)
-                }
+            endTimeAndDateLayout.dateTextView.setOnClickListener {
+                showDatePickerDialog(it)
+            }
+            endTimeAndDateLayout.dateButton.setOnClickListener {
+                showDatePickerDialog(it)
             }
 
-            reminderTextView.setOnClickListener {
+            reminderLayout.reminderTextView.setOnClickListener {
                 showReminderOptionsPopupMenu(it)
             }
-            reminderButton.setOnClickListener {
+            reminderLayout.reminderButton.setOnClickListener {
                 showReminderOptionsPopupMenu(it)
             }
-        }
-    }
 
-    private fun setupAttendeeLayout() {
-        binding.attendeesLayout.apply {
-
-            addAttendeeButton.isVisible = !isAttendee
-            addAttendeeButton.setOnClickListener {
+            attendeesLayout.addAttendeeButton.isVisible = !isAttendee
+            attendeesLayout.addAttendeeButton.setOnClickListener {
                 showAddAttendeeDialog()
             }
-
-            collectLatestLifecycleFlow(viewModel.isInEditMode) { isEditing ->
-                if (!isAttendee) {
-                    addAttendeeButton.isVisible = isEditing
-                }
-            }
-            collectLatestLifecycleFlow(viewModel.selectedAttendeeFilterType) { attendeeFilterType ->
-                when (attendeeFilterType) {
-                    EventDetailViewModel.AttendeeFilterTypes.ALL -> {
-                        goingTextView.isVisible = true
-                        goingAttendeeRecyclerView.isVisible = true
-                        notGoingTextView.isVisible = true
-                        notGoingAttendeeRecyclerView.isVisible = true
-                        allButtonTextView.setTextColor(
-                            ResourcesCompat
-                                .getColor(resources, R.color.white, null)
-                        )
-                        allButton.background.setTint(
-                            (
-                                ResourcesCompat
-                                    .getColor(resources, R.color.black, null)
-                                )
-                        )
-                        goingButtonTextView.setTextColor(
-                            ResourcesCompat
-                                .getColor(resources, R.color.dark_gray, null)
-                        )
-                        goingButton.background.setTint(
-                            ResourcesCompat
-                                .getColor(resources, R.color.light_2, null)
-                        )
-                        notGoingButtonTextView.setTextColor(
-                            ResourcesCompat
-                                .getColor(resources, R.color.dark_gray, null)
-                        )
-                        notGoingButton.background.setTint(
-                            ResourcesCompat
-                                .getColor(resources, R.color.light_2, null)
-                        )
-                    }
-                    EventDetailViewModel.AttendeeFilterTypes.GOING -> {
-                        goingTextView.isVisible = true
-                        goingAttendeeRecyclerView.isVisible = true
-                        notGoingTextView.isVisible = false
-                        notGoingAttendeeRecyclerView.isVisible = false
-                        allButtonTextView.setTextColor(
-                            ResourcesCompat
-                                .getColor(resources, R.color.dark_gray, null)
-                        )
-                        allButton.background.setTint(
-                            ResourcesCompat
-                                .getColor(resources, R.color.light_2, null)
-                        )
-                        goingButtonTextView.setTextColor(
-                            ResourcesCompat
-                                .getColor(resources, R.color.white, null)
-                        )
-                        goingButton.background.setTint(
-                            ResourcesCompat
-                                .getColor(resources, R.color.black, null)
-                        )
-                        notGoingButtonTextView.setTextColor(
-                            ResourcesCompat
-                                .getColor(resources, R.color.dark_gray, null)
-                        )
-                        notGoingButton.background.setTint(
-                            ResourcesCompat
-                                .getColor(resources, R.color.light_2, null)
-                        )
-                    }
-                    EventDetailViewModel.AttendeeFilterTypes.NOT_GOING -> {
-                        goingTextView.isVisible = false
-                        goingAttendeeRecyclerView.isVisible = false
-                        notGoingTextView.isVisible = true
-                        notGoingAttendeeRecyclerView.isVisible = true
-                        allButtonTextView.setTextColor(
-                            ResourcesCompat
-                                .getColor(resources, R.color.dark_gray, null)
-                        )
-                        allButton.background.setTint(
-                            ResourcesCompat
-                                .getColor(resources, R.color.light_2, null)
-                        )
-                        goingButtonTextView.setTextColor(
-                            ResourcesCompat
-                                .getColor(resources, R.color.dark_gray, null)
-                        )
-                        goingButton.background.setTint(
-                            ResourcesCompat
-                                .getColor(resources, R.color.light_2, null)
-                        )
-                        notGoingButtonTextView.setTextColor(
-                            ResourcesCompat
-                                .getColor(resources, R.color.white, null)
-                        )
-                        notGoingButton.background.setTint(
-                            ResourcesCompat
-                                .getColor(resources, R.color.black, null)
-                        )
-                    }
-                }
-            }
-            allButton.setOnClickListener {
+            attendeesLayout.allButton.setOnClickListener {
                 viewModel.setAttendeeFilterType(EventDetailViewModel.AttendeeFilterTypes.ALL)
             }
-            goingButton.setOnClickListener {
+            attendeesLayout.goingButton.setOnClickListener {
                 viewModel.setAttendeeFilterType(EventDetailViewModel.AttendeeFilterTypes.GOING)
             }
-            notGoingButton.setOnClickListener {
+            attendeesLayout.notGoingButton.setOnClickListener {
                 viewModel.setAttendeeFilterType(EventDetailViewModel.AttendeeFilterTypes.NOT_GOING)
             }
-        }
-        collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
-            val goingAttendeeAdapter = AttendeeItemAdapter(
-                goingAttendees,
-                isAttendee,
-                onDeleteIconClick = { attendee -> viewModel.deleteAttendee(attendee) }
-            )
-            binding.attendeesLayout.goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
-            binding.attendeesLayout.goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
-                requireContext(), LinearLayoutManager.VERTICAL, false
-            )
-        }
 
-        collectLatestLifecycleFlow(viewModel.notGoingAttendees) { notGoingAttendees ->
-            val notGoingAttendeeAdapter = AttendeeItemAdapter(
-                notGoingAttendees,
-                isAttendee,
-                onDeleteIconClick = { attendee -> viewModel.deleteAttendee(attendee) }
-            )
-            binding.attendeesLayout.notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
-            binding.attendeesLayout.notGoingAttendeeRecyclerView
-                .layoutManager = LinearLayoutManager(requireContext())
-        }
-    }
-
-    private fun setupDeleteJoinLeaveEventButton() {
-        binding.btmActionTvBtn.apply {
-            if (isAttendee) {
-                collectLatestLifecycleFlow(viewModel.isAttending) { isAttending ->
-                    if (isAttending) {
-                        deleteAgendaItemButton.text = getString(R.string.join_event)
-                    } else {
-                        deleteAgendaItemButton.text = getString(R.string.leave_event)
-                    }
-                }
-            } else {
-                deleteAgendaItemButton.text = String.format(
+            if (!isAttendee) {
+                btmActionTvBtn.deleteAgendaItemButton.text = String.format(
                     resources
                         .getString(R.string.delete_agenda_item_button),
                     getString(R.string.event)
                 ).uppercase()
             }
-
-            deleteAgendaItemButton.setOnClickListener {
+            btmActionTvBtn.deleteAgendaItemButton.setOnClickListener {
                 if (isAttendee) {
                     viewModel.switchAttendingStatus()
                 } else {
@@ -555,6 +219,281 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 }
             }
         }
+    }
+
+    private fun subscribeToObservables() {
+        binding.apply {
+
+            collectLatestLifecycleFlow(viewModel.isInEditMode) { isEditing ->
+                header.saveButton.isVisible = isEditing
+                header.saveButton.isEnabled = isEditing
+                header.editButton.isVisible = !isEditing
+                header.editButton.isEnabled = !isEditing
+
+                if (!isAttendee) {
+                    addTitleAndDoneButtonLayout.editTitleButton.isVisible = isEditing
+                    addTitleAndDoneButtonLayout.editTitleButton.isEnabled = isEditing
+                    addTitleAndDoneButtonLayout.titleTextView.isEnabled = isEditing
+
+                    addDescriptionLayout.editDescriptionButton.isVisible = isEditing
+                    addDescriptionLayout.editDescriptionButton.isEnabled = isEditing
+                    addDescriptionLayout.descriptionTextView.isEnabled = isEditing
+
+                    startTimeAndDateLayout.timeTextView.isEnabled = isEditing
+                    startTimeAndDateLayout.timeButton.isEnabled = isEditing
+                    startTimeAndDateLayout.timeButton.isVisible = isEditing
+                    startTimeAndDateLayout.dateTextView.isEnabled = isEditing
+                    startTimeAndDateLayout.dateButton.isEnabled = isEditing
+                    startTimeAndDateLayout.dateButton.isVisible = isEditing
+
+                    endTimeAndDateLayout.timeTextView.isEnabled = isEditing
+                    endTimeAndDateLayout.timeButton.isEnabled = isEditing
+                    endTimeAndDateLayout.timeButton.isVisible = isEditing
+                    endTimeAndDateLayout.dateTextView.isEnabled = isEditing
+                    endTimeAndDateLayout.dateButton.isEnabled = isEditing
+                    endTimeAndDateLayout.dateButton.isVisible = isEditing
+
+                    attendeesLayout.addAttendeeButton.isVisible = isEditing
+                }
+
+                reminderLayout.reminderTextView.isEnabled = isEditing
+                reminderLayout.reminderButton.isEnabled = isEditing
+                reminderLayout.reminderButton.isVisible = isEditing
+            }
+
+            collectLatestLifecycleFlow(viewModel.isDone) { isDone ->
+                if (isDone) {
+                    addTitleAndDoneButtonLayout.taskDoneCircle
+                        .setBackgroundResource(R.drawable.task_done_circle)
+                    addTitleAndDoneButtonLayout.titleTextView.paintFlags =
+                        Paint.STRIKE_THRU_TEXT_FLAG
+                } else {
+                    addTitleAndDoneButtonLayout.taskDoneCircle
+                        .setBackgroundResource(R.drawable.ic_undone_circle)
+                    addTitleAndDoneButtonLayout.titleTextView.paintFlags = Paint.ANTI_ALIAS_FLAG
+                }
+            }
+
+            collectLatestLifecycleFlow(viewModel.title) { title ->
+                addTitleAndDoneButtonLayout.titleTextView.text = title
+            }
+
+            collectLatestLifecycleFlow(viewModel.description) { description ->
+                addDescriptionLayout.descriptionTextView.text = description
+            }
+
+            collectLatestLifecycleFlow(viewModel.photos) { photoList ->
+                addPhotoLayout.addPhotoLayout.isVisible = !isAttendee || photoList.isNotEmpty()
+
+                val adapter = PhotoItemAdapter(
+                    photoList,
+                    onPhotoClick = { index -> openPhoto(index) },
+                    onAddPhotoClick = { addPhoto() },
+                    userIsAttendee = isAttendee
+                )
+                addPhotoLayout.photosRecyclerView.adapter = adapter
+                addPhotoLayout.photosRecyclerView.layoutManager = LinearLayoutManager(
+                    requireContext(), LinearLayoutManager.HORIZONTAL, false
+                )
+
+                addPhotoLayout.addPhotoPlusSign.isVisible = photoList.isEmpty()
+                addPhotoLayout.addPhotoTextView.isVisible = photoList.isEmpty()
+                addPhotoLayout.photosTextView.isVisible = photoList.isNotEmpty()
+                addPhotoLayout.photosRecyclerView.isVisible = photoList.isNotEmpty()
+            }
+
+            collectLatestLifecycleFlow(viewModel.selectedStartTime) { selectedStartTime ->
+                startTimeAndDateLayout.timeTextView.text = selectedStartTime.format(
+                    DateTimeFormatter.ofPattern("HH:mm")
+                )
+            }
+            collectLatestLifecycleFlow(viewModel.selectedStartDate) { selectedStartDate ->
+                startTimeAndDateLayout.dateTextView.text = selectedStartDate.format(
+                    DateTimeFormatter.ofPattern("MMM dd yyyy")
+                )
+            }
+
+            collectLatestLifecycleFlow(viewModel.selectedEndTime) { selectedEndTime ->
+                endTimeAndDateLayout.timeTextView.text = selectedEndTime.format(
+                    DateTimeFormatter.ofPattern("HH:mm")
+                )
+            }
+            collectLatestLifecycleFlow(viewModel.selectedEndDate) { selectedEndDate ->
+                endTimeAndDateLayout.dateTextView.text = selectedEndDate.format(
+                    DateTimeFormatter.ofPattern("MMM dd yyyy")
+                )
+            }
+
+            collectLatestLifecycleFlow(viewModel.selectedReminderTime) { reminderTime ->
+                when (reminderTime) {
+                    ReminderTimes.TEN_MINUTES_BEFORE ->
+                        reminderLayout.reminderTextView.text =
+                            getString(R.string.ten_minutes_before)
+                    ReminderTimes.THIRTY_MINUTES_BEFORE ->
+                        reminderLayout.reminderTextView.text =
+                            getString(R.string.thirty_minutes_before)
+                    ReminderTimes.ONE_HOUR_BEFORE ->
+                        reminderLayout.reminderTextView.text =
+                            getString(R.string.one_hour_before)
+                    ReminderTimes.SIX_HOURS_BEFORE ->
+                        reminderLayout.reminderTextView.text =
+                            getString(R.string.six_hours_before)
+                    ReminderTimes.ONE_DAY_BEFORE ->
+                        reminderLayout.reminderTextView.text =
+                            getString(R.string.one_day_before)
+                }
+            }
+
+            attendeesLayout.apply {
+                collectLatestLifecycleFlow(
+                    viewModel.selectedAttendeeFilterType
+                ) { attendeeFilterType ->
+                    when (attendeeFilterType) {
+                        EventDetailViewModel.AttendeeFilterTypes.ALL -> {
+                            goingTextView.isVisible = true
+                            goingAttendeeRecyclerView.isVisible = true
+                            notGoingTextView.isVisible = true
+                            notGoingAttendeeRecyclerView.isVisible = true
+                            allButtonTextView.setTextColor(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.white, null)
+                            )
+                            allButton.background.setTint(
+                                (
+                                    ResourcesCompat
+                                        .getColor(resources, R.color.black, null)
+                                    )
+                            )
+                            goingButtonTextView.setTextColor(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.dark_gray, null)
+                            )
+                            goingButton.background.setTint(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.light_2, null)
+                            )
+                            notGoingButtonTextView.setTextColor(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.dark_gray, null)
+                            )
+                            notGoingButton.background.setTint(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.light_2, null)
+                            )
+                        }
+                        EventDetailViewModel.AttendeeFilterTypes.GOING -> {
+                            goingTextView.isVisible = true
+                            goingAttendeeRecyclerView.isVisible = true
+                            notGoingTextView.isVisible = false
+                            notGoingAttendeeRecyclerView.isVisible = false
+                            allButtonTextView.setTextColor(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.dark_gray, null)
+                            )
+                            allButton.background.setTint(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.light_2, null)
+                            )
+                            goingButtonTextView.setTextColor(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.white, null)
+                            )
+                            goingButton.background.setTint(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.black, null)
+                            )
+                            notGoingButtonTextView.setTextColor(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.dark_gray, null)
+                            )
+                            notGoingButton.background.setTint(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.light_2, null)
+                            )
+                        }
+                        EventDetailViewModel.AttendeeFilterTypes.NOT_GOING -> {
+                            goingTextView.isVisible = false
+                            goingAttendeeRecyclerView.isVisible = false
+                            notGoingTextView.isVisible = true
+                            notGoingAttendeeRecyclerView.isVisible = true
+                            allButtonTextView.setTextColor(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.dark_gray, null)
+                            )
+                            allButton.background.setTint(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.light_2, null)
+                            )
+                            goingButtonTextView.setTextColor(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.dark_gray, null)
+                            )
+                            goingButton.background.setTint(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.light_2, null)
+                            )
+                            notGoingButtonTextView.setTextColor(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.white, null)
+                            )
+                            notGoingButton.background.setTint(
+                                ResourcesCompat
+                                    .getColor(resources, R.color.black, null)
+                            )
+                        }
+                    }
+                }
+                collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
+                    val goingAttendeeAdapter = AttendeeItemAdapter(
+                        goingAttendees,
+                        isAttendee,
+                        onDeleteIconClick = { attendee -> viewModel.deleteAttendee(attendee) }
+                    )
+                    goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
+                    goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
+                        requireContext()
+                    )
+                }
+                collectLatestLifecycleFlow(viewModel.notGoingAttendees) { notGoingAttendees ->
+                    val notGoingAttendeeAdapter = AttendeeItemAdapter(
+                        notGoingAttendees,
+                        isAttendee,
+                        onDeleteIconClick = { attendee -> viewModel.deleteAttendee(attendee) }
+                    )
+                    notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
+                    notGoingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
+                        requireContext()
+                    )
+                }
+            }
+            if (isAttendee) {
+                collectLatestLifecycleFlow(viewModel.isAttending) { isAttending ->
+                    if (isAttending) {
+                        btmActionTvBtn.deleteAgendaItemButton.text = getString(R.string.join_event)
+                    } else {
+                        btmActionTvBtn.deleteAgendaItemButton.text = getString(R.string.leave_event)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun addPhoto() {
+        addPhotoSearchForResult.launch("image/*")
+    }
+    private fun openPhoto(index: Int) {
+        setFragmentResultListener("REQUEST_KEY") { resultKey, bundle ->
+            if (resultKey == "REQUEST_KEY") {
+                val photoToDelete = bundle.getInt("DELETE_PHOTO_INDEX")
+                viewModel.deletePhoto(photoToDelete)
+            }
+        }
+        navController.navigate(
+            EventDetailFragmentDirections
+                .actionEventDetailFragmentToPhotoDetailFragment(
+                    viewModel.photos.value[index].toString(), index
+                )
+        )
     }
 
     private fun saveEvent() {
