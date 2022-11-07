@@ -1,67 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/headerConstraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/black">
+        <include
+            android:id="@+id/header"
+            layout="@layout/cv_agenda_item_detail_header_layout" />
 
-        <ImageButton
-            android:id="@+id/closeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_close_button"
-            android:layout_marginStart="26dp"
-            app:layout_constraintBottom_toTopOf="@+id/mainBodyScrollView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-        </ImageButton>
-
-        <ImageButton
-            android:id="@+id/editButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="26dp"
-            android:background="@drawable/ic_edit_pencil_button"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/mainBodyScrollView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-        </ImageButton>
-
-        <TextView
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="22dp"
-            android:fontFamily="@font/inter_semi_bold"
-            android:text="@string/save_button"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/mainBodyScrollView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/currentDateTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_semi_bold"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/mainBodyScrollView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="01 MARCH 2022" />
-
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:id="@+id/mainBodyScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -70,8 +22,9 @@
             android:layout_marginTop="50dp"
             android:fillViewport="true">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/mainBodyConstraintLayout"
+            <LinearLayout
+                android:id="@+id/mainBodyLinearLayout"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:background="@drawable/bg_rounded_top"
@@ -81,182 +34,68 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/reminderIcon"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="30dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_task_box">
-                </ImageView>
-
-                <TextView
-                    android:id="@+id/agendaItemTypeTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="30dp"
-                    android:text="@string/task"
-                    android:textColor="@color/dark_gray"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/inter_semi_bold"
-                    app:layout_constraintStart_toEndOf="@id/reminderIcon"
-                    app:layout_constraintTop_toTopOf="parent">
-                </TextView>
-
-                <View
-                    android:id="@+id/taskDoneCircle"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_marginStart="17dp"
-                    android:layout_marginTop="33dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@drawable/ic_undone_circle"
-                    android:backgroundTint="@color/black"
-                    app:layout_constraintBottom_toTopOf="@+id/topOfDescriptionLine"
-                    app:layout_constraintEnd_toStartOf="@id/titleTextView"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/reminderIcon">
-                </View>
-
-                <TextView
-                    android:id="@+id/titleTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="9dp"
-                    android:layout_marginTop="30dp"
-                    android:fontFamily="@font/inter_bold"
-                    android:textColor="@color/black"
-                    android:textSize="26sp"
-                    app:layout_constraintBottom_toTopOf="@id/topOfDescriptionLine"
-                    app:layout_constraintEnd_toStartOf="@id/editTitleButton"
-                    app:layout_constraintStart_toEndOf="@id/taskDoneCircle"
-                    app:layout_constraintTop_toBottomOf="@id/reminderIcon"
-                    app:layout_constraintVertical_bias="0.0"
-                    app:layout_constraintVertical_chainStyle="packed"
-                    tools:text="Project X">
-                </TextView>
-
-                <ImageButton
-                    android:id="@+id/editTitleButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="30dp"
-                    android:background="@drawable/ic_edit_arrow"
-                    android:backgroundTint="@color/black"
-                    app:layout_constraintBottom_toBottomOf="@id/titleTextView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/titleTextView"
-                    app:layout_constraintTop_toTopOf="@id/titleTextView">
-                </ImageButton>
-
-                <View
-                    android:id="@+id/topOfDescriptionLine"
+                <include
+                    layout="@layout/cv_empty_divider"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="17dp"
-                    android:layout_marginEnd="17dp"
-                    android:background="@color/light"
-                    android:layout_marginTop="22dp"
-                    app:layout_constraintBottom_toTopOf="@id/descriptionTextView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/titleTextView"/>
-
-                <TextView
-                    android:id="@+id/descriptionTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:lineSpacingExtra="15sp"
-                    android:textAlignment="viewStart"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/inter_regular"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginStart="17dp"
-                    app:layout_constraintBottom_toTopOf="@id/topOfTimeLine"
-                    app:layout_constraintEnd_toStartOf="@id/editDescriptionButton"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/topOfDescriptionLine"
-                    tools:text="Weekly plan \nRole distribution\nNow This is a new line\nand a new one">
-                </TextView>
-
-                <ImageButton
-                    android:id="@+id/editDescriptionButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="30dp"
-                    android:background="@drawable/ic_edit_arrow"
-                    android:backgroundTint="@color/black"
-                    app:layout_constraintBottom_toBottomOf="@id/descriptionTextView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/descriptionTextView"
-                    app:layout_constraintTop_toTopOf="@id/descriptionTextView">
-                </ImageButton>
-
-                <View
-                    android:id="@+id/topOfTimeLine"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="17dp"
-                    android:layout_marginEnd="17dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@color/light"
-                    app:layout_constraintBottom_toTopOf="@id/startTimeAndDateLayout"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
-
-                <com.andrew.tasky.presentation.views.TimeDateSelectorCustomView
+                    android:layout_height="30dp"/>
+                <include
+                    android:id="@+id/agendaItemTypeTVAndIconLayout"
+                    layout="@layout/cv_agenda_item_type_tv_and_icon_layout" />
+                <include
+                    layout="@layout/cv_empty_divider"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="33dp"/>
+                <include
+                    android:id="@+id/addTitleAndDoneButtonLayout"
+                    layout="@layout/cv_add_title_and_done_button_layout" />
+                <include
+                    layout="@layout/cv_empty_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="23dp"/>
+                <include
+                    layout="@layout/cv_line_border_between_views" />
+                <include
+                    layout="@layout/cv_empty_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="17dp"/>
+                <include
+                    android:id="@+id/addDescriptionLayout"
+                    layout="@layout/cv_add_description_layout" />
+                <include
+                    layout="@layout/cv_empty_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"/>
+                <include
+                    layout="@layout/cv_line_border_between_views" />
+                <include
                     android:id="@+id/startTimeAndDateLayout"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/reminderLayout"
-                    app:layout_constraintTop_toBottomOf="@id/topOfTimeLine">
-                </com.andrew.tasky.presentation.views.TimeDateSelectorCustomView>
-
-                <com.andrew.tasky.presentation.views.ReminderLayoutCustomView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    layout="@layout/cv_time_date_selector" />
+                <include
+                    layout="@layout/cv_line_border_between_views" />
+                <include
                     android:id="@+id/reminderLayout"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/startTimeAndDateLayout">
-
-                </com.andrew.tasky.presentation.views.ReminderLayoutCustomView>
-
-                <View
-                    android:id="@+id/topOfAttendeesLine"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_marginStart="17dp"
-                    android:layout_marginEnd="17dp"
-                    android:layout_marginBottom="15dp"
-                    android:background="@color/light"
-                    app:layout_constraintBottom_toTopOf="@id/deleteAgendaItemButton"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <TextView
-                    android:id="@+id/deleteAgendaItemButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="35dp"
-                    android:fontFamily="@font/inter_semi_bold"
-                    android:gravity="center"
-                    android:textColor="@color/gray"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:text="DELETE TASK">
-                </TextView>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </ScrollView>
+                    layout="@layout/cv_reminder_layout" />
+                <include
+                    layout="@layout/cv_line_border_between_views" />
+                <include
+                    layout="@layout/cv_empty_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"/>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+                </FrameLayout>
+                <include
+                    layout="@layout/cv_line_border_between_views" />
+                <include
+                    android:id="@+id/btm_action_tv_btn"
+                    layout= "@layout/cv_agenda_item_screen_btm_action_tv_btn" />
+                <include
+                    layout="@layout/cv_empty_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp"/>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
