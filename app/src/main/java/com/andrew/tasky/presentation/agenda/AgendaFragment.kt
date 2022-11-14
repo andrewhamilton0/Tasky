@@ -4,28 +4,27 @@ import android.os.Bundle
 import android.view.View
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentAgendaBinding
 import com.andrew.tasky.domain.AgendaItem
-import com.andrew.tasky.domain.AgendaItems
 import com.andrew.tasky.presentation.adapters.AgendaItemAdapter
 import com.andrew.tasky.presentation.adapters.MiniCalendarAdapter
 import com.andrew.tasky.presentation.dialogs.DatePickerDialog
-import com.andrew.tasky.util.AgendaItemActions
-import com.andrew.tasky.util.AgendaItemType
-import com.andrew.tasky.util.collectLatestLifecycleFlow
+import com.andrew.tasky.util.*
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@AndroidEntryPoint
 class AgendaFragment : Fragment(R.layout.fragment_agenda) {
 
     private lateinit var navController: NavController
-    private lateinit var viewModel: AgendaViewModel
+    private val viewModel: AgendaViewModel by viewModels()
     private lateinit var fragmentAgendaBinding: FragmentAgendaBinding
     private var currentDateAndTime: LocalDateTime = LocalDateTime.now()
     private var currentDate = currentDateAndTime.toLocalDate()
@@ -34,7 +33,6 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         super.onViewCreated(view, savedInstanceState)
 
         navController = Navigation.findNavController(view)
-        viewModel = ViewModelProvider(this)[AgendaViewModel::class.java]
         fragmentAgendaBinding = FragmentAgendaBinding.bind(view)
 
         subscribeToObservables()
@@ -163,7 +161,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
     }
 
     private fun setupAgendaItemListRecyclerView(dateSelected: LocalDate) {
-        val sortedAgendaItems = AgendaItems.sortByDateSelected(dateSelected)
+        val sortedAgendaItems = viewModel.sortByDateSelected(dateSelected)
 
         val adapter = AgendaItemAdapter(
             agendaItems = sortedAgendaItems,
@@ -178,30 +176,34 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
 
     private fun agendaItemOptions(
         agendaItem: AgendaItem,
-        selectedAgendaItemAction: AgendaItemActions
+        selectedAgendaItemMenuOption: AgendaItemMenuOption
     ) {
-        val agendaItemType = agendaItem.type
-        when (selectedAgendaItemAction) {
-            AgendaItemActions.OPEN -> {
+        when (selectedAgendaItemMenuOption) {
+            AgendaItemMenuOption.OPEN -> {
+                openAgendaItemDetail(agendaItem = agendaItem, isInEditMode = false)
+            }
+            AgendaItemMenuOption.EDIT -> {
+                openAgendaItemDetail(agendaItem = agendaItem, isInEditMode = true)
+            }
+            AgendaItemMenuOption.DELETE -> {
+                viewModel.deleteAgendaItem(agendaItem = agendaItem)
+            }
+        }
+    }
+
+    private fun openAgendaItemDetail(agendaItem: AgendaItem, isInEditMode: Boolean) {
+
+        when (agendaItem.type) {
+            AgendaItemType.TASK -> TODO()
+            AgendaItemType.EVENT ->
                 navController.navigate(
                     AgendaFragmentDirections
                         .actionAgendaFragmentToEventDetailFragment(
                             agendaItem,
-                            false
+                            isInEditMode
                         )
                 )
-            }
-            AgendaItemActions.EDIT -> {
-                navController.navigate(
-                    AgendaFragmentDirections
-                        .actionAgendaFragmentToEventDetailFragment(
-                            agendaItem,
-                            true
-                        )
-                )
-            }
-            AgendaItemActions.DELETE -> {
-            }
+            AgendaItemType.REMINDER -> TODO()
         }
     }
 

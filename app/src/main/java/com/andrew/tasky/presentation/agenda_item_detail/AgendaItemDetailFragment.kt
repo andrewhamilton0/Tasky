@@ -21,7 +21,6 @@ import com.andrew.tasky.databinding.CvReminderLayoutBinding
 import com.andrew.tasky.databinding.CvTimeDateSelectorBinding
 import com.andrew.tasky.databinding.FragmentAgendaItemDetailBinding
 import com.andrew.tasky.domain.AgendaItem
-import com.andrew.tasky.domain.AgendaItems
 import com.andrew.tasky.domain.Attendee
 import com.andrew.tasky.domain.AttendeeType
 import com.andrew.tasky.presentation.adapters.AttendeeItemAdapter
@@ -148,19 +147,19 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
             }
             collectLatestLifecycleFlow(viewModel.selectedReminderTime) { reminderTime ->
                 when (reminderTime) {
-                    ReminderTimes.TEN_MINUTES_BEFORE ->
+                    ReminderTime.TEN_MINUTES_BEFORE ->
                         reminderLayoutBinding.reminderTextView.text =
                             getString(R.string.ten_minutes_before)
-                    ReminderTimes.THIRTY_MINUTES_BEFORE ->
+                    ReminderTime.THIRTY_MINUTES_BEFORE ->
                         reminderLayoutBinding.reminderTextView.text =
                             getString(R.string.thirty_minutes_before)
-                    ReminderTimes.ONE_HOUR_BEFORE ->
+                    ReminderTime.ONE_HOUR_BEFORE ->
                         reminderLayoutBinding.reminderTextView.text =
                             getString(R.string.one_hour_before)
-                    ReminderTimes.SIX_HOURS_BEFORE ->
+                    ReminderTime.SIX_HOURS_BEFORE ->
                         reminderLayoutBinding.reminderTextView.text =
                             getString(R.string.six_hours_before)
-                    ReminderTimes.ONE_DAY_BEFORE ->
+                    ReminderTime.ONE_DAY_BEFORE ->
                         reminderLayoutBinding.reminderTextView.text =
                             getString(R.string.one_day_before)
                 }
@@ -655,23 +654,23 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.tenMinutes -> {
-                        viewModel.setSelectedReminderTime(ReminderTimes.TEN_MINUTES_BEFORE)
+                        viewModel.setSelectedReminderTime(ReminderTime.TEN_MINUTES_BEFORE)
                         true
                     }
                     R.id.thirtyMinutes -> {
-                        viewModel.setSelectedReminderTime(ReminderTimes.THIRTY_MINUTES_BEFORE)
+                        viewModel.setSelectedReminderTime(ReminderTime.THIRTY_MINUTES_BEFORE)
                         true
                     }
                     R.id.oneHour -> {
-                        viewModel.setSelectedReminderTime(ReminderTimes.ONE_HOUR_BEFORE)
+                        viewModel.setSelectedReminderTime(ReminderTime.ONE_HOUR_BEFORE)
                         true
                     }
                     R.id.sixHours -> {
-                        viewModel.setSelectedReminderTime(ReminderTimes.SIX_HOURS_BEFORE)
+                        viewModel.setSelectedReminderTime(ReminderTime.SIX_HOURS_BEFORE)
                         true
                     }
                     R.id.oneDay -> {
-                        viewModel.setSelectedReminderTime(ReminderTimes.ONE_DAY_BEFORE)
+                        viewModel.setSelectedReminderTime(ReminderTime.ONE_DAY_BEFORE)
                         true
                     }
                     else -> true
@@ -683,11 +682,14 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
 
     private fun getAgendaItemCurrentInfo(): AgendaItem {
         return AgendaItem(
-            agendaItemType,
-            viewModel.isDone.value,
-            viewModel.title.value,
-            viewModel.description.value,
-            LocalDateTime.of(viewModel.selectedStartDate.value, viewModel.selectedStartTime.value),
+            type = agendaItemType,
+            isDone = viewModel.isDone.value,
+            title = viewModel.title.value,
+            description = viewModel.description.value,
+            startDateAndTime = LocalDateTime.of(
+                viewModel.selectedStartDate.value,
+                viewModel.selectedStartTime.value
+            ),
             reminderTime = viewModel.selectedReminderTime.value,
             photos = viewModel.photos.value
         )
@@ -697,10 +699,10 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
         val newAgendaItem = getAgendaItemCurrentInfo()
         if (args.agendaItem != null) {
             args.agendaItem?.let { oldAgendaItem ->
-                AgendaItems.replaceAgendaItem(newAgendaItem, oldAgendaItem)
+                // AgendaItems.replaceAgendaItem(newAgendaItem, oldAgendaItem) Todo
             }
         } else {
-            AgendaItems.addAgendaItem(newAgendaItem)
+            // AgendaItems.addAgendaItem(newAgendaItem) Todo
         }
     }
 
@@ -717,7 +719,7 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
                 val deleteAgendaItem = bundle.getBoolean("DELETE_AGENDA_ITEM")
                 if (deleteAgendaItem) {
                     args.agendaItem?.let {
-                        AgendaItems.deleteAgendaItem(it)
+                        // AgendaItems.deleteAgendaItem(it) Todo
                     }
                     navController.popBackStack()
                 }

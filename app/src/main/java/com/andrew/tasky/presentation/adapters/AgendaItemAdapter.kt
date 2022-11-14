@@ -9,13 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.ItemAgendaBinding
 import com.andrew.tasky.domain.AgendaItem
-import com.andrew.tasky.util.AgendaItemActions
+import com.andrew.tasky.util.AgendaItemMenuOption
 import com.andrew.tasky.util.AgendaItemType
 import java.time.format.DateTimeFormatter
 
 class AgendaItemAdapter(
     private var agendaItems: List<AgendaItem>,
-    private val onAgendaItemOptionClick: (AgendaItem, AgendaItemActions) -> Unit
+    private val onAgendaItemOptionClick: (AgendaItem, AgendaItemMenuOption) -> Unit
 ) : RecyclerView.Adapter<AgendaItemAdapter.AgendaItemViewHolder>() {
 
     inner class AgendaItemViewHolder(val binding: ItemAgendaBinding) :
@@ -45,7 +45,7 @@ class AgendaItemAdapter(
             }
 
             agendaItemCard.setOnClickListener {
-                onAgendaItemOptionClick(agendaItems[position], AgendaItemActions.OPEN)
+                onAgendaItemOptionClick(agendaItems[position], AgendaItemMenuOption.OPEN)
             }
 
             optionsButton.setOnClickListener { view ->
@@ -54,17 +54,17 @@ class AgendaItemAdapter(
                 popupMenu.setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
                         R.id.open -> {
-                            val actionOption = AgendaItemActions.OPEN
+                            val actionOption = AgendaItemMenuOption.OPEN
                             onAgendaItemOptionClick(agendaItems[position], actionOption)
                             true
                         }
                         R.id.edit -> {
-                            val actionOption = AgendaItemActions.EDIT
+                            val actionOption = AgendaItemMenuOption.EDIT
                             onAgendaItemOptionClick(agendaItems[position], actionOption)
                             true
                         }
                         R.id.delete -> {
-                            val actionOption = AgendaItemActions.DELETE
+                            val actionOption = AgendaItemMenuOption.DELETE
                             onAgendaItemOptionClick(agendaItems[position], actionOption)
                             true
                         }

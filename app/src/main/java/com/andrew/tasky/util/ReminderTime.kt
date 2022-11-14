@@ -1,6 +1,6 @@
 package com.andrew.tasky.util
 
-enum class ReminderTimes {
+enum class ReminderTime {
     TEN_MINUTES_BEFORE,
     THIRTY_MINUTES_BEFORE,
     ONE_HOUR_BEFORE,

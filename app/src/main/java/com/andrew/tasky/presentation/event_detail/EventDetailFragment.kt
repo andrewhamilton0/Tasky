@@ -18,10 +18,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentEventDetailBinding
-import com.andrew.tasky.domain.AgendaItem
-import com.andrew.tasky.domain.AgendaItems
-import com.andrew.tasky.domain.Attendee
-import com.andrew.tasky.domain.AttendeeType
 import com.andrew.tasky.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.presentation.adapters.PhotoItemAdapter
 import com.andrew.tasky.presentation.dialogs.AddAttendeeDialog
@@ -29,11 +25,13 @@ import com.andrew.tasky.presentation.dialogs.DatePickerDialog
 import com.andrew.tasky.presentation.dialogs.DeleteConfirmationDialog
 import com.andrew.tasky.presentation.dialogs.TimePickerDialog
 import com.andrew.tasky.util.*
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+@AndroidEntryPoint
 class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
 
     private val currentDate = LocalDateTime.now()
@@ -51,7 +49,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         }
     )
     private val args: EventDetailFragmentArgs by navArgs()
-    private val isAttendee = true
+    private val isAttendee = false
     private val agendaItemType = AgendaItemType.EVENT
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,41 +59,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
 
         setupViewsAndOnClickListeners()
         subscribeToObservables()
-
-        val attendeesList = listOf(
-            Attendee(
-                name = "Samantha Jones", isAttending = true,
-                attendeeType = AttendeeType.CREATOR, email = "random@gmail.com"
-            ),
-            Attendee(
-                name = "Cappuccino Joe", isAttending = true,
-                attendeeType = AttendeeType.ATTENDEE, email = "random1@gmail.com"
-            ),
-            Attendee(
-                name = "Autumn Leaves", isAttending = true,
-                attendeeType = AttendeeType.ATTENDEE, email = "random2@gmail.com"
-            ),
-            Attendee(
-                name = "Andrew", isAttending = true,
-                attendeeType = AttendeeType.ATTENDEE, email = "random3@gmail.com"
-            ),
-            Attendee(
-                name = "Ramsay Beans", isAttending = false,
-                attendeeType = AttendeeType.ATTENDEE, email = "random4@gmail.com"
-            ),
-            Attendee(
-                name = "I Heart Lucy", isAttending = false,
-                attendeeType = AttendeeType.ATTENDEE, email = "random5@gmail.com"
-            ),
-            Attendee(
-                name = "I Have A Long name", isAttending = true,
-                attendeeType = AttendeeType.ATTENDEE, email = "random6@gmail.com"
-            )
-        )
-
-        for (name in attendeesList) {
-            viewModel.addAttendee(name)
-        }
     }
 
     private fun setupViewsAndOnClickListeners() {
@@ -109,7 +72,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 viewModel.setEditMode(true)
             }
             header.saveButton.setOnClickListener {
-                saveEvent()
+                viewModel.saveAgendaItem()
                 navController.popBackStack()
             }
 
@@ -326,19 +289,19 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
 
             collectLatestLifecycleFlow(viewModel.selectedReminderTime) { reminderTime ->
                 when (reminderTime) {
-                    ReminderTimes.TEN_MINUTES_BEFORE ->
+                    ReminderTime.TEN_MINUTES_BEFORE ->
                         reminderLayout.reminderTextView.text =
                             getString(R.string.ten_minutes_before)
-                    ReminderTimes.THIRTY_MINUTES_BEFORE ->
+                    ReminderTime.THIRTY_MINUTES_BEFORE ->
                         reminderLayout.reminderTextView.text =
                             getString(R.string.thirty_minutes_before)
-                    ReminderTimes.ONE_HOUR_BEFORE ->
+                    ReminderTime.ONE_HOUR_BEFORE ->
                         reminderLayout.reminderTextView.text =
                             getString(R.string.one_hour_before)
-                    ReminderTimes.SIX_HOURS_BEFORE ->
+                    ReminderTime.SIX_HOURS_BEFORE ->
                         reminderLayout.reminderTextView.text =
                             getString(R.string.six_hours_before)
-                    ReminderTimes.ONE_DAY_BEFORE ->
+                    ReminderTime.ONE_DAY_BEFORE ->
                         reminderLayout.reminderTextView.text =
                             getString(R.string.one_day_before)
                 }
@@ -496,32 +459,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         )
     }
 
-    private fun saveEvent() {
-        val newAgendaItem = AgendaItem(
-            type = agendaItemType,
-            isDone = viewModel.isDone.value,
-            title = viewModel.title.value,
-            description = viewModel.description.value,
-            startDateAndTime = LocalDateTime.of(
-                viewModel.selectedStartDate.value,
-                viewModel.selectedStartTime.value
-            ),
-            endDateAndTime = LocalDateTime.of(
-                viewModel.selectedEndDate.value,
-                viewModel.selectedEndTime.value
-            ),
-            reminderTime = viewModel.selectedReminderTime.value,
-            photos = viewModel.photos.value
-        )
-        if (args.agendaItem != null) {
-            args.agendaItem?.let { oldAgendaItem ->
-                AgendaItems.replaceAgendaItem(newAgendaItem, oldAgendaItem)
-            }
-        } else {
-            AgendaItems.addAgendaItem(newAgendaItem)
-        }
-    }
-
     private fun navigateToEditFragment(editType: EditType) {
         setFragmentResultListener("INPUT_REQUEST_KEY") { resultKey, bundle ->
             if (resultKey == "INPUT_REQUEST_KEY") {
@@ -628,23 +565,23 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.tenMinutes -> {
-                    viewModel.setSelectedReminderTime(ReminderTimes.TEN_MINUTES_BEFORE)
+                    viewModel.setSelectedReminderTime(ReminderTime.TEN_MINUTES_BEFORE)
                     true
                 }
                 R.id.thirtyMinutes -> {
-                    viewModel.setSelectedReminderTime(ReminderTimes.THIRTY_MINUTES_BEFORE)
+                    viewModel.setSelectedReminderTime(ReminderTime.THIRTY_MINUTES_BEFORE)
                     true
                 }
                 R.id.oneHour -> {
-                    viewModel.setSelectedReminderTime(ReminderTimes.ONE_HOUR_BEFORE)
+                    viewModel.setSelectedReminderTime(ReminderTime.ONE_HOUR_BEFORE)
                     true
                 }
                 R.id.sixHours -> {
-                    viewModel.setSelectedReminderTime(ReminderTimes.SIX_HOURS_BEFORE)
+                    viewModel.setSelectedReminderTime(ReminderTime.SIX_HOURS_BEFORE)
                     true
                 }
                 R.id.oneDay -> {
-                    viewModel.setSelectedReminderTime(ReminderTimes.ONE_DAY_BEFORE)
+                    viewModel.setSelectedReminderTime(ReminderTime.ONE_DAY_BEFORE)
                     true
                 }
                 else -> true
@@ -671,9 +608,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             if (resultKey == "REQUEST_KEY") {
                 val deleteAgendaItem = bundle.getBoolean("DELETE_AGENDA_ITEM")
                 if (deleteAgendaItem) {
-                    args.agendaItem?.let {
-                        AgendaItems.deleteAgendaItem(it)
-                    }
+                    viewModel.deleteAgendaItem()
                     navController.popBackStack()
                 }
             }

@@ -1,19 +1,28 @@
 package com.andrew.tasky.presentation.event_detail
 
 import android.net.Uri
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.Attendee
-import com.andrew.tasky.util.ReminderTimes
+import com.andrew.tasky.domain.repository.AgendaItemRepository
+import com.andrew.tasky.util.AgendaItemType
+import com.andrew.tasky.util.ReminderTime
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
+import javax.inject.Inject
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-class EventDetailViewModel(
-    private val savedStateHandle: SavedStateHandle
+@HiltViewModel
+class EventDetailViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val repository: AgendaItemRepository
 ) : ViewModel() {
+
+    private var id: Int? = null
+    private val agendaItemType = AgendaItemType.EVENT
 
     private val _isInEditMode = MutableStateFlow(false)
     val isInEditMode = _isInEditMode.asStateFlow()
@@ -63,9 +72,9 @@ class EventDetailViewModel(
         _selectedEndTime.value = selectedEndTime
     }
 
-    private val _selectedReminderTime = MutableStateFlow(ReminderTimes.TEN_MINUTES_BEFORE)
+    private val _selectedReminderTime = MutableStateFlow(ReminderTime.TEN_MINUTES_BEFORE)
     val selectedReminderTime = _selectedReminderTime.asStateFlow()
-    fun setSelectedReminderTime(selectedReminderTime: ReminderTimes) {
+    fun setSelectedReminderTime(selectedReminderTime: ReminderTime) {
         _selectedReminderTime.value = selectedReminderTime
     }
 
@@ -88,6 +97,9 @@ class EventDetailViewModel(
     val attendees = _attendees.asStateFlow()
     fun addAttendee(attendee: Attendee) {
         _attendees.value += attendee
+    }
+    private fun setupAttendeeList(attendeeList: List<Attendee>) {
+        _attendees.value = attendeeList
     }
 
     val goingAttendees = attendees.map {
@@ -121,8 +133,39 @@ class EventDetailViewModel(
         NOT_GOING
     }
 
+    fun saveAgendaItem() {
+        val agendaItem = AgendaItem(
+            id = id,
+            type = agendaItemType,
+            isDone = isDone.value,
+            title = title.value,
+            description = description.value,
+            startDateAndTime = LocalDateTime.of(
+                selectedStartDate.value,
+                selectedStartTime.value
+            ),
+            endDateAndTime = LocalDateTime.of(
+                selectedEndDate.value,
+                selectedEndTime.value
+            ),
+            reminderTime = selectedReminderTime.value,
+            photos = photos.value,
+            attendees = attendees.value
+        )
+        viewModelScope.launch {
+            repository.upsert(agendaItem)
+        }
+    }
+
+    fun deleteAgendaItem() {
+        viewModelScope.launch {
+            savedStateHandle.get<AgendaItem>("agendaItem")?.let { repository.deleteAgendaItem(it) }
+        }
+    }
+
     init {
         savedStateHandle.get<AgendaItem>("agendaItem")?.let { item ->
+            id = item.id
             setIsDone(item.isDone)
             setTitle(item.title)
             setDescription(item.description)
@@ -134,6 +177,7 @@ class EventDetailViewModel(
             }
             setSelectedReminderTime(item.reminderTime)
             item.photos?.let { setupPhotos(it) }
+            item.attendees?.let { setupAttendeeList(it) }
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)
