@@ -29,6 +29,8 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
     private var currentDateAndTime: LocalDateTime = LocalDateTime.now()
     private var currentDate = currentDateAndTime.toLocalDate()
 
+    private lateinit var agendaAdapter: AgendaItemAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -38,6 +40,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         subscribeToObservables()
         setOnClickListeners()
         setupCurrentMonthTextView()
+        setupAgendaItemListRecyclerView()
     }
 
     private fun subscribeToObservables() {
@@ -46,7 +49,6 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         )
         collectLatestLifecycleFlow(viewModel.dateSelected) { dateSelected ->
             setupCurrentDateSelectedTextView(dateSelected)
-            setupAgendaItemListRecyclerView(dateSelected)
 
             val adapter = MiniCalendarAdapter(
                 startDate = currentDate,
@@ -55,6 +57,9 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                 onHolderClick = { dateClicked -> viewModel.setDateSelected(dateClicked) }
             )
             fragmentAgendaBinding.miniCalendar.adapter = adapter
+        }
+        collectLatestLifecycleFlow(viewModel.agendaItems) { items ->
+            agendaAdapter.submitList(items)
         }
     }
 
@@ -160,16 +165,13 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         }
     }
 
-    private fun setupAgendaItemListRecyclerView(dateSelected: LocalDate) {
-        val sortedAgendaItems = viewModel.sortByDateSelected(dateSelected)
-
-        val adapter = AgendaItemAdapter(
-            agendaItems = sortedAgendaItems,
+    private fun setupAgendaItemListRecyclerView() {
+        agendaAdapter = AgendaItemAdapter(
             onAgendaItemOptionClick = { agendaItem, agendaItemActionOptions ->
                 agendaItemOptions(agendaItem, agendaItemActionOptions)
             }
         )
-        fragmentAgendaBinding.agendaItemRecyclerView.adapter = adapter
+        fragmentAgendaBinding.agendaItemRecyclerView.adapter = agendaAdapter
         fragmentAgendaBinding.agendaItemRecyclerView.layoutManager =
             LinearLayoutManager(requireContext())
     }

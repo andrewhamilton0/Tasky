@@ -5,6 +5,8 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.ItemAgendaBinding
@@ -14,9 +16,18 @@ import com.andrew.tasky.util.AgendaItemType
 import java.time.format.DateTimeFormatter
 
 class AgendaItemAdapter(
-    private var agendaItems: List<AgendaItem>,
     private val onAgendaItemOptionClick: (AgendaItem, AgendaItemMenuOption) -> Unit
-) : RecyclerView.Adapter<AgendaItemAdapter.AgendaItemViewHolder>() {
+) : ListAdapter<AgendaItem, AgendaItemAdapter.AgendaItemViewHolder>(Companion) {
+
+    companion object : DiffUtil.ItemCallback<AgendaItem>() {
+        override fun areItemsTheSame(oldItem: AgendaItem, newItem: AgendaItem): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: AgendaItem, newItem: AgendaItem): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     inner class AgendaItemViewHolder(val binding: ItemAgendaBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -29,23 +40,23 @@ class AgendaItemAdapter(
 
     override fun onBindViewHolder(holder: AgendaItemViewHolder, position: Int) {
         holder.binding.apply {
-            agendaItemTitle.text = agendaItems[position].title
-            agendaItemDescription.text = agendaItems[position].description
+            agendaItemTitle.text = currentList[position].title
+            agendaItemDescription.text = currentList[position].description
             agendaItemDate.text = (
-                agendaItems[position].startDateAndTime
+                currentList[position].startDateAndTime
                     .format(DateTimeFormatter.ofPattern("MMM d, HH:mm")) +
                     (
-                        agendaItems[position].endDateAndTime
+                        currentList[position].endDateAndTime
                             ?.format(DateTimeFormatter.ofPattern(" - MMM d, HH:mm")) ?: ""
                         )
                 )
 
             doneButton.setOnClickListener {
-                agendaItems[position].isDone = true
+                currentList[position].isDone = true
             }
 
             agendaItemCard.setOnClickListener {
-                onAgendaItemOptionClick(agendaItems[position], AgendaItemMenuOption.OPEN)
+                onAgendaItemOptionClick(currentList[position], AgendaItemMenuOption.OPEN)
             }
 
             optionsButton.setOnClickListener { view ->
@@ -55,17 +66,17 @@ class AgendaItemAdapter(
                     when (menuItem.itemId) {
                         R.id.open -> {
                             val actionOption = AgendaItemMenuOption.OPEN
-                            onAgendaItemOptionClick(agendaItems[position], actionOption)
+                            onAgendaItemOptionClick(currentList[position], actionOption)
                             true
                         }
                         R.id.edit -> {
                             val actionOption = AgendaItemMenuOption.EDIT
-                            onAgendaItemOptionClick(agendaItems[position], actionOption)
+                            onAgendaItemOptionClick(currentList[position], actionOption)
                             true
                         }
                         R.id.delete -> {
                             val actionOption = AgendaItemMenuOption.DELETE
-                            onAgendaItemOptionClick(agendaItems[position], actionOption)
+                            onAgendaItemOptionClick(currentList[position], actionOption)
                             true
                         }
                         else -> true
@@ -74,7 +85,7 @@ class AgendaItemAdapter(
                 popupMenu.show()
             }
 
-            if (agendaItems[position].isDone) {
+            if (currentList[position].isDone) {
                 doneButton.setImageResource(R.drawable.task_done_circle)
                 agendaItemTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             } else {
@@ -82,7 +93,7 @@ class AgendaItemAdapter(
                 agendaItemTitle.paintFlags = Paint.ANTI_ALIAS_FLAG
             }
 
-            when (agendaItems[position].type) {
+            when (currentList[position].type) {
                 AgendaItemType.TASK -> {
                     agendaItemCard.setCardBackgroundColor(Color.parseColor("#259f70"))
                     doneButton.setColorFilter(Color.parseColor("#FFeeeeee"))
@@ -99,9 +110,5 @@ class AgendaItemAdapter(
                 )
             }
         }
-    }
-
-    override fun getItemCount(): Int {
-        return agendaItems.size
     }
 }

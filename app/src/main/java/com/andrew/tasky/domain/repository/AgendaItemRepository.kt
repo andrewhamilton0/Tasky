@@ -1,9 +1,9 @@
 package com.andrew.tasky.domain.repository
 
-import androidx.lifecycle.LiveData
 import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.db.AgendaItemDatabase
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 class AgendaItemRepository @Inject constructor(
     private val db: AgendaItemDatabase
@@ -12,7 +12,7 @@ class AgendaItemRepository @Inject constructor(
         db.getAgendaItemDao().upsert(agendaItem)
     }
 
-    fun getAgendaItems(): LiveData<List<AgendaItem>> {
+    fun getAgendaItems(): Flow<List<AgendaItem>> {
         return db.getAgendaItemDao().getAllAgendaItems()
     }
 

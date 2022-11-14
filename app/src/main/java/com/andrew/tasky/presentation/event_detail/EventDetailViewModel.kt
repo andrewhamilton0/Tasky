@@ -12,8 +12,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class EventDetailViewModel @Inject constructor(
@@ -152,8 +154,14 @@ class EventDetailViewModel @Inject constructor(
             photos = photos.value,
             attendees = attendees.value
         )
+        // viewModelScope gets cancelled as soon as the Fragment is popped from the backstack,
+        // so if you pop it right after inserting an element, this coroutine will be cancelled
+        // before it can finish inserting the element. With NonCancellable we make sure it's not
+        // going to be cancelled.
         viewModelScope.launch {
-            repository.upsert(agendaItem)
+            withContext(NonCancellable) {
+                repository.upsert(agendaItem)
+            }
         }
     }
 
