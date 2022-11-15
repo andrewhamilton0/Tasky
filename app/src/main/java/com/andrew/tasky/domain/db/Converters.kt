@@ -1,8 +1,8 @@
 package com.andrew.tasky.domain.db
 
-import android.net.Uri
 import androidx.room.TypeConverter
 import com.andrew.tasky.domain.Attendee
+import com.andrew.tasky.domain.Photo
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.ReminderTime
 import com.google.gson.Gson
@@ -21,13 +21,15 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromLocalDateTime(localDateTime: LocalDateTime): String {
-        return localDateTime.toString()
+    fun fromLocalDateTime(localDateTime: LocalDateTime?): String? {
+        return localDateTime?.toString()
     }
 
     @TypeConverter
-    fun toLocalDateTime(localDateTimeString: String): LocalDateTime {
-        return LocalDateTime.parse(localDateTimeString)
+    fun toLocalDateTime(localDateTimeString: String?): LocalDateTime? {
+        return if (localDateTimeString != null) {
+            LocalDateTime.parse(localDateTimeString)
+        } else null
     }
 
     @TypeConverter
@@ -41,22 +43,30 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromAttendeeList(list: List<Attendee>): String {
-        return Gson().toJson(list)
+    fun fromAttendeeList(list: List<Attendee>?): String? {
+        return if (list != null) {
+            Gson().toJson(list)
+        } else null
     }
 
     @TypeConverter
-    fun toAttendeeList(value: String): List<Attendee> {
-        return Gson().fromJson(value, Array<Attendee>::class.java).toList()
+    fun toAttendeeList(value: String?): List<Attendee>? {
+        return if (value != null) {
+            Gson().fromJson(value, Array<Attendee>::class.java).toList()
+        } else null
     }
 
     @TypeConverter
-    fun fromUriList(list: List<Uri>): String {
-        return Gson().toJson(list)
+    fun fromUriList(list: List<Photo>?): String? {
+        return if (list != null) {
+            Gson().toJson(list)
+        } else null
     }
 
     @TypeConverter
-    fun toUriList(value: String): List<Uri> {
-        return Gson().fromJson(value, Array<Uri>::class.java).toList()
+    fun toUriList(value: String?): List<Photo>? {
+        return if (value != null) {
+            Gson().fromJson(value, Array<Photo>::class.java).toList()
+        } else null
     }
 }

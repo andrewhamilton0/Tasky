@@ -5,9 +5,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.databinding.ItemPhotoAdapterCardBinding
+import com.andrew.tasky.domain.Photo
 
 class PhotoItemAdapter(
-    private var photos: List<Uri>,
+    private var photos: List<Photo>,
     private val onPhotoClick: (Int) -> Unit,
     private val onAddPhotoClick: () -> Unit,
     private val userIsAttendee: Boolean
@@ -25,7 +26,7 @@ class PhotoItemAdapter(
     override fun onBindViewHolder(holder: PhotoItemViewHolder, position: Int) {
         holder.binding.apply {
             if (position != photos.size) {
-                image.setImageURI(photos[position])
+                image.setImageURI(Uri.parse(photos[position].uriString))
                 holder.itemView.setOnClickListener {
                     onPhotoClick(position)
                 }

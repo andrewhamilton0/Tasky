@@ -23,6 +23,7 @@ import com.andrew.tasky.databinding.FragmentAgendaItemDetailBinding
 import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.Attendee
 import com.andrew.tasky.domain.AttendeeType
+import com.andrew.tasky.domain.Photo
 import com.andrew.tasky.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.presentation.adapters.PhotoItemAdapter
 import com.andrew.tasky.presentation.dialogs.DatePickerDialog
@@ -52,7 +53,7 @@ class AgendaItemDetailFragment : Fragment(R.layout.fragment_agenda_item_detail) 
         ActivityResultContracts.GetContent(),
         ActivityResultCallback {
             if (it != null) {
-                viewModel.addPhoto(it)
+                viewModel.addPhoto(Photo(it.toString()))
             }
         }
     )

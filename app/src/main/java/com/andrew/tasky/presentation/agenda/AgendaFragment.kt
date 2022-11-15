@@ -111,9 +111,8 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                             val agendaItemType = AgendaItemType.REMINDER
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToAgendaItemDetailFragment(
+                                    .actionAgendaFragmentToReminderDetailFragment(
                                         null,
-                                        agendaItemType,
                                         true
                                     )
                             )
@@ -205,7 +204,13 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                             isInEditMode
                         )
                 )
-            AgendaItemType.REMINDER -> TODO()
+            AgendaItemType.REMINDER -> navController.navigate(
+                AgendaFragmentDirections
+                    .actionAgendaFragmentToReminderDetailFragment(
+                        agendaItem,
+                        isInEditMode
+                    )
+            )
         }
     }
 

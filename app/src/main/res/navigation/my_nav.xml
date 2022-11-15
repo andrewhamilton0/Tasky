@@ -105,10 +105,6 @@
             app:nullable="true"
             />
         <argument
-            android:name="agendaItemType"
-            app:argType="com.andrew.tasky.util.AgendaItemType"
-            />
-        <argument
             android:name="isInEditMode"
             app:argType="boolean"
             />

@@ -18,6 +18,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentEventDetailBinding
+import com.andrew.tasky.domain.Photo
 import com.andrew.tasky.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.presentation.adapters.PhotoItemAdapter
 import com.andrew.tasky.presentation.dialogs.AddAttendeeDialog
@@ -44,7 +45,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         ActivityResultContracts.GetContent(),
         ActivityResultCallback {
             if (it != null) {
-                viewModel.addPhoto(it)
+                viewModel.addPhoto(Photo(it.toString()))
             }
         }
     )
@@ -75,6 +76,9 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 viewModel.saveAgendaItem()
                 navController.popBackStack()
             }
+
+            agendaItemTypeTVAndIconLayout.agendaItemIcon.setImageResource(R.drawable.ic_event_box)
+            agendaItemTypeTVAndIconLayout.agendaItemTypeTextView.text = getString(R.string.event)
 
             addTitleAndDoneButtonLayout.taskDoneCircle.setOnClickListener {
                 viewModel.setIsDone(!viewModel.isDone.value)

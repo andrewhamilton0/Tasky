@@ -1,9 +1,9 @@
 package com.andrew.tasky.presentation.agenda_item_detail
 
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andrew.tasky.domain.Attendee
+import com.andrew.tasky.domain.Photo
 import com.andrew.tasky.util.ReminderTime
 import java.time.LocalDate
 import java.time.LocalTime
@@ -71,16 +71,16 @@ class AgendaItemDetailViewModel : ViewModel() {
         _selectedReminderTime.value = selectedReminderTime
     }
 
-    private val _photos = MutableStateFlow(listOf<Uri>())
+    private val _photos = MutableStateFlow(listOf<Photo>())
     val photos = _photos.asStateFlow()
-    fun addPhoto(uri: Uri) {
-        _photos.value += uri
+    fun addPhoto(photo: Photo) {
+        _photos.value += photo
     }
     fun deletePhoto(index1: Int) {
         val updatedPhotos = photos.value.filterIndexed { index, _ -> index != index1 }
         _photos.value = updatedPhotos
     }
-    fun setupPhotos(photoList: List<Uri>) {
+    fun setupPhotos(photoList: List<Photo>) {
         _photos.value = photoList
     }
 
