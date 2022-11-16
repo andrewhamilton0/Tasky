@@ -1,9 +1,9 @@
 package com.andrew.tasky.presentation.event_detail
 
-import android.net.Uri
 import androidx.lifecycle.*
 import com.andrew.tasky.domain.AgendaItem
 import com.andrew.tasky.domain.Attendee
+import com.andrew.tasky.domain.Photo
 import com.andrew.tasky.domain.repository.AgendaItemRepository
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.ReminderTime
@@ -23,7 +23,6 @@ class EventDetailViewModel @Inject constructor(
     private val repository: AgendaItemRepository
 ) : ViewModel() {
 
-    private var id: Int? = null
     private val agendaItemType = AgendaItemType.EVENT
 
     private val _isInEditMode = MutableStateFlow(false)
@@ -80,19 +79,19 @@ class EventDetailViewModel @Inject constructor(
         _selectedReminderTime.value = selectedReminderTime
     }
 
-    private val _photos = MutableStateFlow(listOf<Uri>())
-    val photos = _photos.asStateFlow()
-    fun addPhoto(uri: Uri) {
-        _photos.value += uri
+    private val _photo = MutableStateFlow(listOf<Photo>())
+    val photos = _photo.asStateFlow()
+    fun addPhoto(photo: Photo) {
+        _photo.value += photo
     }
     fun deletePhoto(indexToDelete: Int) {
         val updatedPhotos = photos.value.filterIndexed { currentIndex, _ ->
             currentIndex != indexToDelete
         }
-        _photos.value = updatedPhotos
+        _photo.value = updatedPhotos
     }
-    private fun setupPhotos(photoList: List<Uri>) {
-        _photos.value = photoList
+    private fun setupPhotos(photoList: List<Photo>) {
+        _photo.value = photoList
     }
 
     private val _attendees = MutableStateFlow(listOf<Attendee>())
@@ -137,7 +136,7 @@ class EventDetailViewModel @Inject constructor(
 
     fun saveAgendaItem() {
         val agendaItem = AgendaItem(
-            id = id,
+            savedStateHandle.get<AgendaItem>("agendaItem")?.id,
             type = agendaItemType,
             isDone = isDone.value,
             title = title.value,
@@ -167,13 +166,16 @@ class EventDetailViewModel @Inject constructor(
 
     fun deleteAgendaItem() {
         viewModelScope.launch {
-            savedStateHandle.get<AgendaItem>("agendaItem")?.let { repository.deleteAgendaItem(it) }
+            withContext(NonCancellable) {
+                savedStateHandle.get<AgendaItem>("agendaItem")?.let {
+                    repository.deleteAgendaItem(it)
+                }
+            }
         }
     }
 
     init {
         savedStateHandle.get<AgendaItem>("agendaItem")?.let { item ->
-            id = item.id
             setIsDone(item.isDone)
             setTitle(item.title)
             setDescription(item.description)

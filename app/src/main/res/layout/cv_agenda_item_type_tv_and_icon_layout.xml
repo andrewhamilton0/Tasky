@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
-        android:id="@+id/eventIcon"
+        android:id="@+id/agendaItemIcon"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="16dp"
@@ -23,7 +23,7 @@
         android:textColor="@color/dark_gray"
         android:textSize="16sp"
         android:fontFamily="@font/inter_semi_bold"
-        app:layout_constraintStart_toEndOf="@id/eventIcon"
+        app:layout_constraintStart_toEndOf="@id/agendaItemIcon"
         app:layout_constraintTop_toTopOf="parent">
     </TextView>
 </androidx.constraintlayout.widget.ConstraintLayout>
