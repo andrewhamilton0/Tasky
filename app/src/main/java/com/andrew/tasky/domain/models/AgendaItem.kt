@@ -1,7 +1,8 @@
-package com.andrew.tasky.domain
+package com.andrew.tasky.domain.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.andrew.tasky.domain.Attendee
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.ReminderTime
 import java.io.Serializable

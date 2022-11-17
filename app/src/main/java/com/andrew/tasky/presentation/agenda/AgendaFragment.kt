@@ -10,7 +10,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentAgendaBinding
-import com.andrew.tasky.domain.AgendaItem
+import com.andrew.tasky.domain.models.AgendaItem
 import com.andrew.tasky.presentation.adapters.AgendaItemAdapter
 import com.andrew.tasky.presentation.adapters.MiniCalendarAdapter
 import com.andrew.tasky.presentation.dialogs.DatePickerDialog
@@ -30,6 +30,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
     private var currentDate = currentDateAndTime.toLocalDate()
 
     private lateinit var agendaAdapter: AgendaItemAdapter
+    private lateinit var miniCalendarAdapter: MiniCalendarAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,22 +42,21 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         setOnClickListeners()
         setupCurrentMonthTextView()
         setupAgendaItemListRecyclerView()
-    }
-
-    private fun subscribeToObservables() {
+        miniCalendarAdapter = MiniCalendarAdapter(
+            onHolderClick = { date -> viewModel.setDateSelected(date) }
+        )
+        fragmentAgendaBinding.miniCalendar.adapter = miniCalendarAdapter
         fragmentAgendaBinding.miniCalendar.layoutManager = LinearLayoutManager(
             requireContext(), LinearLayoutManager.HORIZONTAL, false
         )
+    }
+
+    private fun subscribeToObservables() {
+        collectLatestLifecycleFlow(viewModel.calendarDateItemList) { dates ->
+            miniCalendarAdapter.submitList(dates)
+        }
         collectLatestLifecycleFlow(viewModel.dateSelected) { dateSelected ->
             setupCurrentDateSelectedTextView(dateSelected)
-
-            val adapter = MiniCalendarAdapter(
-                startDate = currentDate,
-                calendarSize = 6,
-                dateSelected = dateSelected,
-                onHolderClick = { dateClicked -> viewModel.setDateSelected(dateClicked) }
-            )
-            fragmentAgendaBinding.miniCalendar.adapter = adapter
         }
         collectLatestLifecycleFlow(viewModel.agendaItems) { items ->
             agendaAdapter.submitList(items)
@@ -108,7 +108,6 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                             true
                         }
                         R.id.reminder -> {
-                            val agendaItemType = AgendaItemType.REMINDER
                             navController.navigate(
                                 AgendaFragmentDirections
                                     .actionAgendaFragmentToReminderDetailFragment(
@@ -119,15 +118,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                             true
                         }
                         R.id.task -> {
-                            val agendaItemType = AgendaItemType.TASK
-                            navController.navigate(
-                                AgendaFragmentDirections
-                                    .actionAgendaFragmentToAgendaItemDetailFragment(
-                                        null,
-                                        agendaItemType,
-                                        true
-                                    )
-                            )
+                            // Todo()
                             true
                         }
                         else -> true

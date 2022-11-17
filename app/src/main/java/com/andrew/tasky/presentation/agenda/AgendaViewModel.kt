@@ -2,7 +2,8 @@ package com.andrew.tasky.presentation.agenda
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrew.tasky.domain.AgendaItem
+import com.andrew.tasky.domain.models.AgendaItem
+import com.andrew.tasky.domain.models.CalendarDateItem
 import com.andrew.tasky.domain.repository.AgendaItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
@@ -31,11 +32,47 @@ class AgendaViewModel@Inject constructor(
 
     fun setDateSelected(dateUserSelected: LocalDate) {
         _dateSelected.value = dateUserSelected
+        _calendarDateItemList.value.map { item ->
+            item.isSelected = dateUserSelected == item.date
+        }
     }
+
+    private val _calendarDateItemList = MutableStateFlow(
+        listOf<CalendarDateItem>(
+            CalendarDateItem(
+                true,
+                LocalDate.now()
+            )
+        )
+    )
+    val calendarDateItemList = _calendarDateItemList.asStateFlow()
 
     fun deleteAgendaItem(agendaItem: AgendaItem) {
         viewModelScope.launch {
             repository.deleteAgendaItem(agendaItem)
+        }
+    }
+
+    init {
+        val daysBefore = 6
+        val daysAfter = 8
+
+        for (day in 1..daysBefore) {
+            _calendarDateItemList.value += CalendarDateItem(
+                false,
+                LocalDate.now().minusDays(day.toLong())
+            )
+        }
+        for (day in 1..daysAfter) {
+            _calendarDateItemList.value += CalendarDateItem(
+                false,
+                LocalDate.now().plusDays(
+                    day.toLong()
+                )
+            )
+        }
+        _calendarDateItemList.value = calendarDateItemList.value.sortedBy {
+            it.date
         }
     }
 }

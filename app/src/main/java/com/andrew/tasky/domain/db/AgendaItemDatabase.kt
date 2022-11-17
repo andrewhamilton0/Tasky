@@ -1,7 +1,7 @@
 package com.andrew.tasky.domain.db
 
 import androidx.room.*
-import com.andrew.tasky.domain.AgendaItem
+import com.andrew.tasky.domain.models.AgendaItem
 
 @Database(
     entities = [AgendaItem::class],

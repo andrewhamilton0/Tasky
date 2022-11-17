@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.ItemAgendaBinding
-import com.andrew.tasky.domain.AgendaItem
+import com.andrew.tasky.domain.models.AgendaItem
 import com.andrew.tasky.util.AgendaItemMenuOption
 import com.andrew.tasky.util.AgendaItemType
 import java.time.format.DateTimeFormatter

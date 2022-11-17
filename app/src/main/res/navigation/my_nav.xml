@@ -29,9 +29,6 @@
         android:label="fragment_agenda"
         tools:layout="@layout/fragment_agenda" >
         <action
-            android:id="@+id/action_agendaFragment_to_agendaItemDetailFragment"
-            app:destination="@id/agendaItemDetailFragment" />
-        <action
             android:id="@+id/action_agendaFragment_to_loginFragment"
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
@@ -47,31 +44,6 @@
             app:destination="@id/taskDetailFragment" />
     </fragment>
     <fragment
-        android:id="@+id/agendaItemDetailFragment"
-        android:name="com.andrew.tasky.presentation.agenda_item_detail.AgendaItemDetailFragment"
-        android:label="fragment_agenda_item_detail"
-        tools:layout="@layout/fragment_agenda_item_detail" >
-        <action
-            android:id="@+id/action_agendaItemDetailFragment_to_editFragment"
-            app:destination="@id/editFragment" />
-        <argument
-            android:name="agendaItem"
-            app:argType="com.andrew.tasky.domain.AgendaItem"
-            app:nullable="true"
-            />
-        <argument
-            android:name="agendaItemType"
-            app:argType="com.andrew.tasky.util.AgendaItemType"
-            />
-        <argument
-            android:name="isInEditMode"
-            app:argType="boolean"
-            />
-        <action
-            android:id="@+id/action_agendaItemDetailFragment_to_photoDetailFragment"
-            app:destination="@id/photoDetailFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/eventDetailFragment"
         android:name="com.andrew.tasky.presentation.event_detail.EventDetailFragment"
         android:label="EventDetailFragment" >
@@ -80,7 +52,7 @@
             app:destination="@id/editFragment" />
         <argument
             android:name="agendaItem"
-            app:argType="com.andrew.tasky.domain.AgendaItem"
+            app:argType="com.andrew.tasky.domain.models.AgendaItem"
             app:nullable="true"
             />
         <argument
@@ -101,7 +73,7 @@
             app:destination="@id/editFragment" />
         <argument
             android:name="agendaItem"
-            app:argType="com.andrew.tasky.domain.AgendaItem"
+            app:argType="com.andrew.tasky.domain.models.AgendaItem"
             app:nullable="true"
             />
         <argument
@@ -119,7 +91,7 @@
             app:destination="@id/editFragment" />
         <argument
             android:name="agendaItem"
-            app:argType="com.andrew.tasky.domain.AgendaItem"
+            app:argType="com.andrew.tasky.domain.models.AgendaItem"
             app:nullable="true"
             />
         <argument

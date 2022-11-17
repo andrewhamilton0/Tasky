@@ -3,16 +3,27 @@ package com.andrew.tasky.presentation.adapters
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.databinding.ItemPhotoAdapterCardBinding
-import com.andrew.tasky.domain.Photo
+import com.andrew.tasky.domain.models.Photo
 
 class PhotoItemAdapter(
-    private var photos: List<Photo>,
     private val onPhotoClick: (Int) -> Unit,
     private val onAddPhotoClick: () -> Unit,
     private val userIsAttendee: Boolean
-) : RecyclerView.Adapter<PhotoItemAdapter.PhotoItemViewHolder>() {
+) : ListAdapter<Photo, PhotoItemAdapter.PhotoItemViewHolder>(Companion) {
+
+    companion object : DiffUtil.ItemCallback<Photo>() {
+        override fun areItemsTheSame(oldItem: Photo, newItem: Photo): Boolean {
+            return oldItem == newItem
+        }
+
+        override fun areContentsTheSame(oldItem: Photo, newItem: Photo): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     inner class PhotoItemViewHolder(val binding: ItemPhotoAdapterCardBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -25,8 +36,8 @@ class PhotoItemAdapter(
 
     override fun onBindViewHolder(holder: PhotoItemViewHolder, position: Int) {
         holder.binding.apply {
-            if (position != photos.size) {
-                image.setImageURI(Uri.parse(photos[position].uriString))
+            if (position != currentList.size) {
+                image.setImageURI(Uri.parse(currentList[position].uriString))
                 holder.itemView.setOnClickListener {
                     onPhotoClick(position)
                 }
@@ -35,7 +46,7 @@ class PhotoItemAdapter(
             // Gets rid of add photo after 10 photos, and adds click listener to add photo card
             if (position == 10) {
                 holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
-            } else if (position == photos.size) {
+            } else if (position == currentList.size) {
                 holder.itemView.setOnClickListener {
                     onAddPhotoClick()
                 }
@@ -46,9 +57,9 @@ class PhotoItemAdapter(
     override fun getItemCount(): Int {
         // If user is attendee and not creator, then user cannot see add photo card
         return if (userIsAttendee) {
-            photos.size
+            currentList.size
         } else {
-            photos.size + 1
+            currentList.size + 1
         }
     }
 }
