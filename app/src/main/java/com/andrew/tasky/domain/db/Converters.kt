@@ -2,7 +2,7 @@ package com.andrew.tasky.domain.db
 
 import androidx.room.TypeConverter
 import com.andrew.tasky.domain.Attendee
-import com.andrew.tasky.domain.Photo
+import com.andrew.tasky.domain.models.Photo
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.ReminderTime
 import com.google.gson.Gson

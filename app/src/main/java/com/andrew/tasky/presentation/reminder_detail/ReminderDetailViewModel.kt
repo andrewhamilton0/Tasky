@@ -2,7 +2,7 @@ package com.andrew.tasky.presentation.reminder_detail
 
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModel
-import com.andrew.tasky.domain.AgendaItem
+import com.andrew.tasky.domain.models.AgendaItem
 import com.andrew.tasky.domain.repository.AgendaItemRepository
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.ReminderTime

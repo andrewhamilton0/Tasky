@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.andrew.tasky.domain.AgendaItem
+import com.andrew.tasky.domain.models.AgendaItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao

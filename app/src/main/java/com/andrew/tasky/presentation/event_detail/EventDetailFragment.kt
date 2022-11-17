@@ -18,7 +18,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentEventDetailBinding
-import com.andrew.tasky.domain.Photo
+import com.andrew.tasky.domain.models.Photo
 import com.andrew.tasky.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.presentation.adapters.PhotoItemAdapter
 import com.andrew.tasky.presentation.dialogs.AddAttendeeDialog
@@ -52,6 +52,10 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
     private val args: EventDetailFragmentArgs by navArgs()
     private val isAttendee = false
     private val agendaItemType = AgendaItemType.EVENT
+
+    private lateinit var photoAdapter: PhotoItemAdapter
+    private lateinit var goingAttendeeAdapter: AttendeeItemAdapter
+    private lateinit var notGoingAttendeeAdapter: AttendeeItemAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -109,6 +113,15 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             addPhotoLayout.addPhotoPlusSign.setOnClickListener {
                 addPhoto()
             }
+            photoAdapter = PhotoItemAdapter(
+                onPhotoClick = { index -> openPhoto(index) },
+                onAddPhotoClick = { addPhoto() },
+                userIsAttendee = isAttendee
+            )
+            addPhotoLayout.photosRecyclerView.adapter = photoAdapter
+            addPhotoLayout.photosRecyclerView.layoutManager = LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false
+            )
 
             startTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.from)
             startTimeAndDateLayout.timeTextView.isEnabled = !isAttendee
@@ -170,6 +183,22 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             attendeesLayout.notGoingButton.setOnClickListener {
                 viewModel.setAttendeeFilterType(EventDetailViewModel.AttendeeFilterTypes.NOT_GOING)
             }
+            goingAttendeeAdapter = AttendeeItemAdapter(
+                isAttendee,
+                onDeleteIconClick = { attendee -> viewModel.deleteAttendee(attendee) }
+            )
+            attendeesLayout.goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
+            attendeesLayout.goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
+                requireContext()
+            )
+            notGoingAttendeeAdapter = AttendeeItemAdapter(
+                isAttendee,
+                onDeleteIconClick = { attendee -> viewModel.deleteAttendee(attendee) }
+            )
+            attendeesLayout.notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
+            attendeesLayout.notGoingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
+                requireContext()
+            )
 
             if (!isAttendee) {
                 btmActionTvBtn.deleteAgendaItemButton.text = String.format(
@@ -250,19 +279,9 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
 
             collectLatestLifecycleFlow(viewModel.photos) { photoList ->
+                photoAdapter.submitList(photoList)
+
                 addPhotoLayout.addPhotoLayout.isVisible = !isAttendee || photoList.isNotEmpty()
-
-                val adapter = PhotoItemAdapter(
-                    photoList,
-                    onPhotoClick = { index -> openPhoto(index) },
-                    onAddPhotoClick = { addPhoto() },
-                    userIsAttendee = isAttendee
-                )
-                addPhotoLayout.photosRecyclerView.adapter = adapter
-                addPhotoLayout.photosRecyclerView.layoutManager = LinearLayoutManager(
-                    requireContext(), LinearLayoutManager.HORIZONTAL, false
-                )
-
                 addPhotoLayout.addPhotoPlusSign.isVisible = photoList.isEmpty()
                 addPhotoLayout.addPhotoTextView.isVisible = photoList.isEmpty()
                 addPhotoLayout.photosTextView.isVisible = photoList.isNotEmpty()
@@ -411,26 +430,10 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                     }
                 }
                 collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
-                    val goingAttendeeAdapter = AttendeeItemAdapter(
-                        goingAttendees,
-                        isAttendee,
-                        onDeleteIconClick = { attendee -> viewModel.deleteAttendee(attendee) }
-                    )
-                    goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
-                    goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
-                        requireContext()
-                    )
+                    goingAttendeeAdapter.submitList(goingAttendees)
                 }
                 collectLatestLifecycleFlow(viewModel.notGoingAttendees) { notGoingAttendees ->
-                    val notGoingAttendeeAdapter = AttendeeItemAdapter(
-                        notGoingAttendees,
-                        isAttendee,
-                        onDeleteIconClick = { attendee -> viewModel.deleteAttendee(attendee) }
-                    )
-                    notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
-                    notGoingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
-                        requireContext()
-                    )
+                    notGoingAttendeeAdapter.submitList(notGoingAttendees)
                 }
             }
             if (isAttendee) {

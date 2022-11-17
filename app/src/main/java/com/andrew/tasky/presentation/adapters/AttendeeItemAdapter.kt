@@ -3,6 +3,8 @@ package com.andrew.tasky.presentation.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.databinding.ItemAttendeeBinding
 import com.andrew.tasky.domain.Attendee
@@ -10,10 +12,19 @@ import com.andrew.tasky.domain.AttendeeType
 import com.andrew.tasky.domain.StringToInitials
 
 class AttendeeItemAdapter(
-    private var attendees: List<Attendee>,
     private var isAttendee: Boolean,
     private val onDeleteIconClick: (Attendee) -> Unit
-) : RecyclerView.Adapter<AttendeeItemAdapter.AttendeeItemViewHolder>() {
+) : ListAdapter<Attendee, AttendeeItemAdapter.AttendeeItemViewHolder>(Companion) {
+
+    companion object : DiffUtil.ItemCallback<Attendee>() {
+        override fun areItemsTheSame(oldItem: Attendee, newItem: Attendee): Boolean {
+            return oldItem == newItem
+        }
+
+        override fun areContentsTheSame(oldItem: Attendee, newItem: Attendee): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     inner class AttendeeItemViewHolder(val binding: ItemAttendeeBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -27,22 +38,22 @@ class AttendeeItemAdapter(
     override fun onBindViewHolder(holder: AttendeeItemViewHolder, position: Int) {
         holder.binding.apply {
 
-            val isCreatorHolder = attendees[position].attendeeType == AttendeeType.CREATOR
+            val isCreatorHolder = currentList[position].attendeeType == AttendeeType.CREATOR
             deleteAttendeeButton.isVisible = !isCreatorHolder && !isAttendee
             creatorTextView.isVisible = isCreatorHolder
 
-            attendeeFullNameTextView.text = attendees[position].name
+            attendeeFullNameTextView.text = currentList[position].name
 
             attendeeInitialsTextView.text = StringToInitials
-                .convertStringToInitials(attendees[position].name)
+                .convertStringToInitials(currentList[position].name)
 
             deleteAttendeeButton.setOnClickListener {
-                onDeleteIconClick(attendees[position])
+                onDeleteIconClick(currentList[position])
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return attendees.size
+        return currentList.size
     }
 }

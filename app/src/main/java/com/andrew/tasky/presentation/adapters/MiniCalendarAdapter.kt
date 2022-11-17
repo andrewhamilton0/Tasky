@@ -3,18 +3,34 @@ package com.andrew.tasky.presentation.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.ItemMiniCalendarDayBinding
+import com.andrew.tasky.domain.models.CalendarDateItem
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class MiniCalendarAdapter(
-    private val startDate: LocalDate,
-    private val calendarSize: Int,
-    private val dateSelected: LocalDate,
     private val onHolderClick: (LocalDate) -> Unit
-) : RecyclerView.Adapter<MiniCalendarAdapter.MiniCalendarViewHolder>() {
+) : ListAdapter<CalendarDateItem, MiniCalendarAdapter.MiniCalendarViewHolder>(Companion) {
+
+    companion object : DiffUtil.ItemCallback<CalendarDateItem>() {
+        override fun areItemsTheSame(
+            oldItem: CalendarDateItem,
+            newItem: CalendarDateItem
+        ): Boolean {
+            return oldItem == newItem
+        }
+
+        override fun areContentsTheSame(
+            oldItem: CalendarDateItem,
+            newItem: CalendarDateItem
+        ): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     inner class MiniCalendarViewHolder(val binding: ItemMiniCalendarDayBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -27,14 +43,14 @@ class MiniCalendarAdapter(
 
     override fun onBindViewHolder(holder: MiniCalendarViewHolder, position: Int) {
         holder.binding.apply {
-            dateNumber.text = startDate.plusDays(position.toLong()).format(
+            dateNumber.text = currentList[position].date.format(
                 DateTimeFormatter.ofPattern("d")
             )
-            dayOfWeek.text = startDate.plusDays(position.toLong()).format(
+            dayOfWeek.text = currentList[position].date.format(
                 DateTimeFormatter.ofPattern("eeeee")
             )
 
-            if (dateSelected == startDate.plusDays(position.toLong())) {
+            if (currentList[position].isSelected) {
                 miniCalendarCard.setCardBackgroundColor(
                     ResourcesCompat.getColor(
                         holder.itemView.context.resources,
@@ -53,12 +69,12 @@ class MiniCalendarAdapter(
             }
 
             holder.itemView.setOnClickListener {
-                onHolderClick(startDate.plusDays(position.toLong()))
+                onHolderClick(currentList[position].date)
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return calendarSize
+        return currentList.size
     }
 }

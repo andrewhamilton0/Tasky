@@ -1,4 +1,4 @@
-package com.andrew.tasky.domain
+package com.andrew.tasky.domain.models
 
 import java.io.Serializable
 
