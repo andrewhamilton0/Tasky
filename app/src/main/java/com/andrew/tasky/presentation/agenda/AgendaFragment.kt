@@ -13,7 +13,6 @@ import com.andrew.tasky.databinding.FragmentAgendaBinding
 import com.andrew.tasky.domain.models.AgendaItem
 import com.andrew.tasky.presentation.adapters.AgendaItemAdapter
 import com.andrew.tasky.presentation.adapters.MiniCalendarAdapter
-import com.andrew.tasky.presentation.dialogs.DatePickerDialog
 import com.andrew.tasky.util.*
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
@@ -43,7 +42,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         setupCurrentMonthTextView()
         setupAgendaItemListRecyclerView()
         miniCalendarAdapter = MiniCalendarAdapter(
-            onHolderClick = { date -> viewModel.setDateSelected(date) }
+            onDateClick = { date -> viewModel.setDateSelected(date) }
         )
         fragmentAgendaBinding.miniCalendar.adapter = miniCalendarAdapter
         fragmentAgendaBinding.miniCalendar.layoutManager = LinearLayoutManager(
@@ -68,10 +67,10 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         fragmentAgendaBinding.apply {
 
             calendarMonth.setOnClickListener {
-                showDatePickerFragment()
+                showDatePickerDialog(viewModel::setDateSelected)
             }
             calendarDropDownArrow.setOnClickListener {
-                showDatePickerFragment()
+                showDatePickerDialog(viewModel::setDateSelected)
             }
 
             logoutButton.setOnClickListener { view ->
@@ -203,23 +202,5 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                     )
             )
         }
-    }
-
-    private fun showDatePickerFragment() {
-        val datePickerFragment = DatePickerDialog()
-        val supportFragmentManager = requireActivity().supportFragmentManager
-
-        supportFragmentManager.setFragmentResultListener(
-            "REQUEST_KEY",
-            viewLifecycleOwner
-        ) {
-            resultKey, bundle ->
-            if (resultKey == "REQUEST_KEY") {
-                val date = bundle.getString("SELECTED_DATE")
-                val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
-                viewModel.setDateSelected(LocalDate.parse(date, formatter))
-            }
-        }
-        datePickerFragment.show(supportFragmentManager, "DatePickerFragment")
     }
 }

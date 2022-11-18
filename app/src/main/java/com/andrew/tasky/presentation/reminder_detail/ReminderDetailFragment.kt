@@ -3,25 +3,16 @@ package com.andrew.tasky.presentation.reminder_detail
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.*
-import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.navArgs
 import com.andrew.tasky.R
 import com.andrew.tasky.databinding.FragmentReminderDetailBinding
-import com.andrew.tasky.presentation.dialogs.DatePickerDialog
-import com.andrew.tasky.presentation.dialogs.DeleteConfirmationDialog
-import com.andrew.tasky.presentation.dialogs.TimePickerDialog
 import com.andrew.tasky.util.*
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
@@ -33,7 +24,6 @@ class ReminderDetailFragment : Fragment(R.layout.fragment_reminder_detail) {
     private val viewModel: ReminderDetailViewModel by viewModels()
     private lateinit var navController: NavController
     private lateinit var binding: FragmentReminderDetailBinding
-    private val args: ReminderDetailFragmentArgs by navArgs()
     private val agendaItemType = AgendaItemType.REMINDER
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,41 +58,69 @@ class ReminderDetailFragment : Fragment(R.layout.fragment_reminder_detail) {
                 viewModel.setIsDone(!viewModel.isDone.value)
             }
             addTitleAndDoneButtonLayout.titleTextView.setOnClickListener {
-                navigateToEditFragment(EditType.TITLE)
+                navigateToEditFragment(
+                    editType = EditType.TITLE,
+                    originalText = viewModel.title.value,
+                    onResult = viewModel::setTitle
+                )
             }
             addTitleAndDoneButtonLayout.editTitleButton.setOnClickListener {
-                navigateToEditFragment(EditType.TITLE)
+                navigateToEditFragment(
+                    editType = EditType.TITLE,
+                    originalText = viewModel.title.value,
+                    onResult = viewModel::setTitle
+                )
             }
 
             addDescriptionLayout.editDescriptionButton.setOnClickListener {
-                navigateToEditFragment(EditType.DESCRIPTION)
+                navigateToEditFragment(
+                    editType = EditType.DESCRIPTION,
+                    originalText = viewModel.description.value,
+                    onResult = viewModel::setDescription
+                )
             }
             addDescriptionLayout.descriptionTextView.setOnClickListener {
-                navigateToEditFragment(EditType.DESCRIPTION)
+                navigateToEditFragment(
+                    editType = EditType.DESCRIPTION,
+                    originalText = viewModel.description.value,
+                    onResult = viewModel::setDescription
+                )
             }
 
             startTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.from)
             startTimeAndDateLayout.timeTextView.setOnClickListener {
-                showTimePickerDialog(it)
+                showTimePickerDialog(viewModel::setStartTime)
             }
             startTimeAndDateLayout.timeButton.setOnClickListener {
-                showTimePickerDialog(it)
+                showTimePickerDialog(viewModel::setStartTime)
             }
             startTimeAndDateLayout.dateTextView.setOnClickListener {
-                showDatePickerDialog(it)
+                showDatePickerDialog(viewModel::setStartDate)
             }
             startTimeAndDateLayout.dateButton.setOnClickListener {
-                showDatePickerDialog(it)
+                showDatePickerDialog(viewModel::setStartDate)
             }
 
             reminderLayout.reminderTextView.setOnClickListener {
-                showReminderOptionsPopupMenu(it)
+                showReminderOptionsPopupMenu(
+                    it,
+                    viewModel::setSelectedReminderTime
+                )
             }
             reminderLayout.reminderButton.setOnClickListener {
-                showReminderOptionsPopupMenu(it)
+                showReminderOptionsPopupMenu(
+                    it,
+                    viewModel::setSelectedReminderTime
+                )
             }
             btmActionTvBtn.deleteAgendaItemButton.setOnClickListener {
-                showDeleteConfirmationDialog()
+                showDeleteConfirmationDialog(
+                    agendaItemType,
+                    onResultDeleteAgendaItem = {
+                        viewModel.deleteAgendaItem()
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }
@@ -188,154 +206,5 @@ class ReminderDetailFragment : Fragment(R.layout.fragment_reminder_detail) {
                 }
             }
         }
-    }
-
-    private fun navigateToEditFragment(editType: EditType) {
-        setFragmentResultListener("INPUT_REQUEST_KEY") { resultKey, bundle ->
-            if (resultKey == "INPUT_REQUEST_KEY") {
-                val input = bundle.getString("INPUT")
-                when (editType) {
-                    EditType.TITLE -> {
-                        if (input != null) {
-                            viewModel.setTitle(input)
-                        }
-                    }
-                    EditType.DESCRIPTION -> {
-                        if (input != null) {
-                            viewModel.setDescription(input)
-                        }
-                    }
-                }
-            }
-        }
-        when (editType) {
-            EditType.TITLE -> {
-                val text = binding.addTitleAndDoneButtonLayout.titleTextView.text.toString()
-                val bundle = Bundle()
-                bundle.putString("TEXT", text)
-                bundle.putString("EDIT_TYPE", editType.name)
-
-                setFragmentResult("EDIT_TYPE_AND_TEXT_REQUEST_KEY", bundle)
-
-                navController.navigate(
-                    ReminderDetailFragmentDirections
-                        .actionReminderDetailFragmentToEditFragment()
-                )
-            }
-            EditType.DESCRIPTION -> {
-                val text = binding.addDescriptionLayout.descriptionTextView.text.toString()
-                val bundle = Bundle()
-                bundle.putString("TEXT", text)
-                bundle.putString("EDIT_TYPE", editType.name)
-
-                setFragmentResult("EDIT_TYPE_AND_TEXT_REQUEST_KEY", bundle)
-
-                navController.navigate(
-                    ReminderDetailFragmentDirections
-                        .actionReminderDetailFragmentToEditFragment()
-                )
-            }
-        }
-    }
-
-    private fun showTimePickerDialog(view: View) {
-        val timePickerDialog = TimePickerDialog()
-        val supportFragmentManager = requireActivity().supportFragmentManager
-
-        supportFragmentManager.setFragmentResultListener(
-            "REQUEST_KEY",
-            viewLifecycleOwner
-        ) { resultKey, bundle ->
-            if (resultKey == "REQUEST_KEY") {
-                val time = bundle.getString("SELECTED_TIME")
-                val formatter = DateTimeFormatter.ofPattern("hh:mm a")
-                if (view == binding.startTimeAndDateLayout.timeTextView ||
-                    view == binding.startTimeAndDateLayout.timeButton
-                ) {
-                    viewModel.setStartTime(LocalTime.parse(time, formatter))
-                }
-            }
-        }
-        timePickerDialog.show(supportFragmentManager, "TimePickerDialog")
-    }
-
-    private fun showDatePickerDialog(view: View) {
-        val datePickerFragment = DatePickerDialog()
-        val supportFragmentManager = requireActivity().supportFragmentManager
-
-        supportFragmentManager.setFragmentResultListener(
-            "REQUEST_KEY",
-            viewLifecycleOwner
-        ) { resultKey, bundle ->
-            if (resultKey == "REQUEST_KEY") {
-                val date = bundle.getString("SELECTED_DATE")
-                val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
-
-                if (view == binding.startTimeAndDateLayout.dateTextView ||
-                    view == binding.startTimeAndDateLayout.dateButton
-                ) {
-                    viewModel.setStartDate(LocalDate.parse(date, formatter))
-                }
-            }
-        }
-        datePickerFragment.show(supportFragmentManager, "DatePickerFragment")
-    }
-
-    // View parameter determines which view popup appears under
-    private fun showReminderOptionsPopupMenu(view: View) {
-        val popupMenu = PopupMenu(requireContext(), view)
-        popupMenu.inflate(R.menu.menu_reminder_time_options)
-        popupMenu.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.tenMinutes -> {
-                    viewModel.setSelectedReminderTime(ReminderTime.TEN_MINUTES_BEFORE)
-                    true
-                }
-                R.id.thirtyMinutes -> {
-                    viewModel.setSelectedReminderTime(ReminderTime.THIRTY_MINUTES_BEFORE)
-                    true
-                }
-                R.id.oneHour -> {
-                    viewModel.setSelectedReminderTime(ReminderTime.ONE_HOUR_BEFORE)
-                    true
-                }
-                R.id.sixHours -> {
-                    viewModel.setSelectedReminderTime(ReminderTime.SIX_HOURS_BEFORE)
-                    true
-                }
-                R.id.oneDay -> {
-                    viewModel.setSelectedReminderTime(ReminderTime.ONE_DAY_BEFORE)
-                    true
-                }
-                else -> true
-            }
-        }
-        popupMenu.show()
-    }
-
-    private fun showDeleteConfirmationDialog() {
-        val deleteConfirmationDialog = DeleteConfirmationDialog()
-        val supportFragmentManager = requireActivity().supportFragmentManager
-
-        supportFragmentManager.setFragmentResultListener(
-            "REQUEST_KEY",
-            viewLifecycleOwner
-        ) { resultKey, bundle ->
-            if (resultKey == "REQUEST_KEY") {
-                val deleteAgendaItem = bundle.getBoolean("DELETE_AGENDA_ITEM")
-                if (deleteAgendaItem) {
-                    viewModel.deleteAgendaItem()
-                    navController.popBackStack()
-                }
-            }
-        }
-
-        val bundle = Bundle()
-        bundle.putString("AGENDA_ITEM_TYPE", agendaItemType.name)
-        supportFragmentManager.setFragmentResult(
-            "DELETE_CONFIRMATION_AGENDA_TYPE_REQUEST_KEY", bundle
-        )
-
-        deleteConfirmationDialog.show(supportFragmentManager, "DeleteConfirmationDialog")
     }
 }
