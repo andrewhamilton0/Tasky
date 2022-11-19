@@ -47,9 +47,6 @@
         android:id="@+id/eventDetailFragment"
         android:name="com.andrew.tasky.presentation.event_detail.EventDetailFragment"
         android:label="EventDetailFragment" >
-        <action
-            android:id="@+id/action_eventDetailFragment_to_editFragment"
-            app:destination="@id/editFragment" />
         <argument
             android:name="agendaItem"
             app:argType="com.andrew.tasky.domain.models.AgendaItem"
@@ -68,9 +65,6 @@
         android:name="com.andrew.tasky.presentation.reminder_detail.ReminderDetailFragment"
         android:label="fragment_reminder_detail"
         tools:layout="@layout/fragment_reminder_detail" >
-        <action
-            android:id="@+id/action_reminderDetailFragment_to_editFragment"
-            app:destination="@id/editFragment" />
         <argument
             android:name="agendaItem"
             app:argType="com.andrew.tasky.domain.models.AgendaItem"
@@ -86,9 +80,6 @@
         android:name="com.andrew.tasky.presentation.task_detail.TaskDetailFragment"
         android:label="fragment_task_detail"
         tools:layout="@layout/fragment_task_detail" >
-        <action
-            android:id="@+id/action_taskDetailFragment_to_editFragment"
-            app:destination="@id/editFragment" />
         <argument
             android:name="agendaItem"
             app:argType="com.andrew.tasky.domain.models.AgendaItem"
@@ -123,4 +114,5 @@
             app:argType="integer">
         </argument>
     </fragment>
+    <action android:id="@+id/action_global_editFragment" app:destination="@id/editFragment"/>
 </navigation>

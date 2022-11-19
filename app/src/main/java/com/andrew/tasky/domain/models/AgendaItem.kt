@@ -2,7 +2,6 @@ package com.andrew.tasky.domain.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.andrew.tasky.domain.Attendee
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.ReminderTime
 import java.io.Serializable
@@ -22,8 +21,8 @@ data class AgendaItem(
     val startDateAndTime: LocalDateTime,
     val endDateAndTime: LocalDateTime? = null,
     val reminderTime: ReminderTime,
-    val photos: List<Photo>? = null,
+    val photos: List<Photo>? = emptyList(),
     val isAttendee: Boolean? = false,
-    val attendees: List<Attendee>? = null,
+    val attendees: List<Attendee>? = emptyList(),
     val isAttending: Boolean? = true
 ) : Serializable

@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.databinding.ItemAttendeeBinding
-import com.andrew.tasky.domain.Attendee
-import com.andrew.tasky.domain.AttendeeType
 import com.andrew.tasky.domain.StringToInitials
+import com.andrew.tasky.domain.models.Attendee
+import com.andrew.tasky.domain.models.AttendeeType
 
 class AttendeeItemAdapter(
     private var isAttendee: Boolean,

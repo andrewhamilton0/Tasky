@@ -13,7 +13,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class MiniCalendarAdapter(
-    private val onHolderClick: (LocalDate) -> Unit
+    private val onDateClick: (LocalDate) -> Unit
 ) : ListAdapter<CalendarDateItem, MiniCalendarAdapter.MiniCalendarViewHolder>(Companion) {
 
     companion object : DiffUtil.ItemCallback<CalendarDateItem>() {
@@ -69,7 +69,7 @@ class MiniCalendarAdapter(
             }
 
             holder.itemView.setOnClickListener {
-                onHolderClick(currentList[position].date)
+                onDateClick(currentList[position].date)
             }
         }
     }

@@ -1,8 +1,8 @@
 package com.andrew.tasky.presentation.event_detail
 
 import androidx.lifecycle.*
-import com.andrew.tasky.domain.Attendee
 import com.andrew.tasky.domain.models.AgendaItem
+import com.andrew.tasky.domain.models.Attendee
 import com.andrew.tasky.domain.models.Photo
 import com.andrew.tasky.domain.repository.AgendaItemRepository
 import com.andrew.tasky.util.AgendaItemType

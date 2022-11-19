@@ -32,19 +32,15 @@ class AgendaViewModel@Inject constructor(
 
     fun setDateSelected(dateUserSelected: LocalDate) {
         _dateSelected.value = dateUserSelected
-        _calendarDateItemList.value.map { item ->
-            item.isSelected = dateUserSelected == item.date
+        _calendarDateItemList.value = calendarDateItemList.value.map { item ->
+            CalendarDateItem(
+                dateUserSelected == item.date,
+                item.date
+            )
         }
     }
 
-    private val _calendarDateItemList = MutableStateFlow(
-        listOf<CalendarDateItem>(
-            CalendarDateItem(
-                true,
-                LocalDate.now()
-            )
-        )
-    )
+    private val _calendarDateItemList = MutableStateFlow(emptyList<CalendarDateItem>())
     val calendarDateItemList = _calendarDateItemList.asStateFlow()
 
     fun deleteAgendaItem(agendaItem: AgendaItem) {
@@ -54,25 +50,25 @@ class AgendaViewModel@Inject constructor(
     }
 
     init {
-        val daysBefore = 6
-        val daysAfter = 8
 
-        for (day in 1..daysBefore) {
-            _calendarDateItemList.value += CalendarDateItem(
-                false,
-                LocalDate.now().minusDays(day.toLong())
+        val daysAfterCurrentDate = 5
+        var calendarList = listOf<CalendarDateItem>(
+            CalendarDateItem(
+                true,
+                LocalDate.now()
             )
-        }
-        for (day in 1..daysAfter) {
-            _calendarDateItemList.value += CalendarDateItem(
+        )
+        for (day in 1..daysAfterCurrentDate) {
+            calendarList += CalendarDateItem(
                 false,
                 LocalDate.now().plusDays(
                     day.toLong()
                 )
             )
         }
-        _calendarDateItemList.value = calendarDateItemList.value.sortedBy {
+        calendarList = calendarList.sortedBy {
             it.date
         }
+        _calendarDateItemList.value = calendarList
     }
 }

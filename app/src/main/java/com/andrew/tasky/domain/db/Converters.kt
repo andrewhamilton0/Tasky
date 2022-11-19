@@ -1,7 +1,7 @@
 package com.andrew.tasky.domain.db
 
 import androidx.room.TypeConverter
-import com.andrew.tasky.domain.Attendee
+import com.andrew.tasky.domain.models.Attendee
 import com.andrew.tasky.domain.models.Photo
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.ReminderTime
@@ -43,30 +43,22 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromAttendeeList(list: List<Attendee>?): String? {
-        return if (list != null) {
-            Gson().toJson(list)
-        } else null
+    fun fromAttendeeList(list: List<Attendee>): String {
+        return Gson().toJson(list)
     }
 
     @TypeConverter
-    fun toAttendeeList(value: String?): List<Attendee>? {
-        return if (value != null) {
-            Gson().fromJson(value, Array<Attendee>::class.java).toList()
-        } else null
+    fun toAttendeeList(value: String): List<Attendee> {
+        return Gson().fromJson(value, Array<Attendee>::class.java).toList()
     }
 
     @TypeConverter
-    fun fromUriList(list: List<Photo>?): String? {
-        return if (list != null) {
-            Gson().toJson(list)
-        } else null
+    fun fromUriList(list: List<Photo>): String {
+        return Gson().toJson(list)
     }
 
     @TypeConverter
-    fun toUriList(value: String?): List<Photo>? {
-        return if (value != null) {
-            Gson().fromJson(value, Array<Photo>::class.java).toList()
-        } else null
+    fun toUriList(value: String): List<Photo> {
+        return Gson().fromJson(value, Array<Photo>::class.java).toList()
     }
 }
