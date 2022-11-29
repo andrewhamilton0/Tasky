@@ -6,168 +6,73 @@
     android:layout_height="match_parent"
     android:background="@color/black">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/topOfWelcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".12" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/bottomOfWelcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".176" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/topOfButtonHolderLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".23" />
-
     <TextView
         android:id="@+id/welcomeMessageTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/register_welcome_message"
         android:textColor="@color/white"
-        android:textSize="34sp"
-        android:textStyle="bold"
+        android:fontFamily="@font/inter_bold"
+        android:textSize="28sp"
+        android:layout_marginTop="47dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topOfWelcome"
-        app:layout_constraintBottom_toTopOf="@id/bottomOfWelcome" />
-
+        app:layout_constraintTop_toTopOf="parent">
+    </TextView>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttonHolderLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/bg_rounded_top"
         android:backgroundTint="@color/white"
+        android:layout_marginTop="119dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topOfButtonHolderLayout">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/startOfTextBoxes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".075" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/endOfTextBoxes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent=".925" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/topOfTextBoxes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".075" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottomOfName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".165" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/topOfEmailAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".19" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottomOfEmailAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".28" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/topOfPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".305" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottomOfPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".395" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/topOfGetStarted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".5" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottomOfGetStarted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".59" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/topOfBackButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".80" />
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/nameLayout"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="63dp"
             android:background="@drawable/bg_rounded_edit_text"
             android:backgroundTint="@color/light_2"
-            app:layout_constraintTop_toBottomOf="@+id/topOfTextBoxes"
-            app:layout_constraintBottom_toTopOf="@id/bottomOfName"
-            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
-            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/startOfEditText1"
+                android:id="@+id/startOfEditText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent=".061" />
 
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/endOfEditText1"
+                android:id="@+id/endOfEditText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent=".878" />
+                app:layout_constraintGuide_percent=".86" />
 
             <EditText
                 android:id="@+id/nameEditText"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:background="@null"
+                android:fontFamily="@font/inter_regular"
                 android:hint="@string/name_preview"
                 android:singleLine="true"
                 android:textAlignment="viewStart"
-                android:textColorHighlight="@color/black"
-                android:textColorLink="@color/black"
                 android:textCursorDrawable="@null"
-                app:layout_constraintStart_toEndOf="@id/startOfEditText1"
-                app:layout_constraintEnd_toStartOf="@id/endOfEditText1"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/endOfEditText"
+                app:layout_constraintStart_toEndOf="@id/startOfEditText"
+                app:layout_constraintTop_toTopOf="parent">
             </EditText>
 
             <ImageView
@@ -177,7 +82,7 @@
                 android:background="@drawable/ic_baseline_check_24"
                 android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/endOfEditText1"
+                app:layout_constraintStart_toEndOf="@id/endOfEditText"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
             </ImageView>
@@ -186,43 +91,58 @@
         <com.andrew.tasky.presentation.views.EmailTextField
             android:id="@+id/emailTextField"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/topOfEmailAddress"
-            app:layout_constraintBottom_toTopOf="@+id/bottomOfEmailAddress"
-            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
-            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
+            android:layout_height="63dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/nameLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
         </com.andrew.tasky.presentation.views.EmailTextField>
 
         <com.andrew.tasky.presentation.views.PasswordTextField
             android:id="@+id/passwordTextField"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/topOfPassword"
-            app:layout_constraintBottom_toTopOf="@+id/bottomOfPassword"
-            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
-            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes">
+            android:layout_height="63dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/emailTextField"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
         </com.andrew.tasky.presentation.views.PasswordTextField>
 
         <Button
             android:id="@+id/getStartedButton"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="55dp"
             android:background="@drawable/bg_rounded_button"
             android:text="@string/get_started_button"
-            app:layout_constraintTop_toBottomOf="@id/topOfGetStarted"
-            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
-            app:layout_constraintEnd_toStartOf="@+id/endOfTextBoxes"
-            app:layout_constraintBottom_toTopOf="@+id/bottomOfGetStarted">
+            android:textSize="16sp"
+            android:fontFamily="@font/inter_bold"
+            android:textColor="@color/light"
+            android:layout_marginTop="70dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintTop_toBottomOf="@id/passwordTextField"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
         </Button>
 
-        <Button
+        <ImageButton
             android:id="@+id/backButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="150dp"
             android:background="@drawable/bg_rounded_edit_text"
-            app:icon="@drawable/ic_baseline_arrow_back_ios_new_24"
-            app:layout_constraintStart_toEndOf="@id/startOfTextBoxes"
-            app:layout_constraintTop_toTopOf="@id/topOfBackButton">
-        </Button>
+            android:backgroundTint="@color/black"
+            android:src="@drawable/ic_back_arrow_register"
+            app:flow_verticalBias="0.0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/getStartedButton"
+            app:layout_constraintVertical_bias="0.0">
+        </ImageButton>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
