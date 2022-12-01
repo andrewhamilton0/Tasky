@@ -34,8 +34,8 @@ class AgendaViewModel@Inject constructor(
         _dateSelected.value = dateUserSelected
         _calendarDateItemList.value = calendarDateItemList.value.map { item ->
             CalendarDateItem(
-                dateUserSelected == item.date,
-                item.date
+                isSelected = dateUserSelected == item.date,
+                date = item.date
             )
         }
     }
@@ -54,16 +54,14 @@ class AgendaViewModel@Inject constructor(
         val daysAfterCurrentDate = 5
         var calendarList = listOf<CalendarDateItem>(
             CalendarDateItem(
-                true,
-                LocalDate.now()
+                isSelected = true,
+                date = LocalDate.now()
             )
         )
-        for (day in 1..daysAfterCurrentDate) {
-            calendarList += CalendarDateItem(
-                false,
-                LocalDate.now().plusDays(
-                    day.toLong()
-                )
+        calendarList += (1..daysAfterCurrentDate).map { days ->
+            CalendarDateItem(
+                isSelected = false,
+                date = LocalDate.now().plusDays(days.toLong())
             )
         }
         calendarList = calendarList.sortedBy {

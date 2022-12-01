@@ -42,7 +42,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         setupCurrentMonthTextView()
         setupAgendaItemListRecyclerView()
         miniCalendarAdapter = MiniCalendarAdapter(
-            onDateClick = { date -> viewModel.setDateSelected(date) }
+            onDateClick = viewModel::setDateSelected
         )
         fragmentAgendaBinding.miniCalendar.adapter = miniCalendarAdapter
         fragmentAgendaBinding.miniCalendar.layoutManager = LinearLayoutManager(
@@ -117,7 +117,13 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                             true
                         }
                         R.id.task -> {
-                            // Todo()
+                            navController.navigate(
+                                AgendaFragmentDirections
+                                    .actionAgendaFragmentToTaskDetailFragment(
+                                        null,
+                                        true
+                                    )
+                            )
                             true
                         }
                         else -> true
@@ -185,7 +191,13 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
     private fun openAgendaItemDetail(agendaItem: AgendaItem, isInEditMode: Boolean) {
 
         when (agendaItem.type) {
-            AgendaItemType.TASK -> TODO()
+            AgendaItemType.TASK -> navController.navigate(
+                AgendaFragmentDirections
+                    .actionAgendaFragmentToTaskDetailFragment(
+                        agendaItem,
+                        isInEditMode
+                    )
+            )
             AgendaItemType.EVENT ->
                 navController.navigate(
                     AgendaFragmentDirections
