@@ -113,7 +113,7 @@ class TaskDetailFragment : Fragment(R.layout.fragment_task_detail) {
                     onResult = viewModel::setSelectedReminderTime
                 )
             }
-            btmActionTvBtn.deleteAgendaItemButton.setOnClickListener {
+            deleteBtn.deleteAgendaItemButton.setOnClickListener {
                 showDeleteConfirmationDialog(
                     agendaItemType,
                     onResultDeleteAgendaItem = {

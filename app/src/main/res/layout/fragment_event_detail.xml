@@ -106,8 +106,8 @@
                     android:layout_weight="1">
                 </FrameLayout>
                 <include
-                    android:id="@+id/btm_action_tv_btn"
-                    layout= "@layout/cv_agenda_item_screen_btm_action_tv_btn" />
+                    android:id="@+id/delete_btn"
+                    layout= "@layout/cv_agenda_item_delete_btn" />
                 <include
                     layout="@layout/cv_empty_divider"
                     android:layout_width="match_parent"

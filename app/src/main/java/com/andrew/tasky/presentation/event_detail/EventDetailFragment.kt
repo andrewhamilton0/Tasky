@@ -214,13 +214,13 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             )
 
             if (!isAttendee) {
-                btmActionTvBtn.deleteAgendaItemButton.text = String.format(
+                deleteBtn.deleteAgendaItemButton.text = String.format(
                     resources
                         .getString(R.string.delete_agenda_item_button),
                     getString(R.string.event)
                 ).uppercase()
             }
-            btmActionTvBtn.deleteAgendaItemButton.setOnClickListener {
+            deleteBtn.deleteAgendaItemButton.setOnClickListener {
                 if (isAttendee) {
                     viewModel.switchAttendingStatus()
                 } else {
@@ -458,9 +458,9 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             if (isAttendee) {
                 collectLatestLifecycleFlow(viewModel.isAttending) { isAttending ->
                     if (isAttending) {
-                        btmActionTvBtn.deleteAgendaItemButton.text = getString(R.string.join_event)
+                        deleteBtn.deleteAgendaItemButton.text = getString(R.string.join_event)
                     } else {
-                        btmActionTvBtn.deleteAgendaItemButton.text = getString(R.string.leave_event)
+                        deleteBtn.deleteAgendaItemButton.text = getString(R.string.leave_event)
                     }
                 }
             }

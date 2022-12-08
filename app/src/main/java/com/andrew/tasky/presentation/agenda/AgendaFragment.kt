@@ -57,7 +57,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         collectLatestLifecycleFlow(viewModel.dateSelected) { dateSelected ->
             setupCurrentDateSelectedTextView(dateSelected)
         }
-        collectLatestLifecycleFlow(viewModel.agendaItems) { items ->
+        collectLatestLifecycleFlow(viewModel.uiAgendaItems) { items ->
             agendaAdapter.submitList(items)
         }
     }
