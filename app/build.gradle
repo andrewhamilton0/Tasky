@@ -89,7 +89,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 
-    implementation('androidx.fragment:fragment-ktx:1.5.4')
+    implementation('androidx.fragment:fragment-ktx:1.5.5')
 
 
     testImplementation "com.google.truth:truth:1.1.3"
