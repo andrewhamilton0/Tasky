@@ -63,7 +63,6 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
     }
 
     private fun setOnClickListeners() {
-
         fragmentAgendaBinding.apply {
 
             calendarMonth.setOnClickListener {
@@ -140,7 +139,6 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
     }
 
     private fun setupCurrentDateSelectedTextView(dateSelected: LocalDate) {
-
         when (dateSelected) {
             currentDate.minusDays(1) -> {
                 fragmentAgendaBinding.currentDateSelectedTextView.text =
@@ -162,30 +160,40 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
 
     private fun setupAgendaItemListRecyclerView() {
         agendaAdapter = AgendaItemAdapter(
-            onAgendaItemOptionClick = { agendaItem, agendaItemActionOptions ->
-                agendaItemOptions(agendaItem, agendaItemActionOptions)
-            }
+            onAgendaItemCardClick = { agendaItem ->
+                openAgendaItemDetail(agendaItem = agendaItem, isInEditMode = false)
+            },
+            onAgendaItemOptionClick = { agendaItem, view ->
+                agendaItemOptions(agendaItem = agendaItem, view = view)
+            },
+            onDoneButtonClick = (viewModel::switchIsDone)
         )
         fragmentAgendaBinding.agendaItemRecyclerView.adapter = agendaAdapter
         fragmentAgendaBinding.agendaItemRecyclerView.layoutManager =
             LinearLayoutManager(requireContext())
     }
 
-    private fun agendaItemOptions(
-        agendaItem: AgendaItem,
-        selectedAgendaItemMenuOption: AgendaItemMenuOption
-    ) {
-        when (selectedAgendaItemMenuOption) {
-            AgendaItemMenuOption.OPEN -> {
-                openAgendaItemDetail(agendaItem = agendaItem, isInEditMode = false)
-            }
-            AgendaItemMenuOption.EDIT -> {
-                openAgendaItemDetail(agendaItem = agendaItem, isInEditMode = true)
-            }
-            AgendaItemMenuOption.DELETE -> {
-                viewModel.deleteAgendaItem(agendaItem = agendaItem)
+    private fun agendaItemOptions(agendaItem: AgendaItem, view: View) {
+        val popupMenu = PopupMenu(requireContext(), view)
+        popupMenu.inflate(R.menu.menu_agenda_item_actions)
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.open -> {
+                    openAgendaItemDetail(agendaItem = agendaItem, isInEditMode = false)
+                    true
+                }
+                R.id.edit -> {
+                    openAgendaItemDetail(agendaItem = agendaItem, isInEditMode = true)
+                    true
+                }
+                R.id.delete -> {
+                    viewModel.deleteAgendaItem(agendaItem = agendaItem)
+                    true
+                }
+                else -> true
             }
         }
+        popupMenu.show()
     }
 
     private fun openAgendaItemDetail(agendaItem: AgendaItem, isInEditMode: Boolean) {

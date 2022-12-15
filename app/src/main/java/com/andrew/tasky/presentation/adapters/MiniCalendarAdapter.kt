@@ -68,7 +68,7 @@ class MiniCalendarAdapter(
                 )
             }
 
-            holder.itemView.setOnClickListener {
+            miniCalendarCard.setOnClickListener {
                 onDateClick(currentList[position].date)
             }
         }
