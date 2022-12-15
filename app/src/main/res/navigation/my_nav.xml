@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.andrew.tasky.presentation.login.LoginFragment"
+        android:name="com.andrew.tasky.auth.presentation.screens.login.LoginFragment"
         android:label="LoginFragment"
         tools:layout="@layout/fragment_login">
         <action
@@ -19,13 +19,13 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.andrew.tasky.presentation.register.RegisterFragment"
+        android:name="com.andrew.tasky.auth.presentation.screens.register.RegisterFragment"
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" >
     </fragment>
     <fragment
         android:id="@+id/agendaFragment"
-        android:name="com.andrew.tasky.presentation.agenda.AgendaFragment"
+        android:name="com.andrew.tasky.agenda.presentation.screens.agenda.AgendaFragment"
         android:label="fragment_agenda"
         tools:layout="@layout/fragment_agenda" >
         <action
@@ -45,11 +45,11 @@
     </fragment>
     <fragment
         android:id="@+id/eventDetailFragment"
-        android:name="com.andrew.tasky.presentation.event_detail.EventDetailFragment"
+        android:name="com.andrew.tasky.agenda.presentation.screens.event_detail.EventDetailFragment"
         android:label="EventDetailFragment" >
         <argument
             android:name="agendaItem"
-            app:argType="com.andrew.tasky.domain.models.AgendaItem"
+            app:argType="com.andrew.tasky.agenda.domain.models.AgendaItem"
             app:nullable="true"
             />
         <argument
@@ -62,12 +62,12 @@
     </fragment>
     <fragment
         android:id="@+id/reminderDetailFragment"
-        android:name="com.andrew.tasky.presentation.reminder_detail.ReminderDetailFragment"
+        android:name="com.andrew.tasky.agenda.presentation.screens.reminder_detail.ReminderDetailFragment"
         android:label="fragment_reminder_detail"
         tools:layout="@layout/fragment_reminder_detail" >
         <argument
             android:name="agendaItem"
-            app:argType="com.andrew.tasky.domain.models.AgendaItem"
+            app:argType="com.andrew.tasky.agenda.domain.models.AgendaItem"
             app:nullable="true"
             />
         <argument
@@ -77,12 +77,12 @@
     </fragment>
     <fragment
         android:id="@+id/taskDetailFragment"
-        android:name="com.andrew.tasky.presentation.task_detail.TaskDetailFragment"
+        android:name="com.andrew.tasky.agenda.presentation.screens.task_detail.TaskDetailFragment"
         android:label="fragment_task_detail"
         tools:layout="@layout/fragment_task_detail" >
         <argument
             android:name="agendaItem"
-            app:argType="com.andrew.tasky.domain.models.AgendaItem"
+            app:argType="com.andrew.tasky.agenda.domain.models.AgendaItem"
             app:nullable="true"
             />
         <argument
@@ -92,13 +92,13 @@
     </fragment>
     <fragment
         android:id="@+id/editFragment"
-        android:name="com.andrew.tasky.presentation.edit.EditFragment"
+        android:name="com.andrew.tasky.agenda.presentation.screens.edit.EditFragment"
         android:label="fragment_edit"
         tools:layout="@layout/fragment_edit">
     </fragment>
     <fragment
         android:id="@+id/photoDetailFragment"
-        android:name="com.andrew.tasky.presentation.photo_detail.PhotoDetailFragment"
+        android:name="com.andrew.tasky.agenda.presentation.screens.photo_detail.PhotoDetailFragment"
         android:label="fragment_photo_detail"
         tools:layout="@layout/fragment_photo_detail">
         <argument
