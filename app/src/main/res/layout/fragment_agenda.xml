@@ -1,134 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.agenda.AgendaFragment"
-    android:background="@color/black">
-
-    <TextView
-        android:id="@+id/calendarMonth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="MARCH"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:fontFamily="@font/inter_bold"
-        android:textSize="16sp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="15dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-    </TextView>
-    <ImageView
-        android:id="@+id/calendarDropDownArrow"
-        android:src="@drawable/arrow_drop_down"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        app:layout_constraintTop_toTopOf="@id/calendarMonth"
-        app:layout_constraintBottom_toBottomOf="@id/calendarMonth"
-        app:layout_constraintStart_toEndOf="@id/calendarMonth">
-    </ImageView>
-
+    android:fillViewport="true">
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/logoutButtonLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-    <ImageView
-        android:id="@+id/logoutButton"
-        android:background="@drawable/ic_logout_initials_circle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-    </ImageView>
+        android:background="@color/black">
         <TextView
-            android:id="@+id/logoutButtonText"
+            android:id="@+id/calendarMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/light_blue"
-            android:text="AH"
+            android:text="MARCH"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:fontFamily="@font/inter_bold"
             android:textSize="16sp"
-            android:fontFamily="@font/inter_semi_bold"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="15dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
         </TextView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/calendarDropDownArrow"
+            android:src="@drawable/arrow_drop_down"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toTopOf="@id/calendarMonth"
+            app:layout_constraintBottom_toBottomOf="@id/calendarMonth"
+            app:layout_constraintStart_toEndOf="@id/calendarMonth">
+        </ImageView>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/bottomOfHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.09" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/mainBodyLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="53dp"
-        android:background="@drawable/bg_rounded_top"
-        android:backgroundTint="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="-16dp">
-
-        <LinearLayout
-            android:id="@+id/miniCalendarLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/miniCalendar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginStart="23dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="23dp">
-
-            </androidx.recyclerview.widget.RecyclerView>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/current_date_selected_text_view"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/logoutButtonLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="34dp"
-            android:fontFamily="@font/inter_bold"
-            android:text="Today"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/miniCalendarLinearLayout">
-        </TextView>
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <ImageView
+                android:id="@+id/logoutButton"
+                android:background="@drawable/ic_logout_initials_circle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+            </ImageView>
+            <TextView
+                android:id="@+id/logoutButtonText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/light_blue"
+                android:text="AH"
+                android:textSize="16sp"
+                android:fontFamily="@font/inter_semi_bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+            </TextView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/agendaItemRecyclerView"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/mainBodyScrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="1dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/current_date_selected_text_view"
-            app:layout_constraintVertical_bias="0.0"
-            tools:layout_editor_absoluteX="14dp">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:layout_marginTop="53dp"
+            android:fillViewport="true">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/mainBodyLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/bg_rounded_top"
+                android:backgroundTint="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0">
+
+                <LinearLayout
+                    android:id="@+id/miniCalendarLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/miniCalendar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="23dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginEnd="23dp">
+                    </androidx.recyclerview.widget.RecyclerView>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/current_date_selected_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="34dp"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="Today"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/miniCalendarLinearLayout">
+                </TextView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/agendaItemRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="1dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/current_date_selected_text_view"
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:layout_editor_absoluteX="14dp">
+                </androidx.recyclerview.widget.RecyclerView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
         <ImageButton
             android:id="@+id/addAgendaItemFAB"
             android:layout_width="wrap_content"
@@ -151,4 +153,4 @@
             app:layout_constraintTop_toTopOf="@id/addAgendaItemFAB">
         </ImageView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

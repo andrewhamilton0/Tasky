@@ -21,8 +21,6 @@ class AgendaViewModel@Inject constructor(
 
     private val _dateSelected = MutableStateFlow(LocalDate.now())
     val dateSelected = _dateSelected.asStateFlow()
-    private var _currentDateAndTime = MutableStateFlow(LocalDateTime.now())
-    private val currentDateAndTime = _currentDateAndTime.asStateFlow()
 
     private val currentDateAndTimeFlow = flow<LocalDateTime> {
         var dateAndTime = LocalDateTime.now()
@@ -33,15 +31,7 @@ class AgendaViewModel@Inject constructor(
         }
     }
 
-    private fun subscribeToObservables() {
-        viewModelScope.launch {
-            currentDateAndTimeFlow.collect {
-                _currentDateAndTime.value = it
-            }
-        }
-    }
-
-    val agendaItems = repository
+    private val agendaItems = repository
         .getAgendaItems()
         .combine(dateSelected) { items, selectedDate ->
             items
@@ -54,16 +44,12 @@ class AgendaViewModel@Inject constructor(
         agendaItems: List<AgendaItem>,
         currentDateTime: LocalDateTime
     ): Int {
-        var currentDateTimeIndex = 0
-        for (item in agendaItems) {
-            if (item.startDateAndTime < currentDateTime) {
-                currentDateTimeIndex++
-            }
-        }
-        return currentDateTimeIndex
+        return agendaItems.indexOf(
+            agendaItems.findLast { it.startDateAndTime < currentDateTime } ?: return 0
+        ).plus(1)
     }
 
-    val uiAgendaItems = agendaItems.map { items ->
+    val uiAgendaItems = combine(agendaItems, currentDateAndTimeFlow) { items, currentTime ->
         items.map { item ->
             UiAgendaItem.Item(item)
         }
@@ -72,43 +58,39 @@ class AgendaViewModel@Inject constructor(
                 add(
                     indexOfTimeNeedle(
                         agendaItems = items,
-                        currentDateTime = currentDateAndTime.value
+                        currentDateTime = currentTime
                     ),
                     UiAgendaItem.TimeNeedle
                 )
             }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun setDateSelected(dateUserSelected: LocalDate) {
-        _dateSelected.value = dateUserSelected
-        _calendarDateItemList.value = calendarDateItemList.value.map { item ->
-            CalendarDateItem(
-                isSelected = dateUserSelected == item.date,
-                date = item.date
-            )
+    fun switchIsDone(agendaItem: AgendaItem) {
+        viewModelScope.launch {
+            val updatedAgendaItem = agendaItem.copy(isDone = !agendaItem.isDone)
+            repository.upsert(updatedAgendaItem)
         }
     }
 
-    private val _calendarDateItemList = MutableStateFlow(emptyList<CalendarDateItem>())
-    val calendarDateItemList = _calendarDateItemList.asStateFlow()
+    fun setDateSelected(dateUserSelected: LocalDate) {
+        _dateSelected.value = dateUserSelected
+    }
+
+    private val daysAfterCurrentDate = 5
+    val calendarDateItemList = combine(
+        dateSelected, currentDateAndTimeFlow
+    ) { dateSelected, currentDateTime ->
+        (0..daysAfterCurrentDate).map { days ->
+            CalendarDateItem(
+                isSelected = dateSelected == currentDateTime.toLocalDate().plusDays(days.toLong()),
+                date = currentDateTime.toLocalDate().plusDays(days.toLong())
+            )
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun deleteAgendaItem(agendaItem: AgendaItem) {
         viewModelScope.launch {
             repository.deleteAgendaItem(agendaItem)
         }
-    }
-
-    init {
-
-        subscribeToObservables()
-
-        val daysAfterCurrentDate = 5
-        val calendarList = (0..daysAfterCurrentDate).mapIndexed { i, days ->
-            CalendarDateItem(
-                isSelected = i == 0,
-                date = LocalDate.now().plusDays(days.toLong())
-            )
-        }
-        _calendarDateItemList.value = calendarList
     }
 }

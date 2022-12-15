@@ -1,10 +1,10 @@
 package com.andrew.tasky.presentation.adapters
 
-import android.graphics.Color
 import android.graphics.Paint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,13 +12,14 @@ import com.andrew.tasky.R
 import com.andrew.tasky.databinding.ItemAgendaBinding
 import com.andrew.tasky.databinding.ItemTimeNeedleBinding
 import com.andrew.tasky.domain.models.AgendaItem
-import com.andrew.tasky.util.AgendaItemMenuOption
 import com.andrew.tasky.util.AgendaItemType
 import com.andrew.tasky.util.UiAgendaItem
 import java.time.format.DateTimeFormatter
 
 class AgendaItemAdapter(
-    private val onAgendaItemOptionClick: (AgendaItem, AgendaItemMenuOption) -> Unit
+    private val onAgendaItemCardClick: (AgendaItem) -> Unit,
+    private val onAgendaItemOptionClick: (AgendaItem, View) -> Unit,
+    private val onDoneButtonClick: (AgendaItem) -> Unit
 ) : ListAdapter<UiAgendaItem, RecyclerView.ViewHolder>(Companion) {
 
     companion object : DiffUtil.ItemCallback<UiAgendaItem>() {
@@ -68,47 +69,23 @@ class AgendaItemAdapter(
                     val agendaItem = item.agendaItem
                     agendaItemTitle.text = agendaItem.title
                     agendaItemDescription.text = agendaItem.description
-                    agendaItemDate.text = (
-                        agendaItem.startDateAndTime
-                            .format(DateTimeFormatter.ofPattern("MMM d, HH:mm")) +
-                            (
-                                agendaItem.endDateAndTime
-                                    ?.format(DateTimeFormatter.ofPattern(" - MMM d, HH:mm")) ?: ""
-                                )
-                        )
+
+                    val startFormatter = DateTimeFormatter.ofPattern("MMM d, HH:mm")
+                    val endFormatter = DateTimeFormatter.ofPattern(" - MMM d, HH:mm")
+                    val formattedStartedDate = agendaItem.startDateAndTime.format(startFormatter)
+                    val formattedEndDate = agendaItem.endDateAndTime?.format(endFormatter) ?: ""
+                    agendaItemDate.text = formattedStartedDate + formattedEndDate
 
                     doneButton.setOnClickListener {
-                        agendaItem.isDone = true
+                        onDoneButtonClick(agendaItem)
                     }
 
                     agendaItemCard.setOnClickListener {
-                        onAgendaItemOptionClick(agendaItem, AgendaItemMenuOption.OPEN)
+                        onAgendaItemCardClick(agendaItem)
                     }
 
                     optionsButton.setOnClickListener { view ->
-                        val popupMenu = PopupMenu(optionsButton.context, view)
-                        popupMenu.inflate(R.menu.menu_agenda_item_actions)
-                        popupMenu.setOnMenuItemClickListener { menuItem ->
-                            when (menuItem.itemId) {
-                                R.id.open -> {
-                                    val actionOption = AgendaItemMenuOption.OPEN
-                                    onAgendaItemOptionClick(agendaItem, actionOption)
-                                    true
-                                }
-                                R.id.edit -> {
-                                    val actionOption = AgendaItemMenuOption.EDIT
-                                    onAgendaItemOptionClick(agendaItem, actionOption)
-                                    true
-                                }
-                                R.id.delete -> {
-                                    val actionOption = AgendaItemMenuOption.DELETE
-                                    onAgendaItemOptionClick(agendaItem, actionOption)
-                                    true
-                                }
-                                else -> true
-                            }
-                        }
-                        popupMenu.show()
+                        onAgendaItemOptionClick(agendaItem, view)
                     }
 
                     if (agendaItem.isDone) {
@@ -121,19 +98,65 @@ class AgendaItemAdapter(
 
                     when (agendaItem.type) {
                         AgendaItemType.TASK -> {
-                            agendaItemCard.setCardBackgroundColor(Color.parseColor("#259f70"))
-                            doneButton.setColorFilter(Color.parseColor("#FFeeeeee"))
-                            optionsButton.setTextColor(Color.parseColor("#FFeeeeee"))
-                            agendaItemTitle.setTextColor(Color.parseColor("#FFeeeeee"))
-                            agendaItemDescription.setTextColor(Color.parseColor("#FFeeeeee"))
-                            agendaItemDate.setTextColor(Color.parseColor("#FFeeeeee"))
+                            agendaItemCard.setCardBackgroundColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.green)
+                            )
+                            doneButton.setColorFilter(
+                                ContextCompat.getColor(holder.itemView.context, R.color.white)
+                            )
+                            optionsButton.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.white)
+                            )
+                            agendaItemTitle.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.white)
+                            )
+                            agendaItemDescription.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.white)
+                            )
+                            agendaItemDate.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.white)
+                            )
                         }
-                        AgendaItemType.EVENT -> agendaItemCard.setCardBackgroundColor(
-                            Color.parseColor("#cced42")
-                        )
-                        AgendaItemType.REMINDER -> agendaItemCard.setCardBackgroundColor(
-                            Color.parseColor("#f2f3f7")
-                        )
+                        AgendaItemType.EVENT -> {
+                            agendaItemCard.setCardBackgroundColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.light_green)
+                            )
+                            doneButton.setColorFilter(
+                                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                            )
+                            optionsButton.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                            )
+                            agendaItemTitle.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                            )
+                            agendaItemDescription.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                            )
+                            agendaItemDate.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                            )
+                        }
+                        AgendaItemType.REMINDER -> {
+                            agendaItemCard.setCardBackgroundColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.light_2)
+                            )
+                            doneButton.setColorFilter(
+                                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                            )
+                            optionsButton.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                            )
+                            agendaItemTitle.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                            )
+                            agendaItemDescription.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                            )
+                            agendaItemDate.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.black)
+                            )
+                        }
                     }
                 }
             }
