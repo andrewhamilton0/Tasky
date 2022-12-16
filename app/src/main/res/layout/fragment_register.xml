@@ -88,7 +88,7 @@
             </ImageView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.andrew.tasky.presentation.views.EmailTextField
+        <com.andrew.tasky.auth.presentation.views.EmailTextField
             android:id="@+id/emailTextField"
             android:layout_width="0dp"
             android:layout_height="63dp"
@@ -98,9 +98,9 @@
             app:layout_constraintTop_toBottomOf="@+id/nameLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-        </com.andrew.tasky.presentation.views.EmailTextField>
+        </com.andrew.tasky.auth.presentation.views.EmailTextField>
 
-        <com.andrew.tasky.presentation.views.PasswordTextField
+        <com.andrew.tasky.auth.presentation.views.PasswordTextField
             android:id="@+id/passwordTextField"
             android:layout_width="0dp"
             android:layout_height="63dp"
@@ -110,7 +110,7 @@
             app:layout_constraintTop_toBottomOf="@+id/emailTextField"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-        </com.andrew.tasky.presentation.views.PasswordTextField>
+        </com.andrew.tasky.auth.presentation.views.PasswordTextField>
 
         <Button
             android:id="@+id/getStartedButton"

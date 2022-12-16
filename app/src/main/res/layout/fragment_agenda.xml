@@ -10,19 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/black">
+
         <TextView
             android:id="@+id/calendarMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="MARCH"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:fontFamily="@font/inter_bold"
-            android:textSize="16sp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="15dp"
+            android:fontFamily="@font/inter_bold"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            tools:text="MARCH">
         </TextView>
         <ImageView
             android:id="@+id/calendarDropDownArrow"
@@ -57,13 +58,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/light_blue"
-                android:text="AH"
                 android:textSize="16sp"
                 android:fontFamily="@font/inter_semi_bold"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="AH">
             </TextView>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -111,11 +112,11 @@
                     android:layout_marginStart="15dp"
                     android:layout_marginTop="34dp"
                     android:fontFamily="@font/inter_bold"
-                    android:text="Today"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/miniCalendarLinearLayout">
+                    app:layout_constraintTop_toBottomOf="@id/miniCalendarLinearLayout"
+                    tools:text="Today">
                 </TextView>
 
                 <androidx.recyclerview.widget.RecyclerView
