@@ -22,6 +22,9 @@
         android:name="com.andrew.tasky.auth.presentation.screens.register.RegisterFragment"
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_registerFragment_to_agendaFragment"
+            app:destination="@id/agendaFragment" />
     </fragment>
     <fragment
         android:id="@+id/agendaFragment"

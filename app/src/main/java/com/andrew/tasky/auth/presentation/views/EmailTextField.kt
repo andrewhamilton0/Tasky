@@ -18,6 +18,16 @@ class EmailTextField @JvmOverloads constructor(
         inflate(context, R.layout.cv_text_field_email, this)
     )
 
+    fun getText(): String {
+        return binding.emailAddressEditText.text.toString()
+    }
+
+    fun isValid(): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(
+            binding.emailAddressEditText.text.toString()
+        ).matches()
+    }
+
     init {
         binding.emailAddressEditText.addTextChangedListener {
             binding.emailAddressCheckBox.isVisible =

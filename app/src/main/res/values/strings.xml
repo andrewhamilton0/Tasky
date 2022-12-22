@@ -68,4 +68,6 @@
     <!--error messages -->
     <string name="error_invalid_password_format">Password must contain at least %1$d characters,
         one number, one uppercase, and one lowercase letter</string>
+    <string name="unauthorized">Unauthorized</string>
+    <string name="unknown_error">Unknown Error</string>
 </resources>

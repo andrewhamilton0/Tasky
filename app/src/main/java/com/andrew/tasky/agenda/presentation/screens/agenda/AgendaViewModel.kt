@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.CalendarDateItem
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
+import com.andrew.tasky.agenda.util.DateType
 import com.andrew.tasky.agenda.util.UiAgendaItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
@@ -20,14 +21,18 @@ class AgendaViewModel@Inject constructor(
 ) : ViewModel() {
 
     private val _dateSelected = MutableStateFlow(LocalDate.now())
-    val dateSelected = _dateSelected.asStateFlow()
+    private val dateSelected = _dateSelected.asStateFlow()
+
+    fun setDateSelected(dateUserSelected: LocalDate) {
+        _dateSelected.value = dateUserSelected
+    }
 
     val currentDateAndTimeFlow = flow<LocalDateTime> {
         var dateAndTime = LocalDateTime.now()
         while (true) {
+            emit(dateAndTime)
             delay(1000L)
             dateAndTime = LocalDateTime.now()
-            emit(dateAndTime)
         }
     }
 
@@ -72,10 +77,6 @@ class AgendaViewModel@Inject constructor(
         }
     }
 
-    fun setDateSelected(dateUserSelected: LocalDate) {
-        _dateSelected.value = dateUserSelected
-    }
-
     private val daysAfterCurrentDate = 5
     val calendarDateItemList = combine(
         dateSelected, currentDateAndTimeFlow
@@ -87,6 +88,26 @@ class AgendaViewModel@Inject constructor(
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val currentDateType = combine(
+        dateSelected, currentDateAndTimeFlow
+    ) { dateSelected, currentDateTime ->
+        val currentDate = currentDateTime.toLocalDate()
+        when (dateSelected) {
+            currentDate.minusDays(1) -> {
+                DateType.Yesterday
+            }
+            currentDate -> {
+                DateType.Today
+            }
+            currentDate.plusDays(1) -> {
+                DateType.Tomorrow
+            }
+            else -> {
+                DateType.FullDate(dateSelected)
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DateType.Today)
 
     fun deleteAgendaItem(agendaItem: AgendaItem) {
         viewModelScope.launch {
