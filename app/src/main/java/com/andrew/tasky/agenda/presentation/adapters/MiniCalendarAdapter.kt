@@ -43,14 +43,15 @@ class MiniCalendarAdapter(
 
     override fun onBindViewHolder(holder: MiniCalendarViewHolder, position: Int) {
         holder.binding.apply {
-            dateNumber.text = currentList[position].date.format(
+            val item = currentList[position]
+            dateNumber.text = item.date.format(
                 DateTimeFormatter.ofPattern("d")
             )
-            dayOfWeek.text = currentList[position].date.format(
+            dayOfWeek.text = item.date.format(
                 DateTimeFormatter.ofPattern("eeeee")
             )
 
-            if (currentList[position].isSelected) {
+            if (item.isSelected) {
                 miniCalendarCard.setCardBackgroundColor(
                     ResourcesCompat.getColor(
                         holder.itemView.context.resources,
@@ -69,7 +70,7 @@ class MiniCalendarAdapter(
             }
 
             miniCalendarCard.setOnClickListener {
-                onDateClick(currentList[position].date)
+                onDateClick(item.date)
             }
         }
     }

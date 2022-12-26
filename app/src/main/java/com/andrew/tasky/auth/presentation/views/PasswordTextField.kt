@@ -17,6 +17,10 @@ class PasswordTextField @JvmOverloads constructor(
         inflate(context, R.layout.cv_text_field_password, this)
     )
 
+    fun getText(): String {
+        return binding.passwordEditText.text.toString()
+    }
+
     fun isPasswordValid(): Boolean {
         return if (PasswordValidator().validate(binding.passwordEditText.text.toString())) {
             true

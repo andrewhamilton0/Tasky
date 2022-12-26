@@ -55,12 +55,9 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         }
         collectLatestLifecycleFlow(viewModel.currentDateAndTimeFlow) { currentDateAndTime ->
             setupCurrentMonthTextView(currentDate = currentDateAndTime.toLocalDate())
-            collectLatestLifecycleFlow(viewModel.dateSelected) { dateSelected ->
-                setupCurrentDateSelectedTextView(
-                    dateSelected = dateSelected,
-                    currentDate = currentDateAndTime.toLocalDate()
-                )
-            }
+        }
+        collectLatestLifecycleFlow(viewModel.currentDateType) { dateType ->
+            setupCurrentDateSelectedTextView(dateType)
         }
     }
 
@@ -140,23 +137,20 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
             .format(DateTimeFormatter.ofPattern("MMMM")).uppercase()
     }
 
-    private fun setupCurrentDateSelectedTextView(dateSelected: LocalDate, currentDate: LocalDate) {
-        when (dateSelected) {
-            currentDate.minusDays(1) -> {
+    private fun setupCurrentDateSelectedTextView(dateType: DateType) {
+        when (dateType) {
+            is DateType.FullDate ->
                 fragmentAgendaBinding.currentDateSelectedTextView.text =
-                    getString(R.string.yesterday)
-            }
-            currentDate -> {
-                fragmentAgendaBinding.currentDateSelectedTextView.text = getString(R.string.today)
-            }
-            currentDate.plusDays(1) -> {
+                    dateType.date.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
+            DateType.Today ->
+                fragmentAgendaBinding.currentDateSelectedTextView.text =
+                    getString(R.string.today)
+            DateType.Tomorrow ->
                 fragmentAgendaBinding.currentDateSelectedTextView.text =
                     getString(R.string.tomorrow)
-            }
-            else -> {
-                fragmentAgendaBinding.currentDateSelectedTextView.text = dateSelected
-                    .format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
-            }
+            DateType.Yesterday ->
+                fragmentAgendaBinding.currentDateSelectedTextView.text =
+                    getString(R.string.yesterday)
         }
     }
 
