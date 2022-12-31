@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
+import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.domain.models.Photo
 import com.andrew.tasky.agenda.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.agenda.presentation.adapters.PhotoItemAdapter
@@ -37,7 +38,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         ActivityResultContracts.GetContent(),
         ActivityResultCallback {
             if (it != null) {
-                viewModel.addPhoto(Photo(it.toString()))
+                viewModel.addPhoto(EventPhoto.Local(uri = it))
             }
         }
     )
@@ -121,6 +122,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 addPhoto()
             }
             photoAdapter = PhotoItemAdapter(
+                context = requireContext(),
                 onPhotoClick = { index -> openPhoto(index) },
                 onAddPhotoClick = { addPhoto() },
                 userIsAttendee = isAttendee

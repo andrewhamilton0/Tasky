@@ -3,6 +3,7 @@ package com.andrew.tasky.agenda.presentation.screens.event_detail
 import androidx.lifecycle.*
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
+import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.domain.models.Photo
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.agenda.util.AgendaItemType
@@ -79,9 +80,9 @@ class EventDetailViewModel @Inject constructor(
         _selectedReminderTime.value = selectedReminderTime
     }
 
-    private val _photo = MutableStateFlow(listOf<Photo>())
+    private val _photo = MutableStateFlow(listOf<EventPhoto>())
     val photos = _photo.asStateFlow()
-    fun addPhoto(photo: Photo) {
+    fun addPhoto(photo: EventPhoto) {
         _photo.value += photo
     }
     fun deletePhoto(indexToDelete: Int) {
@@ -90,7 +91,7 @@ class EventDetailViewModel @Inject constructor(
         }
         _photo.value = updatedPhotos
     }
-    private fun setupPhotos(photoList: List<Photo>) {
+    private fun setupPhotos(photoList: List<EventPhoto>) {
         _photo.value = photoList
     }
 
@@ -104,11 +105,11 @@ class EventDetailViewModel @Inject constructor(
     }
 
     val goingAttendees = attendees.map {
-        it.filter { attendee -> attendee.isAttending }
+        it.filter { attendee -> attendee.isGoing }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val notGoingAttendees = attendees.map {
-        it.filter { attendee -> !attendee.isAttending }
+        it.filter { attendee -> !attendee.isGoing }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun deleteAttendee(attendee: Attendee) {

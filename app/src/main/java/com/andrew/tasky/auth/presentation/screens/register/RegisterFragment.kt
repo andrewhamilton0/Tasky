@@ -9,12 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
 import com.andrew.tasky.auth.AuthResult
-import com.andrew.tasky.auth.presentation.screens.login.LoginFragmentDirections
-import com.andrew.tasky.auth.util.NameValidator
+import com.andrew.tasky.auth.util.PasswordValidator
 import com.andrew.tasky.databinding.FragmentRegisterBinding
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
@@ -35,23 +35,25 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             }
 
             nameEditText.addTextChangedListener {
-                if (it != null) {
-                    viewModel.setIsNameValid(NameValidator().validate(it.toString()))
-                }
+                viewModel.setIsNameValid(name = it.toString())
             }
 
             getStartedButton.setOnClickListener {
-                if (
-                    passwordTextField.isPasswordValid() &&
-                    viewModel.isNameValid.value &&
-                    emailTextField.isValid()
-                ) {
-                    viewModel.register(
-                        name = nameEditText.text.toString(),
-                        email = emailTextField.getText(),
-                        password = passwordTextField.getText()
-                    )
+                if (!viewModel.isPasswordValid(passwordTextField.getText())) {
+                    Toast.makeText(
+                        context,
+                        String.format(
+                            resources.getString(R.string.error_invalid_password_format),
+                            PasswordValidator.MIN_PASSWORD_LENGTH
+                        ),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
+                viewModel.register(
+                    name = nameEditText.text.toString(),
+                    email = emailTextField.getText(),
+                    password = passwordTextField.getText()
+                )
             }
 
             collectLatestLifecycleFlow(viewModel.isNameValid) { isNameValid ->
@@ -64,11 +66,9 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 when (result) {
                     is AuthResult.Authorized -> {
                         navController.navigate(
-                            LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
-                        )
-                        navController.popBackStack(
-                            destinationId = R.id.action_registerFragment_to_agendaFragment,
-                            inclusive = true
+                            RegisterFragmentDirections.actionRegisterFragmentToAgendaFragment(),
+                            NavOptions.Builder().setPopUpTo(R.id.agendaFragment, inclusive = true)
+                                .build()
                         )
                     }
                     is AuthResult.Unauthorized -> Toast.makeText(

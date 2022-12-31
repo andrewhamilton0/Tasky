@@ -22,12 +22,6 @@ class EmailTextField @JvmOverloads constructor(
         return binding.emailAddressEditText.text.toString()
     }
 
-    fun isValid(): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(
-            binding.emailAddressEditText.text.toString()
-        ).matches()
-    }
-
     init {
         binding.emailAddressEditText.addTextChangedListener {
             binding.emailAddressCheckBox.isVisible =

@@ -7,11 +7,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
 import com.andrew.tasky.auth.AuthResult
 import com.andrew.tasky.databinding.FragmentLoginBinding
-import kotlinx.coroutines.flow.collect
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
@@ -42,7 +42,9 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 when (result) {
                     is AuthResult.Authorized -> {
                         navController.navigate(
-                            LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
+                            LoginFragmentDirections.actionLoginFragmentToAgendaFragment(),
+                            NavOptions.Builder().setPopUpTo(R.id.agendaFragment, inclusive = true)
+                                .build()
                         )
                         navController.popBackStack(
                             destinationId = R.id.action_loginFragment_to_agendaFragment,
