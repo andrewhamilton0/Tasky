@@ -21,7 +21,7 @@ data class AgendaItem(
     val startDateAndTime: LocalDateTime,
     val endDateAndTime: LocalDateTime? = null,
     val reminderTime: ReminderTime,
-    val photos: List<Photo>? = emptyList(),
+    val photos: List<EventPhoto>? = emptyList(),
     val isAttendee: Boolean? = false,
     val attendees: List<Attendee>? = emptyList(),
     val isAttending: Boolean? = true

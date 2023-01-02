@@ -1,26 +1,31 @@
 package com.andrew.tasky.agenda.presentation.adapters
 
+import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.domain.models.Photo
+import com.andrew.tasky.agenda.presentation.screens.event_detail.EventDetailFragment
 import com.andrew.tasky.databinding.ItemPhotoAdapterCardBinding
+import com.bumptech.glide.Glide
 
 class PhotoItemAdapter(
+    val context: Context,
     private val onPhotoClick: (Int) -> Unit,
     private val onAddPhotoClick: () -> Unit,
     private val userIsAttendee: Boolean
-) : ListAdapter<Photo, PhotoItemAdapter.PhotoItemViewHolder>(Companion) {
+) : ListAdapter<EventPhoto, PhotoItemAdapter.PhotoItemViewHolder>(Companion) {
 
-    companion object : DiffUtil.ItemCallback<Photo>() {
-        override fun areItemsTheSame(oldItem: Photo, newItem: Photo): Boolean {
+    companion object : DiffUtil.ItemCallback<EventPhoto>() {
+        override fun areItemsTheSame(oldItem: EventPhoto, newItem: EventPhoto): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: Photo, newItem: Photo): Boolean {
+        override fun areContentsTheSame(oldItem: EventPhoto, newItem: EventPhoto): Boolean {
             return oldItem == newItem
         }
     }
@@ -36,15 +41,21 @@ class PhotoItemAdapter(
 
     override fun onBindViewHolder(holder: PhotoItemViewHolder, position: Int) {
         holder.binding.apply {
-            if (position != currentList.size) {
-                image.setImageURI(Uri.parse(currentList[position].uriString))
-                holder.itemView.setOnClickListener {
-                    onPhotoClick(position)
-                }
-            }
 
-            // Gets rid of add photo after 10 photos, and adds click listener to add photo card
-            if (position == 10) {
+            if (position != currentList.size) {
+                if (currentList[position] is EventPhoto.Local) {
+                    val item = currentList[position] as EventPhoto.Local
+                    image.setImageURI(Uri.parse(item.uri.toString()))
+                    holder.itemView.setOnClickListener {
+                        onPhotoClick(position)
+                    }
+                } else {
+                    val item = currentList[position] as EventPhoto.Remote
+                    Glide.with(context)
+                        .load(item.photoUrl)
+                        .into(image)
+                }
+            } else if (position == 10) {
                 holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
             } else if (position == currentList.size) {
                 holder.itemView.setOnClickListener {

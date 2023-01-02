@@ -42,10 +42,10 @@ class AttendeeItemAdapter(
             deleteAttendeeButton.isVisible = !isCreatorHolder && !isAttendee
             creatorTextView.isVisible = isCreatorHolder
 
-            attendeeFullNameTextView.text = currentList[position].name
+            attendeeFullNameTextView.text = currentList[position].fullName
 
             attendeeInitialsTextView.text = StringToInitials
-                .convertStringToInitials(currentList[position].name)
+                .convertStringToInitials(currentList[position].fullName)
 
             deleteAttendeeButton.setOnClickListener {
                 onDeleteIconClick(currentList[position])
