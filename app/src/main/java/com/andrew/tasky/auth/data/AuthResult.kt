@@ -1,4 +1,4 @@
-package com.andrew.tasky.auth
+package com.andrew.tasky.auth.data
 
 sealed class AuthResult<T>(val data: T? = null) {
     class Authorized<T>(data: T? = null) : AuthResult<T>(data)

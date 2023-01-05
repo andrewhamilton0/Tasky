@@ -1,6 +1,7 @@
 package com.andrew.tasky.agenda.domain.models
 
 import android.net.Uri
+import java.util.UUID
 
 sealed interface EventPhoto {
 
@@ -10,6 +11,7 @@ sealed interface EventPhoto {
     ) : EventPhoto
 
     class Local(
-        val uri: Uri
+        val uri: Uri,
+        val id: String = UUID.randomUUID().toString()
     ) : EventPhoto
 }

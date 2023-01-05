@@ -38,17 +38,18 @@ class AttendeeItemAdapter(
     override fun onBindViewHolder(holder: AttendeeItemViewHolder, position: Int) {
         holder.binding.apply {
 
-            val isCreatorHolder = currentList[position].attendeeType == AttendeeType.CREATOR
+            val item = currentList[position]
+
+            val isCreatorHolder = item.attendeeType == AttendeeType.CREATOR
             deleteAttendeeButton.isVisible = !isCreatorHolder && !isAttendee
             creatorTextView.isVisible = isCreatorHolder
 
-            attendeeFullNameTextView.text = currentList[position].fullName
-
+            attendeeFullNameTextView.text = item.fullName
             attendeeInitialsTextView.text = StringToInitials
-                .convertStringToInitials(currentList[position].fullName)
+                .convertStringToInitials(item.fullName)
 
             deleteAttendeeButton.setOnClickListener {
-                onDeleteIconClick(currentList[position])
+                onDeleteIconClick(item)
             }
         }
     }

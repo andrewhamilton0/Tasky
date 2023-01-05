@@ -13,7 +13,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
-import com.andrew.tasky.auth.AuthResult
+import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.auth.util.PasswordValidator
 import com.andrew.tasky.databinding.FragmentRegisterBinding
 

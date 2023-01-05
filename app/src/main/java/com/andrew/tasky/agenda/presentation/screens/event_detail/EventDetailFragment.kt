@@ -15,7 +15,6 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.domain.models.EventPhoto
-import com.andrew.tasky.agenda.domain.models.Photo
 import com.andrew.tasky.agenda.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.agenda.presentation.adapters.PhotoItemAdapter
 import com.andrew.tasky.agenda.presentation.dialogs.AddAttendeeDialog

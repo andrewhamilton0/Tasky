@@ -1,10 +1,10 @@
 package com.andrew.tasky.auth.presentation.screens.register
 
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrew.tasky.auth.AuthRepository
-import com.andrew.tasky.auth.AuthResult
+import com.andrew.tasky.auth.data.AuthRepository
+import com.andrew.tasky.auth.data.AuthResult
+import com.andrew.tasky.auth.domain.EmailPatternValidator
 import com.andrew.tasky.auth.util.NameValidator
 import com.andrew.tasky.auth.util.PasswordValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val emailPatternValidator: EmailPatternValidator
 ) : ViewModel() {
 
     private val resultChannel = Channel<AuthResult<Unit>>()
@@ -37,7 +38,7 @@ class RegisterViewModel @Inject constructor(
         if (
             isPasswordValid(password) &&
             isNameValid.value &&
-            Patterns.EMAIL_ADDRESS.matcher(email).matches()
+            emailPatternValidator.isValidEmailPattern(email)
         ) {
             viewModelScope.launch {
                 val result = repository.register(
