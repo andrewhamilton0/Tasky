@@ -16,7 +16,9 @@ import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
 import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.auth.util.PasswordValidator
 import com.andrew.tasky.databinding.FragmentRegisterBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RegisterFragment : Fragment(R.layout.fragment_register) {
 
     private val viewModel: RegisterViewModel by viewModels()
@@ -50,7 +52,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                     ).show()
                 }
                 viewModel.register(
-                    name = nameEditText.text.toString(),
+                    fullName = nameEditText.text.toString(),
                     email = emailTextField.getText(),
                     password = passwordTextField.getText()
                 )
@@ -61,7 +63,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             }
         }
 
-        lifecycleScope.launchWhenCreated {
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.authResults.collect { result ->
                 when (result) {
                     is AuthResult.Authorized -> {

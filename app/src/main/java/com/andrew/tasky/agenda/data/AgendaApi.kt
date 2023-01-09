@@ -1,9 +1,11 @@
 package com.andrew.tasky.agenda.data
 
 import com.andrew.tasky.agenda.util.Event
-import java.util.TimeZone
+import com.andrew.tasky.agenda.util.Reminder
+import com.andrew.tasky.agenda.util.Task
 import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -17,7 +19,7 @@ interface AgendaApi {
     @GET("/agenda")
     suspend fun getAgendaItems(
         @Query("timezone")
-        timeZone: TimeZone,
+        timeZone: String,
         @Query("time")
         time: Long = System.currentTimeMillis()
     ): Response<AgendaResponse>
@@ -29,7 +31,7 @@ interface AgendaApi {
     @POST("/event")
     suspend fun createEvent(
         @Part eventData: MultipartBody.Part,
-        @Part photoData: MultipartBody.Part
+        @Part photoData: List<MultipartBody.Part>
     ): Response<Event>
 
     @GET("/event")
@@ -48,6 +50,62 @@ interface AgendaApi {
     @PUT("/event")
     suspend fun updateEvent(
         @Part eventData: MultipartBody.Part,
-        @Part photoData: MultipartBody.Part
+        @Part photoData: List<MultipartBody.Part>
     ): Response<Event>
+
+    @GET("/attendee")
+    suspend fun getAttendee(
+        @Query("email")
+        email: String
+    ): Response<GetAttendeeResponse>
+
+    @DELETE("/attendee")
+    suspend fun deleteAttendee(
+        @Query("eventId")
+        eventId: String
+    )
+
+    @POST("/task")
+    suspend fun createTask(
+        @Body task: Task
+    )
+
+    @PUT("/task")
+    suspend fun updateTask(
+        @Body task: Task
+    )
+
+    @GET("/task")
+    suspend fun getTask(
+        @Query("taskId")
+        taskId: String
+    ): Response<Task>
+
+    @DELETE("/task")
+    suspend fun deleteTask(
+        @Query("taskId")
+        taskId: String
+    )
+
+    @POST("/reminder")
+    suspend fun createReminder(
+        @Body reminder: Reminder
+    )
+
+    @PUT("/reminder")
+    suspend fun updateReminder(
+        @Body reminder: Reminder
+    )
+
+    @GET("/reminder")
+    suspend fun getReminder(
+        @Query("reminderId")
+        reminderId: String
+    ): Response<Reminder>
+
+    @DELETE("/reminder")
+    suspend fun deleteReminder(
+        @Query("reminderId")
+        reminderId: String
+    )
 }

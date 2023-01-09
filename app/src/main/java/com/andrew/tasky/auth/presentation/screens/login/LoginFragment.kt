@@ -12,7 +12,9 @@ import androidx.navigation.Navigation
 import com.andrew.tasky.R
 import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.databinding.FragmentLoginBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private lateinit var navController: NavController
@@ -37,6 +39,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 )
             }
         }
+
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.authResults.collect { result ->
                 when (result) {
@@ -45,10 +48,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                             LoginFragmentDirections.actionLoginFragmentToAgendaFragment(),
                             NavOptions.Builder().setPopUpTo(R.id.agendaFragment, inclusive = true)
                                 .build()
-                        )
-                        navController.popBackStack(
-                            destinationId = R.id.action_loginFragment_to_agendaFragment,
-                            inclusive = true
                         )
                     }
                     is AuthResult.Unauthorized -> Toast.makeText(

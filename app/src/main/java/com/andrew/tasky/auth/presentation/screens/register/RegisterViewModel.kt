@@ -20,7 +20,6 @@ class RegisterViewModel @Inject constructor(
     private val repository: AuthRepository,
     private val emailPatternValidator: EmailPatternValidator
 ) : ViewModel() {
-
     private val resultChannel = Channel<AuthResult<Unit>>()
     val authResults = resultChannel.receiveAsFlow()
 
@@ -34,15 +33,15 @@ class RegisterViewModel @Inject constructor(
         return PasswordValidator().validate(password)
     }
 
-    fun register(name: String, email: String, password: String) {
+    fun register(fullName: String, email: String, password: String) {
         if (
-            isPasswordValid(password) &&
+            emailPatternValidator.isValidEmailPattern(email) &&
             isNameValid.value &&
-            emailPatternValidator.isValidEmailPattern(email)
+            isPasswordValid(email)
         ) {
             viewModelScope.launch {
                 val result = repository.register(
-                    name = name,
+                    fullName = fullName,
                     email = email,
                     password = password
                 )

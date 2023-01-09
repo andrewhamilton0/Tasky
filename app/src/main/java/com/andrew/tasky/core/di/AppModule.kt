@@ -6,14 +6,14 @@ import android.content.SharedPreferences
 import androidx.room.Room
 import com.andrew.tasky.agenda.domain.db.AgendaItemDatabase
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
-import com.andrew.tasky.auth.data.AuthApi
-import com.andrew.tasky.auth.data.AuthRepository
-import com.andrew.tasky.auth.data.AuthRepositoryImpl
+import com.andrew.tasky.auth.data.*
+import com.andrew.tasky.auth.domain.EmailPatternValidator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
@@ -24,17 +24,26 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideEmailValidator(): EmailPatternValidator {
+        return EmailPatternValidatorImpl()
+    }
+
+    private val okHttp = OkHttpClient.Builder().addInterceptor(ApiKeyInterceptor)
+
+    @Provides
+    @Singleton
     fun provideAuthApi(): AuthApi {
         return Retrofit.Builder()
             .baseUrl("https://tasky.pl-coding.com/")
             .addConverterFactory(MoshiConverterFactory.create())
+            .client(okHttp.build())
             .build()
             .create()
     }
 
     @Provides
     @Singleton
-    fun provedSharedPref(app: Application): SharedPreferences {
+    fun provideSharedPref(app: Application): SharedPreferences {
         return app.getSharedPreferences("prefs", MODE_PRIVATE)
     }
 

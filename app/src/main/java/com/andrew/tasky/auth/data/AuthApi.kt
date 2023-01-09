@@ -7,17 +7,17 @@ import retrofit2.http.POST
 
 interface AuthApi {
 
-    @POST("register")
+    @POST("/register")
     suspend fun register(
         @Body request: RegisterRequest
     )
 
-    @POST("login")
+    @POST("/login")
     suspend fun login(
         @Body request: LoginRequest
     ): TokenResponse
 
-    @GET("authenticate")
+    @GET("/authenticate")
     suspend fun authenticate(
         @Header("Authorization") token: String
     )
