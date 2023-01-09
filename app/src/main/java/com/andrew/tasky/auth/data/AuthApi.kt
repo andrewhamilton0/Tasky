@@ -1,4 +1,4 @@
-package com.andrew.tasky.auth
+package com.andrew.tasky.auth.data
 
 import retrofit2.http.Body
 import retrofit2.http.GET

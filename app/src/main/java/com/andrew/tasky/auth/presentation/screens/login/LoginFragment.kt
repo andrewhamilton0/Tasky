@@ -10,7 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
-import com.andrew.tasky.auth.AuthResult
+import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.databinding.FragmentLoginBinding
 
 class LoginFragment : Fragment(R.layout.fragment_login) {

@@ -6,9 +6,9 @@ import android.content.SharedPreferences
 import androidx.room.Room
 import com.andrew.tasky.agenda.domain.db.AgendaItemDatabase
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
-import com.andrew.tasky.auth.AuthApi
-import com.andrew.tasky.auth.AuthRepository
-import com.andrew.tasky.auth.AuthRepositoryImpl
+import com.andrew.tasky.auth.data.AuthApi
+import com.andrew.tasky.auth.data.AuthRepository
+import com.andrew.tasky.auth.data.AuthRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

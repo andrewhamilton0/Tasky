@@ -2,7 +2,7 @@ package com.andrew.tasky.agenda.domain.db
 
 import androidx.room.TypeConverter
 import com.andrew.tasky.agenda.domain.models.Attendee
-import com.andrew.tasky.agenda.domain.models.Photo
+import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.util.AgendaItemType
 import com.andrew.tasky.agenda.util.ReminderTime
 import com.google.gson.Gson
@@ -53,12 +53,12 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromUriList(list: List<Photo>): String {
+    fun fromEventPhotoList(list: List<EventPhoto>): String {
         return Gson().toJson(list)
     }
 
     @TypeConverter
-    fun toUriList(value: String): List<Photo> {
-        return Gson().fromJson(value, Array<Photo>::class.java).toList()
+    fun toEventPhotoList(value: String): List<EventPhoto> {
+        return Gson().fromJson(value, Array<EventPhoto>::class.java).toList()
     }
 }

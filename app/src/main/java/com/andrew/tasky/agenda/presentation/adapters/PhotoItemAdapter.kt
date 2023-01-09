@@ -8,8 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.agenda.domain.models.EventPhoto
-import com.andrew.tasky.agenda.domain.models.Photo
-import com.andrew.tasky.agenda.presentation.screens.event_detail.EventDetailFragment
 import com.andrew.tasky.databinding.ItemPhotoAdapterCardBinding
 import com.bumptech.glide.Glide
 
@@ -22,11 +20,19 @@ class PhotoItemAdapter(
 
     companion object : DiffUtil.ItemCallback<EventPhoto>() {
         override fun areItemsTheSame(oldItem: EventPhoto, newItem: EventPhoto): Boolean {
-            return oldItem == newItem
+            return if (oldItem is EventPhoto.Local && newItem is EventPhoto.Local) {
+                oldItem.id == newItem.id
+            } else if (oldItem is EventPhoto.Remote && newItem is EventPhoto.Remote) {
+                oldItem.key == newItem.key
+            } else false
         }
 
         override fun areContentsTheSame(oldItem: EventPhoto, newItem: EventPhoto): Boolean {
-            return oldItem == newItem
+            return if (oldItem is EventPhoto.Local && newItem is EventPhoto.Local) {
+                oldItem.uri == newItem.uri
+            } else if (oldItem is EventPhoto.Remote && newItem is EventPhoto.Remote) {
+                oldItem.photoUrl == newItem.photoUrl
+            } else false
         }
     }
 
@@ -42,18 +48,21 @@ class PhotoItemAdapter(
     override fun onBindViewHolder(holder: PhotoItemViewHolder, position: Int) {
         holder.binding.apply {
 
+            val item = currentList[position]
+
             if (position != currentList.size) {
-                if (currentList[position] is EventPhoto.Local) {
-                    val item = currentList[position] as EventPhoto.Local
-                    image.setImageURI(Uri.parse(item.uri.toString()))
-                    holder.itemView.setOnClickListener {
-                        onPhotoClick(position)
+                when (item) {
+                    is EventPhoto.Local -> {
+                        image.setImageURI(Uri.parse(item.uri.toString()))
+                        holder.itemView.setOnClickListener {
+                            onPhotoClick(position)
+                        }
                     }
-                } else {
-                    val item = currentList[position] as EventPhoto.Remote
-                    Glide.with(context)
-                        .load(item.photoUrl)
-                        .into(image)
+                    is EventPhoto.Remote -> {
+                        Glide.with(context)
+                            .load(item.photoUrl)
+                            .into(image)
+                    }
                 }
             } else if (position == 10) {
                 holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)

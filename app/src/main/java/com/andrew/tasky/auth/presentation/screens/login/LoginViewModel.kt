@@ -2,8 +2,8 @@ package com.andrew.tasky.auth.presentation.screens.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrew.tasky.auth.AuthRepository
-import com.andrew.tasky.auth.AuthResult
+import com.andrew.tasky.auth.data.AuthRepository
+import com.andrew.tasky.auth.data.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel

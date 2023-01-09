@@ -1,4 +1,4 @@
-package com.andrew.tasky.auth
+package com.andrew.tasky.auth.data
 
 import android.content.SharedPreferences
 import retrofit2.HttpException

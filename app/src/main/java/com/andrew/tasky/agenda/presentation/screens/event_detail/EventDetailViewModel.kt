@@ -4,7 +4,6 @@ import androidx.lifecycle.*
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
-import com.andrew.tasky.agenda.domain.models.Photo
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.agenda.util.AgendaItemType
 import com.andrew.tasky.agenda.util.ReminderTime
