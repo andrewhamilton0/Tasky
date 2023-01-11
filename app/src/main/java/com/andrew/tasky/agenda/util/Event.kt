@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.data
+package com.andrew.tasky.agenda.util
 
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto

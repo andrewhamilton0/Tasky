@@ -3,7 +3,6 @@ package com.andrew.tasky.agenda.presentation.screens.task_detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrew.tasky.agenda.data.AgendaApiRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.agenda.util.AgendaItemType
@@ -12,7 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,8 +21,7 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class TaskDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val localRepository: AgendaItemRepository,
-    private val remoteRepository: AgendaApiRepository
+    private val repository: AgendaItemRepository
 ) : ViewModel() {
 
     private val agendaItemType = AgendaItemType.TASK
@@ -73,9 +70,7 @@ class TaskDetailViewModel @Inject constructor(
 
     fun saveAgendaItem() {
         val agendaItem = AgendaItem(
-            id = savedStateHandle.get<AgendaItem>("agendaItem")?.id,
-            apiId = savedStateHandle.get<AgendaItem>("agendaItem")?.apiId
-                ?: UUID.randomUUID().toString(),
+            savedStateHandle.get<AgendaItem>("agendaItem")?.id,
             type = agendaItemType,
             isDone = isDone.value,
             title = title.value,
@@ -88,12 +83,7 @@ class TaskDetailViewModel @Inject constructor(
         )
         viewModelScope.launch {
             withContext(NonCancellable) {
-                localRepository.upsert(agendaItem)
-                if (savedStateHandle.get<AgendaItem>("agendaItem")?.apiId == null) {
-                    remoteRepository.createTask(agendaItem)
-                } else {
-                    remoteRepository.updateTask(agendaItem)
-                }
+                repository.upsert(agendaItem)
             }
         }
     }
@@ -101,9 +91,8 @@ class TaskDetailViewModel @Inject constructor(
     fun deleteAgendaItem() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<AgendaItem>("agendaItem")?.let { agendaItem ->
-                    localRepository.deleteAgendaItem(agendaItem)
-                    remoteRepository.deleteTask(agendaItem.apiId)
+                savedStateHandle.get<AgendaItem>("agendaItem")?.let {
+                    repository.deleteAgendaItem(it)
                 }
             }
         }

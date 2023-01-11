@@ -15,9 +15,7 @@
             app:destination="@id/registerFragment" />
         <action
             android:id="@+id/action_loginFragment_to_agendaFragment"
-            app:destination="@id/agendaFragment"
-            app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true" />
+            app:destination="@id/agendaFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -26,9 +24,7 @@
         tools:layout="@layout/fragment_register" >
         <action
             android:id="@+id/action_registerFragment_to_agendaFragment"
-            app:destination="@id/agendaFragment"
-            app:popUpTo="@id/registerFragment"
-            app:popUpToInclusive="true" />
+            app:destination="@id/agendaFragment" />
     </fragment>
     <fragment
         android:id="@+id/agendaFragment"

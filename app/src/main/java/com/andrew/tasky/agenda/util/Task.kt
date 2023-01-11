@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.data
+package com.andrew.tasky.agenda.util
 
 data class Task(
     val id: String,

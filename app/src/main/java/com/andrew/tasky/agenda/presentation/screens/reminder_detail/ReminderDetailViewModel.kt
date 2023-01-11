@@ -10,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
@@ -69,9 +68,7 @@ class ReminderDetailViewModel @Inject constructor(
 
     fun saveAgendaItem() {
         val agendaItem = AgendaItem(
-            id = savedStateHandle.get<AgendaItem>("agendaItem")?.id,
-            apiId = savedStateHandle.get<AgendaItem>("agendaItem")?.apiId
-                ?: UUID.randomUUID().toString(),
+            savedStateHandle.get<AgendaItem>("agendaItem")?.id,
             type = agendaItemType,
             isDone = isDone.value,
             title = title.value,

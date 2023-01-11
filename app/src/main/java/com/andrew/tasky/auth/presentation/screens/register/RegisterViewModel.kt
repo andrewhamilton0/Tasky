@@ -37,7 +37,7 @@ class RegisterViewModel @Inject constructor(
         if (
             emailPatternValidator.isValidEmailPattern(email) &&
             isNameValid.value &&
-            isPasswordValid(password)
+            isPasswordValid(email)
         ) {
             viewModelScope.launch {
                 val result = repository.register(
