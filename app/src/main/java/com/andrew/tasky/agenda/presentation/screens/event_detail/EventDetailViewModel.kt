@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
@@ -136,7 +137,9 @@ class EventDetailViewModel @Inject constructor(
 
     fun saveAgendaItem() {
         val agendaItem = AgendaItem(
-            savedStateHandle.get<AgendaItem>("agendaItem")?.id,
+            id = savedStateHandle.get<AgendaItem>("agendaItem")?.id,
+            apiId = savedStateHandle.get<AgendaItem>("agendaItem")?.apiId
+                ?: UUID.randomUUID().toString(),
             type = agendaItemType,
             isDone = isDone.value,
             title = title.value,
