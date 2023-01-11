@@ -30,7 +30,7 @@
         android:background="@null"
         android:hint="@string/email_address_preview"
         android:textSize="16sp"
-        android:textColor="#A1A4B2"
+        android:textColor="@color/black"
         android:singleLine="true"
         android:textAlignment="viewStart"
         android:textCursorDrawable="@null"

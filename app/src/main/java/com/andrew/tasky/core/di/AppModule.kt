@@ -4,10 +4,15 @@ import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
+import com.andrew.tasky.agenda.data.AgendaApi
+import com.andrew.tasky.agenda.data.AgendaApiRepository
+import com.andrew.tasky.agenda.data.AgendaApiRepositoryImpl
 import com.andrew.tasky.agenda.domain.db.AgendaItemDatabase
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.auth.data.*
 import com.andrew.tasky.auth.domain.EmailPatternValidator
+import com.andrew.tasky.core.data.ApiKeyInterceptor
+import com.andrew.tasky.core.data.TokenInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,15 +33,29 @@ object AppModule {
         return EmailPatternValidatorImpl()
     }
 
-    private val okHttp = OkHttpClient.Builder().addInterceptor(ApiKeyInterceptor)
-
     @Provides
     @Singleton
     fun provideAuthApi(): AuthApi {
         return Retrofit.Builder()
-            .baseUrl("https://tasky.pl-coding.com/")
+            .baseUrl("https://tasky.pl-coding.com")
+            .client(OkHttpClient.Builder().addInterceptor(ApiKeyInterceptor).build())
             .addConverterFactory(MoshiConverterFactory.create())
-            .client(okHttp.build())
+            .build()
+            .create()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAgendaApi(prefs: SharedPreferences): AgendaApi {
+        return Retrofit.Builder()
+            .baseUrl("https://tasky.pl-coding.com")
+            .client(
+                OkHttpClient.Builder()
+                    .addInterceptor(ApiKeyInterceptor)
+                    .addInterceptor(TokenInterceptor(prefs))
+                    .build()
+            )
+            .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create()
     }
@@ -51,6 +70,12 @@ object AppModule {
     @Singleton
     fun provideAuthRepository(api: AuthApi, prefs: SharedPreferences): AuthRepository {
         return AuthRepositoryImpl(api, prefs)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAgendaItemApiRepository(api: AgendaApi): AgendaApiRepository {
+        return AgendaApiRepositoryImpl(api)
     }
 
     @Provides
