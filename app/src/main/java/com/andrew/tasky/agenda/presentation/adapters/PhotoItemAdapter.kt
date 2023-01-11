@@ -20,11 +20,7 @@ class PhotoItemAdapter(
 
     companion object : DiffUtil.ItemCallback<EventPhoto>() {
         override fun areItemsTheSame(oldItem: EventPhoto, newItem: EventPhoto): Boolean {
-            return if (oldItem is EventPhoto.Local && newItem is EventPhoto.Local) {
-                oldItem.id == newItem.id
-            } else if (oldItem is EventPhoto.Remote && newItem is EventPhoto.Remote) {
-                oldItem.key == newItem.key
-            } else false
+            return oldItem.key == newItem.key
         }
 
         override fun areContentsTheSame(oldItem: EventPhoto, newItem: EventPhoto): Boolean {

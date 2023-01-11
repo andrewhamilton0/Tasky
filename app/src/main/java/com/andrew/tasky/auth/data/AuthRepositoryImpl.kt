@@ -8,11 +8,15 @@ class AuthRepositoryImpl(
     private val prefs: SharedPreferences
 ) : AuthRepository {
 
-    override suspend fun register(name: String, email: String, password: String): AuthResult<Unit> {
+    override suspend fun register(
+        fullName: String,
+        email: String,
+        password: String
+    ): AuthResult<Unit> {
         return try {
             api.register(
                 request = RegisterRequest(
-                    name = name,
+                    fullName = fullName,
                     email = email,
                     password = password
                 )

@@ -7,12 +7,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.agenda.domain.models.Attendee
-import com.andrew.tasky.agenda.domain.models.AttendeeType
 import com.andrew.tasky.core.StringToInitials
 import com.andrew.tasky.databinding.ItemAttendeeBinding
 
 class AttendeeItemAdapter(
-    private var isAttendee: Boolean,
+    private var isUserAttendee: Boolean,
     private val onDeleteIconClick: (Attendee) -> Unit
 ) : ListAdapter<Attendee, AttendeeItemAdapter.AttendeeItemViewHolder>(Companion) {
 
@@ -40,9 +39,8 @@ class AttendeeItemAdapter(
 
             val item = currentList[position]
 
-            val isCreatorHolder = item.attendeeType == AttendeeType.CREATOR
-            deleteAttendeeButton.isVisible = !isCreatorHolder && !isAttendee
-            creatorTextView.isVisible = isCreatorHolder
+            deleteAttendeeButton.isVisible = item.isCreator && !isUserAttendee
+            creatorTextView.isVisible = item.isCreator
 
             attendeeFullNameTextView.text = item.fullName
             attendeeInitialsTextView.text = StringToInitials
