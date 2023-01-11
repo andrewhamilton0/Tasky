@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.util
+package com.andrew.tasky.agenda.data
 
 data class Reminder(
     val id: String,
