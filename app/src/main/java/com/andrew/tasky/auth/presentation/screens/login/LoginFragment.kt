@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
 import com.andrew.tasky.auth.data.AuthResult
@@ -45,9 +44,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 when (result) {
                     is AuthResult.Authorized -> {
                         navController.navigate(
-                            LoginFragmentDirections.actionLoginFragmentToAgendaFragment(),
-                            NavOptions.Builder().setPopUpTo(R.id.agendaFragment, inclusive = true)
-                                .build()
+                            LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
                         )
                     }
                     is AuthResult.Unauthorized -> Toast.makeText(

@@ -12,8 +12,8 @@ import java.time.LocalDateTime
 )
 
 data class AgendaItem(
-
     @PrimaryKey(autoGenerate = true) var id: Int? = null,
+    val apiId: String,
     val type: AgendaItemType,
     var isDone: Boolean,
     val title: String,
@@ -22,7 +22,7 @@ data class AgendaItem(
     val endDateAndTime: LocalDateTime? = null,
     val reminderTime: ReminderTime,
     val photos: List<EventPhoto>? = emptyList(),
-    val isAttendee: Boolean? = false,
+    val isAttendee: Boolean? = null,
     val attendees: List<Attendee>? = emptyList(),
-    val isAttending: Boolean? = true
+    val host: String? = null
 ) : Serializable
