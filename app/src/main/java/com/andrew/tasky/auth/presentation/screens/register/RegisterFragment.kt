@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
@@ -49,13 +50,12 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         ),
                         Toast.LENGTH_LONG
                     ).show()
-                } else {
-                    viewModel.register(
-                        fullName = nameEditText.text.toString(),
-                        email = emailTextField.getText(),
-                        password = passwordTextField.getText()
-                    )
                 }
+                viewModel.register(
+                    fullName = nameEditText.text.toString(),
+                    email = emailTextField.getText(),
+                    password = passwordTextField.getText()
+                )
             }
 
             collectLatestLifecycleFlow(viewModel.isNameValid) { isNameValid ->
@@ -68,7 +68,9 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                 when (result) {
                     is AuthResult.Authorized -> {
                         navController.navigate(
-                            RegisterFragmentDirections.actionRegisterFragmentToAgendaFragment()
+                            RegisterFragmentDirections.actionRegisterFragmentToAgendaFragment(),
+                            NavOptions.Builder().setPopUpTo(R.id.agendaFragment, inclusive = true)
+                                .build()
                         )
                     }
                     is AuthResult.Unauthorized -> Toast.makeText(
