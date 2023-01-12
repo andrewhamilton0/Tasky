@@ -7,6 +7,7 @@ import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.agenda.util.AgendaItemType
 import com.andrew.tasky.agenda.util.ReminderTime
+import com.andrew.tasky.agenda.util.UiEventPhoto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -42,6 +43,12 @@ class EventDetailViewModel @Inject constructor(
     val title = _title.asStateFlow()
     fun setTitle(title: String) {
         _title.value = title
+    }
+
+    private val _isAttendee = MutableStateFlow(false)
+    val isAttendee = _isAttendee.asStateFlow()
+    fun setIsAttendee(isAttendee: Boolean) {
+        _isAttendee.value = isAttendee
     }
 
     private val _description = MutableStateFlow("Blank Description")
@@ -95,6 +102,17 @@ class EventDetailViewModel @Inject constructor(
         _photo.value = photoList
     }
 
+    val uiEventPhotos = photos.map { photos ->
+        photos.map { photo ->
+            UiEventPhoto.Photo(photo)
+        }.toMutableList<UiEventPhoto>()
+            .apply {
+                if ((size in 1..9) && (!isAttendee.value)) {
+                    add(size, UiEventPhoto.AddPhoto)
+                }
+            }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     private val _attendees = MutableStateFlow(listOf<Attendee>())
     val attendees = _attendees.asStateFlow()
     fun addAttendee(attendee: Attendee) {
@@ -123,10 +141,12 @@ class EventDetailViewModel @Inject constructor(
         _selectedAttendeeFilterType.value = type
     }
 
-    private val _isAttending = MutableStateFlow(true)
-    val isAttending = _isAttending.asStateFlow()
-    fun switchAttendingStatus() {
-        _isAttending.value = !isAttending.value
+    val isNotAttendeeAndIsEditing = combine(isAttendee, isInEditMode) { isAttendee, isEditing ->
+        !isAttendee && isEditing
+    }
+    val isNotAttendeeAndPhotosIsEmpty = combine(isAttendee, uiEventPhotos) {
+        isAttendee, photos ->
+        !isAttendee && photos.isEmpty()
     }
 
     enum class AttendeeFilterTypes {
@@ -167,6 +187,9 @@ class EventDetailViewModel @Inject constructor(
         }
     }
 
+    fun leaveEvent() {
+    }
+
     fun deleteAgendaItem() {
         viewModelScope.launch {
             withContext(NonCancellable) {
@@ -179,6 +202,7 @@ class EventDetailViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<AgendaItem>("agendaItem")?.let { item ->
+            item.isAttendee?.let { setIsAttendee(it) }
             setIsDone(item.isDone)
             setTitle(item.title)
             setDescription(item.description)
