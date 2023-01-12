@@ -35,7 +35,7 @@
     <string name="creator">creator</string>
     <string name="join_event">JOIN EVENT</string>
     <string name="leave_event">LEAVE EVENT</string>
-    <string name="delete_blank">DELETE %1$s</string>
+    <string name="delete_agenda_item_button">DELETE %1$s</string>
 
     <!--Reminder time options popup menu on agenda item detail screen -->
     <string name="ten_minutes_before">10 minutes before</string>
