@@ -39,7 +39,7 @@ class AttendeeItemAdapter(
 
             val item = currentList[position]
 
-            deleteAttendeeButton.isVisible = item.isCreator && !isUserAttendee
+            deleteAttendeeButton.isVisible = !item.isCreator && !isUserAttendee
             creatorTextView.isVisible = item.isCreator
 
             attendeeFullNameTextView.text = item.fullName

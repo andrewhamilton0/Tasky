@@ -41,12 +41,8 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
         }
     )
-    private val isAttendee = false
     private val agendaItemType = AgendaItemType.EVENT
-
     private lateinit var photoAdapter: PhotoItemAdapter
-    private lateinit var goingAttendeeAdapter: AttendeeItemAdapter
-    private lateinit var notGoingAttendeeAdapter: AttendeeItemAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,9 +74,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             addTitleAndDoneButtonLayout.taskDoneCircle.setOnClickListener {
                 viewModel.setIsDone(!viewModel.isDone.value)
             }
-            addTitleAndDoneButtonLayout.editTitleButton.isVisible = !isAttendee
-            addTitleAndDoneButtonLayout.editTitleButton.isEnabled = !isAttendee
-            addTitleAndDoneButtonLayout.titleTextView.isEnabled = !isAttendee
+
             addTitleAndDoneButtonLayout.titleTextView.setOnClickListener {
                 navigateToEditFragment(
                     editType = EditType.TITLE,
@@ -96,9 +90,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 )
             }
 
-            addDescriptionLayout.editDescriptionButton.isVisible = !isAttendee
-            addDescriptionLayout.editDescriptionButton.isEnabled = !isAttendee
-            addDescriptionLayout.descriptionTextView.isEnabled = !isAttendee
             addDescriptionLayout.editDescriptionButton.setOnClickListener {
                 navigateToEditFragment(
                     editType = EditType.DESCRIPTION,
@@ -123,8 +114,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             photoAdapter = PhotoItemAdapter(
                 context = requireContext(),
                 onPhotoClick = { index -> openPhoto(index) },
-                onAddPhotoClick = { addPhoto() },
-                userIsAttendee = isAttendee
+                onAddPhotoClick = { addPhoto() }
             )
             addPhotoLayout.photosRecyclerView.adapter = photoAdapter
             addPhotoLayout.photosRecyclerView.layoutManager = LinearLayoutManager(
@@ -132,12 +122,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             )
 
             startTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.from)
-            startTimeAndDateLayout.timeTextView.isEnabled = !isAttendee
-            startTimeAndDateLayout.timeButton.isEnabled = !isAttendee
-            startTimeAndDateLayout.timeButton.isVisible = !isAttendee
-            startTimeAndDateLayout.dateTextView.isEnabled = !isAttendee
-            startTimeAndDateLayout.dateButton.isEnabled = !isAttendee
-            startTimeAndDateLayout.dateButton.isVisible = !isAttendee
+
             startTimeAndDateLayout.timeTextView.setOnClickListener {
                 showTimePickerDialog(viewModel::setStartTime)
             }
@@ -152,12 +137,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
 
             endTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.to)
-            endTimeAndDateLayout.timeTextView.isEnabled = !isAttendee
-            endTimeAndDateLayout.timeButton.isEnabled = !isAttendee
-            endTimeAndDateLayout.timeButton.isVisible = !isAttendee
-            endTimeAndDateLayout.dateTextView.isEnabled = !isAttendee
-            endTimeAndDateLayout.dateButton.isEnabled = !isAttendee
-            endTimeAndDateLayout.dateButton.isVisible = !isAttendee
+
             endTimeAndDateLayout.timeTextView.setOnClickListener {
                 showTimePickerDialog(viewModel::setEndTime)
             }
@@ -184,7 +164,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 )
             }
 
-            attendeesLayout.addAttendeeButton.isVisible = !isAttendee
             attendeesLayout.addAttendeeButton.setOnClickListener {
                 showAddAttendeeDialog()
             }
@@ -196,43 +175,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
             attendeesLayout.notGoingButton.setOnClickListener {
                 viewModel.setAttendeeFilterType(EventDetailViewModel.AttendeeFilterTypes.NOT_GOING)
-            }
-            goingAttendeeAdapter = AttendeeItemAdapter(
-                isAttendee,
-                onDeleteIconClick = viewModel::deleteAttendee
-            )
-            attendeesLayout.goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
-            attendeesLayout.goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
-                requireContext()
-            )
-            notGoingAttendeeAdapter = AttendeeItemAdapter(
-                isAttendee,
-                onDeleteIconClick = viewModel::deleteAttendee
-            )
-            attendeesLayout.notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
-            attendeesLayout.notGoingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
-                requireContext()
-            )
-
-            if (!isAttendee) {
-                deleteBtn.deleteAgendaItemButton.text = String.format(
-                    resources
-                        .getString(R.string.delete_agenda_item_button),
-                    getString(R.string.event)
-                ).uppercase()
-            }
-            deleteBtn.deleteAgendaItemButton.setOnClickListener {
-                if (isAttendee) {
-                    viewModel.switchAttendingStatus()
-                } else {
-                    showDeleteConfirmationDialog(
-                        agendaItemType,
-                        onResultDeleteAgendaItem = {
-                            viewModel.deleteAgendaItem()
-                            navController.popBackStack()
-                        }
-                    )
-                }
             }
         }
     }
@@ -246,35 +188,36 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 header.editButton.isVisible = !isEditing
                 header.editButton.isEnabled = !isEditing
 
-                if (!isAttendee) {
-                    addTitleAndDoneButtonLayout.editTitleButton.isVisible = isEditing
-                    addTitleAndDoneButtonLayout.editTitleButton.isEnabled = isEditing
-                    addTitleAndDoneButtonLayout.titleTextView.isEnabled = isEditing
-
-                    addDescriptionLayout.editDescriptionButton.isVisible = isEditing
-                    addDescriptionLayout.editDescriptionButton.isEnabled = isEditing
-                    addDescriptionLayout.descriptionTextView.isEnabled = isEditing
-
-                    startTimeAndDateLayout.timeTextView.isEnabled = isEditing
-                    startTimeAndDateLayout.timeButton.isEnabled = isEditing
-                    startTimeAndDateLayout.timeButton.isVisible = isEditing
-                    startTimeAndDateLayout.dateTextView.isEnabled = isEditing
-                    startTimeAndDateLayout.dateButton.isEnabled = isEditing
-                    startTimeAndDateLayout.dateButton.isVisible = isEditing
-
-                    endTimeAndDateLayout.timeTextView.isEnabled = isEditing
-                    endTimeAndDateLayout.timeButton.isEnabled = isEditing
-                    endTimeAndDateLayout.timeButton.isVisible = isEditing
-                    endTimeAndDateLayout.dateTextView.isEnabled = isEditing
-                    endTimeAndDateLayout.dateButton.isEnabled = isEditing
-                    endTimeAndDateLayout.dateButton.isVisible = isEditing
-
-                    attendeesLayout.addAttendeeButton.isVisible = isEditing
-                }
-
                 reminderLayout.reminderTextView.isEnabled = isEditing
                 reminderLayout.reminderButton.isEnabled = isEditing
                 reminderLayout.reminderButton.isVisible = isEditing
+            }
+
+            collectLatestLifecycleFlow(viewModel.isNotAttendeeAndIsEditing) {
+                isNotAttendeeAndIsEditing ->
+                addTitleAndDoneButtonLayout.editTitleButton.isVisible = isNotAttendeeAndIsEditing
+                addTitleAndDoneButtonLayout.editTitleButton.isEnabled = isNotAttendeeAndIsEditing
+                addTitleAndDoneButtonLayout.titleTextView.isEnabled = isNotAttendeeAndIsEditing
+
+                addDescriptionLayout.editDescriptionButton.isVisible = isNotAttendeeAndIsEditing
+                addDescriptionLayout.editDescriptionButton.isEnabled = isNotAttendeeAndIsEditing
+                addDescriptionLayout.descriptionTextView.isEnabled = isNotAttendeeAndIsEditing
+
+                startTimeAndDateLayout.timeTextView.isEnabled = isNotAttendeeAndIsEditing
+                startTimeAndDateLayout.timeButton.isEnabled = isNotAttendeeAndIsEditing
+                startTimeAndDateLayout.timeButton.isVisible = isNotAttendeeAndIsEditing
+                startTimeAndDateLayout.dateTextView.isEnabled = isNotAttendeeAndIsEditing
+                startTimeAndDateLayout.dateButton.isEnabled = isNotAttendeeAndIsEditing
+                startTimeAndDateLayout.dateButton.isVisible = isNotAttendeeAndIsEditing
+
+                endTimeAndDateLayout.timeTextView.isEnabled = isNotAttendeeAndIsEditing
+                endTimeAndDateLayout.timeButton.isEnabled = isNotAttendeeAndIsEditing
+                endTimeAndDateLayout.timeButton.isVisible = isNotAttendeeAndIsEditing
+                endTimeAndDateLayout.dateTextView.isEnabled = isNotAttendeeAndIsEditing
+                endTimeAndDateLayout.dateButton.isEnabled = isNotAttendeeAndIsEditing
+                endTimeAndDateLayout.dateButton.isVisible = isNotAttendeeAndIsEditing
+
+                attendeesLayout.addAttendeeButton.isVisible = isNotAttendeeAndIsEditing
             }
 
             collectLatestLifecycleFlow(viewModel.isDone) { isDone ->
@@ -297,15 +240,98 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             collectLatestLifecycleFlow(viewModel.description) { description ->
                 addDescriptionLayout.descriptionTextView.text = description
             }
+            collectLatestLifecycleFlow(viewModel.isAttendee) { isAttendee ->
 
-            collectLatestLifecycleFlow(viewModel.photos) { photoList ->
+                addTitleAndDoneButtonLayout.apply {
+                    editTitleButton.isVisible = !isAttendee
+                    editTitleButton.isEnabled = !isAttendee
+                    titleTextView.isEnabled = !isAttendee
+                }
+
+                addDescriptionLayout.apply {
+                    editDescriptionButton.isVisible = !isAttendee
+                    editDescriptionButton.isEnabled = !isAttendee
+                    descriptionTextView.isEnabled = !isAttendee
+                }
+
+                startTimeAndDateLayout.apply {
+                    timeTextView.isEnabled = !isAttendee
+                    timeButton.isEnabled = !isAttendee
+                    timeButton.isVisible = !isAttendee
+                    dateTextView.isEnabled = !isAttendee
+                    dateButton.isEnabled = !isAttendee
+                    dateButton.isVisible = !isAttendee
+                }
+
+                endTimeAndDateLayout.apply {
+                    timeTextView.isEnabled = !isAttendee
+                    timeButton.isEnabled = !isAttendee
+                    timeButton.isVisible = !isAttendee
+                    dateTextView.isEnabled = !isAttendee
+                    dateButton.isEnabled = !isAttendee
+                    dateButton.isVisible = !isAttendee
+                }
+
+                attendeesLayout.addAttendeeButton.isVisible = !isAttendee
+                val goingAttendeeAdapter = AttendeeItemAdapter(
+                    isAttendee,
+                    onDeleteIconClick = viewModel::deleteAttendee
+                )
+                attendeesLayout.goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
+                attendeesLayout.goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
+                    requireContext()
+                )
+                collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
+                    goingAttendeeAdapter.submitList(goingAttendees)
+                }
+
+                val notGoingAttendeeAdapter = AttendeeItemAdapter(
+                    isAttendee,
+                    onDeleteIconClick = viewModel::deleteAttendee
+                )
+                attendeesLayout.notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
+                attendeesLayout.notGoingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
+                    requireContext()
+                )
+                collectLatestLifecycleFlow(viewModel.notGoingAttendees) { notGoingAttendees ->
+                    notGoingAttendeeAdapter.submitList(notGoingAttendees)
+                }
+
+                if (!isAttendee) {
+                    deleteBtn.deleteAgendaItemButton.text = String.format(
+                        resources
+                            .getString(R.string.delete_blank),
+                        getString(R.string.event)
+                    ).uppercase()
+                    deleteBtn.deleteAgendaItemButton.setOnClickListener {
+                        showDeleteConfirmationDialog(
+                            agendaItemType,
+                            onResultDeleteAgendaItem = {
+                                viewModel.deleteAgendaItem()
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                } else {
+                    deleteBtn.deleteAgendaItemButton.text = getString(R.string.leave_event)
+                    deleteBtn.deleteAgendaItemButton.setOnClickListener {
+                        viewModel.leaveEvent()
+                    }
+                }
+            }
+
+            collectLatestLifecycleFlow(viewModel.uiEventPhotos) { photoList ->
                 photoAdapter.submitList(photoList)
 
-                addPhotoLayout.addPhotoLayout.isVisible = !isAttendee || photoList.isNotEmpty()
                 addPhotoLayout.addPhotoPlusSign.isVisible = photoList.isEmpty()
                 addPhotoLayout.addPhotoTextView.isVisible = photoList.isEmpty()
                 addPhotoLayout.photosTextView.isVisible = photoList.isNotEmpty()
                 addPhotoLayout.photosRecyclerView.isVisible = photoList.isNotEmpty()
+            }
+
+            collectLatestLifecycleFlow(viewModel.isNotAttendeeAndPhotosIsEmpty) {
+                isNotAttendeeAndPhotosIsEmpty ->
+                addPhotoLayout.addPhotoLayout.isVisible = isNotAttendeeAndPhotosIsEmpty
             }
 
             collectLatestLifecycleFlow(viewModel.selectedStartTime) { selectedStartTime ->
@@ -447,21 +473,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                                     .getColor(resources, R.color.black, null)
                             )
                         }
-                    }
-                }
-                collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
-                    goingAttendeeAdapter.submitList(goingAttendees)
-                }
-                collectLatestLifecycleFlow(viewModel.notGoingAttendees) { notGoingAttendees ->
-                    notGoingAttendeeAdapter.submitList(notGoingAttendees)
-                }
-            }
-            if (isAttendee) {
-                collectLatestLifecycleFlow(viewModel.isAttending) { isAttending ->
-                    if (isAttending) {
-                        deleteBtn.deleteAgendaItemButton.text = getString(R.string.join_event)
-                    } else {
-                        deleteBtn.deleteAgendaItemButton.text = getString(R.string.leave_event)
                     }
                 }
             }
