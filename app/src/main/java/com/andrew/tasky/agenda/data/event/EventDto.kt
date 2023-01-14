@@ -1,9 +1,9 @@
-package com.andrew.tasky.agenda.data
+package com.andrew.tasky.agenda.data.event
 
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 
-data class Event(
+data class EventDto(
     val id: String,
     val title: String,
     val description: String,

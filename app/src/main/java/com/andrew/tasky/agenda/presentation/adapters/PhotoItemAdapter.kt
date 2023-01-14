@@ -22,24 +22,12 @@ class PhotoItemAdapter(
         private const val TYPE_EVENT_PHOTO = 1
 
         override fun areItemsTheSame(oldItem: UiEventPhoto, newItem: UiEventPhoto): Boolean {
-            return if (oldItem is UiEventPhoto.Photo && newItem is UiEventPhoto.Photo) {
-                oldItem.eventPhoto.key == newItem.eventPhoto.key
-            } else if (oldItem is UiEventPhoto.AddPhoto && newItem is UiEventPhoto.AddPhoto) {
-                oldItem == newItem
-            } else false
+            return oldItem == newItem
         }
 
         override fun areContentsTheSame(oldItem: UiEventPhoto, newItem: UiEventPhoto): Boolean {
             return if (oldItem is UiEventPhoto.Photo && newItem is UiEventPhoto.Photo) {
-                return if (oldItem.eventPhoto is EventPhoto.Local &&
-                    newItem.eventPhoto is EventPhoto.Local
-                ) {
-                    oldItem.eventPhoto.uri == newItem.eventPhoto.uri
-                } else if (oldItem.eventPhoto is EventPhoto.Remote &&
-                    newItem.eventPhoto is EventPhoto.Remote
-                ) {
-                    oldItem.eventPhoto.photoUrl == newItem.eventPhoto.photoUrl
-                } else false
+                oldItem == newItem
             } else oldItem is UiEventPhoto.AddPhoto && newItem is UiEventPhoto.AddPhoto
         }
     }

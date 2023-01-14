@@ -1,6 +1,6 @@
 package com.andrew.tasky.agenda.domain.repository
 
-import com.andrew.tasky.agenda.domain.db.AgendaItemDatabase
+import com.andrew.tasky.agenda.data.agenda.AgendaItemDatabase
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow

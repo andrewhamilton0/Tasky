@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.domain.db
+package com.andrew.tasky.agenda.data.agenda
 
 import androidx.room.Dao
 import androidx.room.Delete

@@ -1,6 +1,6 @@
-package com.andrew.tasky.agenda.data
+package com.andrew.tasky.agenda.data.task
 
-data class Reminder(
+data class TaskDto(
     val id: String,
     val title: String,
     val description: String?,
