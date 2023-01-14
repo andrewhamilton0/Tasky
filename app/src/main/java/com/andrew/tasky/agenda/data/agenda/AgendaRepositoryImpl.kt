@@ -3,7 +3,6 @@ package com.andrew.tasky.agenda.data.agenda
 import com.andrew.tasky.agenda.data.util.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
-import com.andrew.tasky.agenda.util.AgendaItemType
 import com.andrew.tasky.auth.data.AuthResult
 import java.time.LocalDateTime
 import retrofit2.HttpException
@@ -18,9 +17,8 @@ class AgendaRepositoryImpl(
         return try {
             val response = api.getAgendaItems(timezone = timezone, time = time)
             val tasks = response.taskDtos.map { task ->
-                AgendaItem(
-                    apiId = task.id,
-                    type = AgendaItemType.TASK,
+                AgendaItem.Task(
+                    id = task.id.toInt(),
                     isDone = task.isDone,
                     title = task.title,
                     description = task.description ?: "",
@@ -32,9 +30,8 @@ class AgendaRepositoryImpl(
                 )
             }
             val reminders = response.reminderDtos.map { reminder ->
-                AgendaItem(
-                    apiId = reminder.id,
-                    type = AgendaItemType.REMINDER,
+                AgendaItem.Reminder(
+                    id = reminder.id.toInt(),
                     isDone = reminder.isDone,
                     title = reminder.title,
                     description = reminder.description ?: "",
@@ -45,11 +42,9 @@ class AgendaRepositoryImpl(
                     )
                 )
             }
-
             val events = response.eventDtos.map { event ->
-                AgendaItem(
-                    apiId = event.id,
-                    type = AgendaItemType.EVENT,
+                AgendaItem.Event(
+                    id = event.id.toInt(),
                     isDone = false,
                     title = event.title,
                     description = event.description,
@@ -66,7 +61,7 @@ class AgendaRepositoryImpl(
                 )
             }
 
-            val agendaItems = tasks + reminders + events
+            val agendaItems = tasks + events + reminders
             AuthResult.Authorized(agendaItems)
         } catch (e: HttpException) {
             if (e.code() == 401) {

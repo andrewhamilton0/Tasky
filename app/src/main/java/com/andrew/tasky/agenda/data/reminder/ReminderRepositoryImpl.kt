@@ -14,7 +14,7 @@ class ReminderRepositoryImpl() : ReminderRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getReminder(reminderId: String): AuthResult<AgendaItem> {
+    override suspend fun getReminder(reminderId: String): AuthResult<AgendaItem.Reminder> {
         TODO("Not yet implemented")
     }
 

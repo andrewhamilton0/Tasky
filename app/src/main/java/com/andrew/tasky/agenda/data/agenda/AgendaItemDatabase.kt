@@ -1,7 +1,7 @@
 package com.andrew.tasky.agenda.data.agenda
 
 import androidx.room.*
-import com.andrew.tasky.agenda.domain.db.Converters
+import com.andrew.tasky.agenda.data.util.Converters
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 
 @Database(

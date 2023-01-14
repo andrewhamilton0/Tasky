@@ -10,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
@@ -68,11 +67,8 @@ class ReminderDetailViewModel @Inject constructor(
     }
 
     fun saveAgendaItem() {
-        val agendaItem = AgendaItem(
-            id = savedStateHandle.get<AgendaItem>("agendaItem")?.id,
-            apiId = savedStateHandle.get<AgendaItem>("agendaItem")?.apiId
-                ?: UUID.randomUUID().toString(),
-            type = agendaItemType,
+        val agendaItem = AgendaItem.Reminder(
+            id = savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.id,
             isDone = isDone.value,
             title = title.value,
             description = description.value,
@@ -92,7 +88,7 @@ class ReminderDetailViewModel @Inject constructor(
     fun deleteAgendaItem() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<AgendaItem>("agendaItem")?.let {
+                savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.let {
                     repository.deleteAgendaItem(it)
                 }
             }
@@ -100,7 +96,7 @@ class ReminderDetailViewModel @Inject constructor(
     }
 
     init {
-        savedStateHandle.get<AgendaItem>("agendaItem")?.let { item ->
+        savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.let { item ->
             setIsDone(item.isDone)
             setTitle(item.title)
             setDescription(item.description)
