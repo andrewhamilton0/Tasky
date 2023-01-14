@@ -4,10 +4,10 @@ import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
-import com.andrew.tasky.agenda.data.AgendaApi
-import com.andrew.tasky.agenda.data.AgendaApiRepository
-import com.andrew.tasky.agenda.data.AgendaApiRepositoryImpl
-import com.andrew.tasky.agenda.domain.db.AgendaItemDatabase
+import com.andrew.tasky.agenda.data.agenda.AgendaApi
+import com.andrew.tasky.agenda.data.agenda.AgendaItemDatabase
+import com.andrew.tasky.agenda.data.agenda.AgendaRepositoryImpl
+import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.auth.data.*
 import com.andrew.tasky.auth.domain.EmailPatternValidator
@@ -74,8 +74,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAgendaItemApiRepository(api: AgendaApi): AgendaApiRepository {
-        return AgendaApiRepositoryImpl(api)
+    fun provideAgendaRepository(api: AgendaApi): AgendaRepository {
+        return AgendaRepositoryImpl(api)
     }
 
     @Provides

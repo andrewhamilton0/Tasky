@@ -3,7 +3,7 @@ package com.andrew.tasky.agenda.presentation.screens.task_detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrew.tasky.agenda.data.AgendaApiRepository
+import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.agenda.util.AgendaItemType
@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 class TaskDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val localRepository: AgendaItemRepository,
-    private val remoteRepository: AgendaApiRepository
+    private val remoteRepository: AgendaRepository
 ) : ViewModel() {
 
     private val agendaItemType = AgendaItemType.TASK

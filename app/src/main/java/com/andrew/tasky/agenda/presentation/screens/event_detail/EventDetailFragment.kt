@@ -193,31 +193,31 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 reminderLayout.reminderButton.isVisible = isEditing
             }
 
-            collectLatestLifecycleFlow(viewModel.isNotAttendeeAndIsEditing) {
-                isNotAttendeeAndIsEditing ->
-                addTitleAndDoneButtonLayout.editTitleButton.isVisible = isNotAttendeeAndIsEditing
-                addTitleAndDoneButtonLayout.editTitleButton.isEnabled = isNotAttendeeAndIsEditing
-                addTitleAndDoneButtonLayout.titleTextView.isEnabled = isNotAttendeeAndIsEditing
+            collectLatestLifecycleFlow(viewModel.isCreatorEditing) {
+                isCreatorEditing ->
+                addTitleAndDoneButtonLayout.editTitleButton.isVisible = isCreatorEditing
+                addTitleAndDoneButtonLayout.editTitleButton.isEnabled = isCreatorEditing
+                addTitleAndDoneButtonLayout.titleTextView.isEnabled = isCreatorEditing
 
-                addDescriptionLayout.editDescriptionButton.isVisible = isNotAttendeeAndIsEditing
-                addDescriptionLayout.editDescriptionButton.isEnabled = isNotAttendeeAndIsEditing
-                addDescriptionLayout.descriptionTextView.isEnabled = isNotAttendeeAndIsEditing
+                addDescriptionLayout.editDescriptionButton.isVisible = isCreatorEditing
+                addDescriptionLayout.editDescriptionButton.isEnabled = isCreatorEditing
+                addDescriptionLayout.descriptionTextView.isEnabled = isCreatorEditing
 
-                startTimeAndDateLayout.timeTextView.isEnabled = isNotAttendeeAndIsEditing
-                startTimeAndDateLayout.timeButton.isEnabled = isNotAttendeeAndIsEditing
-                startTimeAndDateLayout.timeButton.isVisible = isNotAttendeeAndIsEditing
-                startTimeAndDateLayout.dateTextView.isEnabled = isNotAttendeeAndIsEditing
-                startTimeAndDateLayout.dateButton.isEnabled = isNotAttendeeAndIsEditing
-                startTimeAndDateLayout.dateButton.isVisible = isNotAttendeeAndIsEditing
+                startTimeAndDateLayout.timeTextView.isEnabled = isCreatorEditing
+                startTimeAndDateLayout.timeButton.isEnabled = isCreatorEditing
+                startTimeAndDateLayout.timeButton.isVisible = isCreatorEditing
+                startTimeAndDateLayout.dateTextView.isEnabled = isCreatorEditing
+                startTimeAndDateLayout.dateButton.isEnabled = isCreatorEditing
+                startTimeAndDateLayout.dateButton.isVisible = isCreatorEditing
 
-                endTimeAndDateLayout.timeTextView.isEnabled = isNotAttendeeAndIsEditing
-                endTimeAndDateLayout.timeButton.isEnabled = isNotAttendeeAndIsEditing
-                endTimeAndDateLayout.timeButton.isVisible = isNotAttendeeAndIsEditing
-                endTimeAndDateLayout.dateTextView.isEnabled = isNotAttendeeAndIsEditing
-                endTimeAndDateLayout.dateButton.isEnabled = isNotAttendeeAndIsEditing
-                endTimeAndDateLayout.dateButton.isVisible = isNotAttendeeAndIsEditing
+                endTimeAndDateLayout.timeTextView.isEnabled = isCreatorEditing
+                endTimeAndDateLayout.timeButton.isEnabled = isCreatorEditing
+                endTimeAndDateLayout.timeButton.isVisible = isCreatorEditing
+                endTimeAndDateLayout.dateTextView.isEnabled = isCreatorEditing
+                endTimeAndDateLayout.dateButton.isEnabled = isCreatorEditing
+                endTimeAndDateLayout.dateButton.isVisible = isCreatorEditing
 
-                attendeesLayout.addAttendeeButton.isVisible = isNotAttendeeAndIsEditing
+                attendeesLayout.addAttendeeButton.isVisible = isCreatorEditing
             }
 
             collectLatestLifecycleFlow(viewModel.isDone) { isDone ->
@@ -329,9 +329,9 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 addPhotoLayout.photosRecyclerView.isVisible = photoList.isNotEmpty()
             }
 
-            collectLatestLifecycleFlow(viewModel.isNotAttendeeAndPhotosIsEmpty) {
-                isNotAttendeeAndPhotosIsEmpty ->
-                addPhotoLayout.addPhotoLayout.isVisible = isNotAttendeeAndPhotosIsEmpty
+            collectLatestLifecycleFlow(viewModel.allowedToSeePhotoLayout) {
+                allowedToSeePhotoLayout ->
+                addPhotoLayout.addPhotoLayout.isVisible = allowedToSeePhotoLayout
             }
 
             collectLatestLifecycleFlow(viewModel.selectedStartTime) { selectedStartTime ->

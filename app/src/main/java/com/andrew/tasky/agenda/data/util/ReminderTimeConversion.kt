@@ -1,5 +1,6 @@
-package com.andrew.tasky.agenda.data
+package com.andrew.tasky.agenda.data.util
 
+import android.util.Log
 import com.andrew.tasky.agenda.util.ReminderTime
 import java.time.*
 import kotlin.time.Duration.Companion.minutes
@@ -16,16 +17,22 @@ object ReminderTimeConversion {
             remindAtTime.toLocalTime(),
             startTime.toLocalTime()
         )
-        return if (period.days == 1) {
-            ReminderTime.ONE_DAY_BEFORE
-        } else if (duration.seconds.minutes.inWholeHours.toInt() == 6) {
-            ReminderTime.SIX_HOURS_BEFORE
-        } else if (duration.seconds.minutes.inWholeHours.toInt() == 1) {
-            ReminderTime.ONE_HOUR_BEFORE
-        } else if (duration.seconds.minutes.inWholeMinutes.toInt() == 30) {
-            ReminderTime.THIRTY_MINUTES_BEFORE
-        } else {
-            ReminderTime.TEN_MINUTES_BEFORE
+
+        return when {
+            period.days == 1 ->
+                ReminderTime.ONE_DAY_BEFORE
+            duration.seconds.minutes.inWholeHours.toInt() == 6 ->
+                ReminderTime.SIX_HOURS_BEFORE
+            duration.seconds.minutes.inWholeHours.toInt() == 1 ->
+                ReminderTime.ONE_HOUR_BEFORE
+            duration.seconds.minutes.inWholeMinutes.toInt() == 30 ->
+                ReminderTime.THIRTY_MINUTES_BEFORE
+            duration.seconds.minutes.inWholeMinutes.toInt() == 10 ->
+                ReminderTime.TEN_MINUTES_BEFORE
+            else -> {
+                Log.e("ReminderTimeConversion", "No Reminder Time Found or Matched")
+                ReminderTime.TEN_MINUTES_BEFORE
+            }
         }
     }
 

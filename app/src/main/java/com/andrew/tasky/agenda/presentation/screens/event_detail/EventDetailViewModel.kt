@@ -102,13 +102,13 @@ class EventDetailViewModel @Inject constructor(
         _photo.value = photoList
     }
 
-    val uiEventPhotos = photos.map { photos ->
+    val uiEventPhotos = photos.combine(isAttendee) { photos, isAttendee ->
         photos.map { photo ->
             UiEventPhoto.Photo(photo)
         }.toMutableList<UiEventPhoto>()
             .apply {
-                if ((size in 1..9) && (!isAttendee.value)) {
-                    add(size, UiEventPhoto.AddPhoto)
+                if ((size in 1..9) && (!isAttendee)) {
+                    add(UiEventPhoto.AddPhoto)
                 }
             }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -141,13 +141,17 @@ class EventDetailViewModel @Inject constructor(
         _selectedAttendeeFilterType.value = type
     }
 
-    val isNotAttendeeAndIsEditing = combine(isAttendee, isInEditMode) { isAttendee, isEditing ->
+    val isCreatorEditing = combine(isAttendee, isInEditMode) { isAttendee, isEditing ->
         !isAttendee && isEditing
-    }
-    val isNotAttendeeAndPhotosIsEmpty = combine(isAttendee, uiEventPhotos) {
-        isAttendee, photos ->
-        !isAttendee && photos.isEmpty()
-    }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    val allowedToSeePhotoLayout = combine(isAttendee, uiEventPhotos) { isAttendee, photos ->
+        when {
+            !isAttendee -> true
+            isAttendee && photos.isNotEmpty() -> true
+            else -> false
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
     enum class AttendeeFilterTypes {
         ALL,
