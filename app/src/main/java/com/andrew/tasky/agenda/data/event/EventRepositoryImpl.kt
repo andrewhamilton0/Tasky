@@ -1,8 +1,8 @@
 package com.andrew.tasky.agenda.data.event
 
 import com.andrew.tasky.agenda.domain.EventRepository
-import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
+import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.data.AuthResult
 
 class EventRepositoryImpl() : EventRepository {
@@ -10,7 +10,7 @@ class EventRepositoryImpl() : EventRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getEvent(eventId: String): AuthResult<AgendaItem> {
+    override suspend fun getEvent(eventId: String): AuthResult<AgendaItem.Event> {
         TODO("Not yet implemented")
     }
 

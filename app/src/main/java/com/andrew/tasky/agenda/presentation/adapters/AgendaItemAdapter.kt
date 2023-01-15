@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.domain.models.AgendaItem
-import com.andrew.tasky.agenda.util.AgendaItemType
 import com.andrew.tasky.agenda.util.UiAgendaItem
 import com.andrew.tasky.databinding.ItemAgendaBinding
 import com.andrew.tasky.databinding.ItemTimeNeedleBinding
@@ -65,59 +64,30 @@ class AgendaItemAdapter(
         when (holder) {
             is AgendaItemViewHolder -> {
                 holder.binding.apply {
+
                     val item = currentList[position] as UiAgendaItem.Item
                     val agendaItem = item.agendaItem
-                    agendaItemTitle.text = agendaItem.title
-                    agendaItemDescription.text = agendaItem.description
 
-                    val startFormatter = DateTimeFormatter.ofPattern("MMM d, HH:mm")
-                    val endFormatter = DateTimeFormatter.ofPattern(" - MMM d, HH:mm")
-                    val formattedStartedDate = agendaItem.startDateAndTime.format(startFormatter)
-                    val formattedEndDate = agendaItem.endDateAndTime?.format(endFormatter) ?: ""
-                    agendaItemDate.text = formattedStartedDate + formattedEndDate
+                    val dateFormatter = DateTimeFormatter.ofPattern("MMM d, HH:mm")
 
-                    doneButton.setOnClickListener {
-                        onDoneButtonClick(agendaItem)
-                    }
+                    when (agendaItem) {
+                        is AgendaItem.Event -> {
+                            agendaItemTitle.text = agendaItem.title
+                            agendaItemDescription.text = agendaItem.description
 
-                    agendaItemCard.setOnClickListener {
-                        onAgendaItemCardClick(agendaItem)
-                    }
+                            if (agendaItem.isDone) {
+                                doneButton.setImageResource(R.drawable.task_done_circle)
+                                agendaItemTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                            } else {
+                                doneButton.setImageResource(R.drawable.ic_undone_circle)
+                                agendaItemTitle.paintFlags = Paint.ANTI_ALIAS_FLAG
+                            }
+                            val formattedStartDate = agendaItem.startDateAndTime
+                                .format(dateFormatter)
+                            val formattedEndDate = agendaItem.endDateAndTime.format(dateFormatter)
+                            val startAndEndDatesText = "$formattedStartDate - $formattedEndDate"
+                            agendaItemDate.text = startAndEndDatesText
 
-                    optionsButton.setOnClickListener { view ->
-                        onAgendaItemOptionClick(agendaItem, view)
-                    }
-
-                    if (agendaItem.isDone) {
-                        doneButton.setImageResource(R.drawable.task_done_circle)
-                        agendaItemTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-                    } else {
-                        doneButton.setImageResource(R.drawable.ic_undone_circle)
-                        agendaItemTitle.paintFlags = Paint.ANTI_ALIAS_FLAG
-                    }
-
-                    when (agendaItem.type) {
-                        AgendaItemType.TASK -> {
-                            agendaItemCard.setCardBackgroundColor(
-                                ContextCompat.getColor(holder.itemView.context, R.color.green)
-                            )
-                            doneButton.setColorFilter(
-                                ContextCompat.getColor(holder.itemView.context, R.color.white)
-                            )
-                            optionsButton.setTextColor(
-                                ContextCompat.getColor(holder.itemView.context, R.color.white)
-                            )
-                            agendaItemTitle.setTextColor(
-                                ContextCompat.getColor(holder.itemView.context, R.color.white)
-                            )
-                            agendaItemDescription.setTextColor(
-                                ContextCompat.getColor(holder.itemView.context, R.color.white)
-                            )
-                            agendaItemDate.setTextColor(
-                                ContextCompat.getColor(holder.itemView.context, R.color.white)
-                            )
-                        }
-                        AgendaItemType.EVENT -> {
                             agendaItemCard.setCardBackgroundColor(
                                 ContextCompat.getColor(holder.itemView.context, R.color.light_green)
                             )
@@ -137,7 +107,22 @@ class AgendaItemAdapter(
                                 ContextCompat.getColor(holder.itemView.context, R.color.black)
                             )
                         }
-                        AgendaItemType.REMINDER -> {
+                        is AgendaItem.Reminder -> {
+                            agendaItemTitle.text = agendaItem.title
+                            agendaItemDescription.text = agendaItem.description
+
+                            if (agendaItem.isDone) {
+                                doneButton.setImageResource(R.drawable.task_done_circle)
+                                agendaItemTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                            } else {
+                                doneButton.setImageResource(R.drawable.ic_undone_circle)
+                                agendaItemTitle.paintFlags = Paint.ANTI_ALIAS_FLAG
+                            }
+
+                            val formattedStartedDate = agendaItem.startDateAndTime
+                                .format(dateFormatter)
+                            agendaItemDate.text = formattedStartedDate
+
                             agendaItemCard.setCardBackgroundColor(
                                 ContextCompat.getColor(holder.itemView.context, R.color.light_2)
                             )
@@ -157,6 +142,53 @@ class AgendaItemAdapter(
                                 ContextCompat.getColor(holder.itemView.context, R.color.black)
                             )
                         }
+                        is AgendaItem.Task -> {
+                            agendaItemTitle.text = agendaItem.title
+                            agendaItemDescription.text = agendaItem.description
+
+                            if (agendaItem.isDone) {
+                                doneButton.setImageResource(R.drawable.task_done_circle)
+                                agendaItemTitle.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                            } else {
+                                doneButton.setImageResource(R.drawable.ic_undone_circle)
+                                agendaItemTitle.paintFlags = Paint.ANTI_ALIAS_FLAG
+                            }
+
+                            val formattedStartedDate = agendaItem.startDateAndTime
+                                .format(dateFormatter)
+                            agendaItemDate.text = formattedStartedDate
+
+                            agendaItemCard.setCardBackgroundColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.green)
+                            )
+                            doneButton.setColorFilter(
+                                ContextCompat.getColor(holder.itemView.context, R.color.white)
+                            )
+                            optionsButton.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.white)
+                            )
+                            agendaItemTitle.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.white)
+                            )
+                            agendaItemDescription.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.white)
+                            )
+                            agendaItemDate.setTextColor(
+                                ContextCompat.getColor(holder.itemView.context, R.color.white)
+                            )
+                        }
+                    }
+
+                    doneButton.setOnClickListener {
+                        onDoneButtonClick(agendaItem)
+                    }
+
+                    agendaItemCard.setOnClickListener {
+                        onAgendaItemCardClick(agendaItem)
+                    }
+
+                    optionsButton.setOnClickListener { view ->
+                        onAgendaItemOptionClick(agendaItem, view)
                     }
                 }
             }

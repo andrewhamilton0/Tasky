@@ -1,18 +1,16 @@
 package com.andrew.tasky.agenda.presentation.screens.event_detail
 
 import androidx.lifecycle.*
-import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
+import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
-import com.andrew.tasky.agenda.util.AgendaItemType
 import com.andrew.tasky.agenda.util.ReminderTime
 import com.andrew.tasky.agenda.util.UiEventPhoto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
@@ -24,8 +22,6 @@ class EventDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: AgendaItemRepository
 ) : ViewModel() {
-
-    private val agendaItemType = AgendaItemType.EVENT
 
     private val _isInEditMode = MutableStateFlow(false)
     val isInEditMode = _isInEditMode.asStateFlow()
@@ -160,11 +156,8 @@ class EventDetailViewModel @Inject constructor(
     }
 
     fun saveAgendaItem() {
-        val agendaItem = AgendaItem(
-            id = savedStateHandle.get<AgendaItem>("agendaItem")?.id,
-            apiId = savedStateHandle.get<AgendaItem>("agendaItem")?.apiId
-                ?: UUID.randomUUID().toString(),
-            type = agendaItemType,
+        val agendaItem = AgendaItem.Event(
+            id = savedStateHandle.get<AgendaItem.Event>("agendaItem")?.id,
             isDone = isDone.value,
             title = title.value,
             description = description.value,
@@ -178,7 +171,9 @@ class EventDetailViewModel @Inject constructor(
             ),
             reminderTime = selectedReminderTime.value,
             photos = photos.value,
-            attendees = attendees.value
+            attendees = attendees.value,
+            isAttendee = false, // TODO make isAttendee
+            host = "BLANK" // TODO make host
         )
         // viewModelScope gets cancelled as soon as the Fragment is popped from the backstack,
         // so if you pop it right after inserting an element, this coroutine will be cancelled
@@ -197,7 +192,7 @@ class EventDetailViewModel @Inject constructor(
     fun deleteAgendaItem() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<AgendaItem>("agendaItem")?.let {
+                savedStateHandle.get<AgendaItem.Event>("agendaItem")?.let {
                     repository.deleteAgendaItem(it)
                 }
             }
@@ -205,7 +200,7 @@ class EventDetailViewModel @Inject constructor(
     }
 
     init {
-        savedStateHandle.get<AgendaItem>("agendaItem")?.let { item ->
+        savedStateHandle.get<AgendaItem.Event>("agendaItem")?.let { item ->
             item.isAttendee?.let { setIsAttendee(it) }
             setIsDone(item.isDone)
             setTitle(item.title)

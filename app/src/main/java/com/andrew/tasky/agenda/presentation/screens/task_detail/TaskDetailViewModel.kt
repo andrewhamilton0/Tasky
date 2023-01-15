@@ -12,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,11 +71,8 @@ class TaskDetailViewModel @Inject constructor(
     }
 
     fun saveAgendaItem() {
-        val agendaItem = AgendaItem(
-            id = savedStateHandle.get<AgendaItem>("agendaItem")?.id,
-            apiId = savedStateHandle.get<AgendaItem>("agendaItem")?.apiId
-                ?: UUID.randomUUID().toString(),
-            type = agendaItemType,
+        val agendaItem = AgendaItem.Task(
+            id = savedStateHandle.get<AgendaItem.Task>("agendaItem")?.id,
             isDone = isDone.value,
             title = title.value,
             description = description.value,
@@ -89,10 +85,10 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(NonCancellable) {
                 localRepository.upsert(agendaItem)
-                if (savedStateHandle.get<AgendaItem>("agendaItem")?.apiId == null) {
-                    remoteRepository.createTask(agendaItem)
+                if (savedStateHandle.get <AgendaItem.Task("agendaItem")?.apiId == null) {
+                    // remoteRepository.createTask(agendaItem) TODO
                 } else {
-                    remoteRepository.updateTask(agendaItem)
+                    // remoteRepository.updateTask(agendaItem) TODO
                 }
             }
         }
@@ -101,16 +97,16 @@ class TaskDetailViewModel @Inject constructor(
     fun deleteAgendaItem() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<AgendaItem>("agendaItem")?.let { agendaItem ->
+                savedStateHandle.get<AgendaItem.Task>("agendaItem")?.let { agendaItem ->
                     localRepository.deleteAgendaItem(agendaItem)
-                    remoteRepository.deleteTask(agendaItem.apiId)
+                    // remoteRepository.deleteTask(agendaItem.apiId) TODO
                 }
             }
         }
     }
 
     init {
-        savedStateHandle.get<AgendaItem>("agendaItem")?.let { item ->
+        savedStateHandle.get<AgendaItem.Task>("agendaItem")?.let { item ->
             setIsDone(item.isDone)
             setTitle(item.title)
             setDescription(item.description)

@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.domain.db
+package com.andrew.tasky.agenda.data.util
 
 import androidx.room.TypeConverter
 import com.andrew.tasky.agenda.domain.models.Attendee
