@@ -4,7 +4,9 @@ import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.data.AuthResult
 
-class ReminderRepositoryImpl() : ReminderRepository {
+class ReminderRepositoryImpl(
+    db: ReminderDatabase
+) : ReminderRepository {
 
     override suspend fun createReminder(reminderDto: ReminderDto): AuthResult<Unit> {
         TODO("Not yet implemented")

@@ -7,7 +7,13 @@ import androidx.room.Room
 import com.andrew.tasky.agenda.data.agenda.AgendaApi
 import com.andrew.tasky.agenda.data.agenda.AgendaItemDatabase
 import com.andrew.tasky.agenda.data.agenda.AgendaRepositoryImpl
+import com.andrew.tasky.agenda.data.event.EventDatabase
+import com.andrew.tasky.agenda.data.event.EventRepositoryImpl
+import com.andrew.tasky.agenda.data.reminder.ReminderDatabase
+import com.andrew.tasky.agenda.data.reminder.ReminderRepositoryImpl
 import com.andrew.tasky.agenda.domain.AgendaRepository
+import com.andrew.tasky.agenda.domain.EventRepository
+import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.auth.data.*
 import com.andrew.tasky.auth.domain.EmailPatternValidator
@@ -92,5 +98,37 @@ object AppModule {
     @Singleton
     fun provideAgendaItemRepository(db: AgendaItemDatabase): AgendaItemRepository {
         return AgendaItemRepository(db)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventDatabase(app: Application): EventDatabase {
+        return Room.databaseBuilder(
+            app,
+            EventDatabase::class.java,
+            "event_db.db"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventRepository(db: EventDatabase): EventRepository {
+        return EventRepositoryImpl(db)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderDatabase(app: Application): ReminderDatabase {
+        return Room.databaseBuilder(
+            app,
+            ReminderDatabase::class.java,
+            "reminder_db.db"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderRepository(db: EventDatabase): ReminderRepository {
+        return ReminderRepositoryImpl(db)
     }
 }
