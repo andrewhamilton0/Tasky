@@ -3,22 +3,11 @@ package com.andrew.tasky.agenda.data.util
 import androidx.room.TypeConverter
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
-import com.andrew.tasky.agenda.util.AgendaItemType
 import com.andrew.tasky.agenda.util.ReminderTime
 import com.google.gson.Gson
 import java.time.LocalDateTime
 
 class Converters {
-
-    @TypeConverter
-    fun fromAgendaItemType(agendaItemType: AgendaItemType): String {
-        return agendaItemType.name
-    }
-
-    @TypeConverter
-    fun toAgendaItemType(name: String): AgendaItemType {
-        return AgendaItemType.valueOf(name)
-    }
 
     @TypeConverter
     fun fromLocalDateTime(localDateTime: LocalDateTime?): String? {
