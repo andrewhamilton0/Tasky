@@ -87,15 +87,15 @@ class ReminderDetailViewModel @Inject constructor(
         }
     }
 
-    // fun deleteAgendaItem() {
-    //    viewModelScope.launch {
-    //        withContext(NonCancellable) {
-    //            savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.let {
-    //                repository.deleteAgendaItem(it)
-    //            }
-    //        }
-    //    }
-    // }
+    fun deleteAgendaItem() {
+        viewModelScope.launch {
+            withContext(NonCancellable) {
+                savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.let {
+                    repository.deleteAgendaItem(it)
+                }
+            }
+        }
+    }
 
     init {
         savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.let { item ->
