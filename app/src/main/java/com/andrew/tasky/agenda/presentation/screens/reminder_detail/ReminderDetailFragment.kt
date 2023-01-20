@@ -117,7 +117,7 @@ class ReminderDetailFragment : Fragment(R.layout.fragment_reminder_detail) {
                 showDeleteConfirmationDialog(
                     agendaItemType,
                     onResultDeleteAgendaItem = {
-                        // viewModel.deleteAgendaItem()
+                        viewModel.deleteAgendaItem()
                         navController.popBackStack()
                     }
                 )
