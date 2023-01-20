@@ -2,6 +2,7 @@ package com.andrew.tasky.agenda.data.reminder
 
 import android.app.Application
 import androidx.work.*
+import com.andrew.tasky.agenda.data.util.toReminderDto
 import com.andrew.tasky.agenda.data.util.toReminderEntity
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -15,11 +16,9 @@ class ReminderRepositoryImpl @Inject constructor(
 ) : ReminderRepository {
 
     override suspend fun createReminder(reminder: AgendaItem.Reminder) {
-        val reminderEntity = reminder.toReminderEntity()
-        db.getReminderDao().upsert(reminderEntity)
+        db.getReminderDao().upsert(reminder.toReminderEntity())
 
-        val reminderEntityAsJson = Gson().toJson(reminderEntity)
-
+        val reminderDtoAsJson = Gson().toJson(reminder.toReminderDto())
         val uploadReminderRequest = OneTimeWorkRequestBuilder<UploadReminderWorker>()
             .setConstraints(
                 Constraints.Builder()
@@ -27,7 +26,7 @@ class ReminderRepositoryImpl @Inject constructor(
                     .build()
             ).setInputData(
                 workDataOf(
-                    "CREATE_REMINDER" to reminderEntityAsJson
+                    "CREATE_REMINDER" to reminderDtoAsJson
                 )
             )
             .build()

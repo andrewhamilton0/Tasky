@@ -25,11 +25,11 @@ class UploadReminderWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
 
-        val reminderEntity = Gson().fromJson(
-            workerParams.inputData.getString("CREATE_REMINDER"), ReminderEntity::class.java
+        val reminderDto = Gson().fromJson(
+            workerParams.inputData.getString("CREATE_REMINDER"), ReminderDto::class.java
         )
 
-        return when (getAuthResult { api.createReminder(reminderEntity) }) {
+        return when (getAuthResult { api.createReminder(reminderDto) }) {
             is AuthResult.Authorized -> {
                 Log.e("REMINDER AUTH Result", "SUCCESS")
                 Result.success()

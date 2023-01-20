@@ -5,19 +5,19 @@ import retrofit2.http.*
 interface ReminderApi {
     @POST("/reminder")
     suspend fun createReminder(
-        @Body reminderEntity: ReminderEntity
+        @Body reminderDto: ReminderDto
     )
 
     @PUT("/reminder")
     suspend fun updateReminder(
-        @Body reminderEntity: ReminderEntity
+        @Body reminderDto: ReminderDto
     )
 
     @GET("/reminder")
     suspend fun getReminder(
         @Query("reminderId")
         reminderId: String
-    ): ReminderEntity
+    ): ReminderDto
 
     @DELETE("/reminder")
     suspend fun deleteReminder(

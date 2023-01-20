@@ -3,6 +3,7 @@ package com.andrew.tasky.agenda.domain.models
 import com.andrew.tasky.agenda.util.ReminderTime
 import java.io.Serializable
 import java.time.LocalDateTime
+import java.util.UUID
 
 sealed interface AgendaItem {
 
@@ -30,7 +31,7 @@ sealed interface AgendaItem {
     ) : AgendaItem, Serializable
 
     data class Reminder(
-        val id: String? = null,
+        val id: String = UUID.randomUUID().toString(),
         val isDone: Boolean = false,
         val title: String,
         val description: String,

@@ -1,6 +1,7 @@
 package com.andrew.tasky.agenda.data.util
 
 import com.andrew.tasky.agenda.data.event.EventDto
+import com.andrew.tasky.agenda.data.reminder.ReminderDto
 import com.andrew.tasky.agenda.data.reminder.ReminderEntity
 import com.andrew.tasky.agenda.data.task.TaskDto
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -21,7 +22,7 @@ fun TaskDto.toTask(): AgendaItem.Task {
     )
 }
 
-fun ReminderEntity.toReminder(): AgendaItem.Reminder {
+fun ReminderDto.toReminder(): AgendaItem.Reminder {
     return AgendaItem.Reminder(
         id = id,
         title = title,
@@ -34,9 +35,23 @@ fun ReminderEntity.toReminder(): AgendaItem.Reminder {
     )
 }
 
+fun AgendaItem.Reminder.toReminderDto(): ReminderDto {
+    return ReminderDto(
+        id = id,
+        title = title,
+        description = description,
+        time = startDateAndTime.toEpochSecond(ZoneOffset.UTC),
+        remindAt = ReminderTimeConversion.toEpochSecond(
+            startTimeEpochSecond = startDateAndTime.toEpochSecond(ZoneOffset.UTC),
+            reminderTime = reminderTime
+        )
+    )
+}
+
 fun AgendaItem.Reminder.toReminderEntity(): ReminderEntity {
     return ReminderEntity(
-        id = id ?: "",
+        id = id,
+        isDone = isDone,
         title = title,
         description = description,
         time = startDateAndTime.toEpochSecond(ZoneOffset.UTC),

@@ -1,7 +1,6 @@
 package com.andrew.tasky.core.data
 
 import android.content.SharedPreferences
-import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.Response
 
