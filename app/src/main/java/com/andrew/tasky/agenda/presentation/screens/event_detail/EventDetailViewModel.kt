@@ -181,7 +181,7 @@ class EventDetailViewModel @Inject constructor(
         // going to be cancelled.
         viewModelScope.launch {
             withContext(NonCancellable) {
-                repository.upsert(agendaItem)
+                // repository.upsert(agendaItem)
             }
         }
     }
@@ -193,7 +193,7 @@ class EventDetailViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(NonCancellable) {
                 savedStateHandle.get<AgendaItem.Event>("agendaItem")?.let {
-                    repository.deleteAgendaItem(it)
+                    // repository.deleteAgendaItem(it)
                 }
             }
         }

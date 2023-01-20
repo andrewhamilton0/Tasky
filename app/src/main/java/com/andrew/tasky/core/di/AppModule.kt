@@ -5,16 +5,10 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
 import com.andrew.tasky.agenda.data.agenda.AgendaApi
-import com.andrew.tasky.agenda.data.agenda.AgendaItemDatabase
-import com.andrew.tasky.agenda.data.agenda.AgendaRepositoryImpl
-import com.andrew.tasky.agenda.data.event.EventDatabase
-import com.andrew.tasky.agenda.data.event.EventRepositoryImpl
+import com.andrew.tasky.agenda.data.reminder.ReminderApi
 import com.andrew.tasky.agenda.data.reminder.ReminderDatabase
 import com.andrew.tasky.agenda.data.reminder.ReminderRepositoryImpl
-import com.andrew.tasky.agenda.domain.AgendaRepository
-import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
-import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.auth.data.*
 import com.andrew.tasky.auth.domain.EmailPatternValidator
 import com.andrew.tasky.core.data.ApiKeyInterceptor
@@ -25,6 +19,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
@@ -44,7 +39,11 @@ object AppModule {
     fun provideAuthApi(): AuthApi {
         return Retrofit.Builder()
             .baseUrl("https://tasky.pl-coding.com")
-            .client(OkHttpClient.Builder().addInterceptor(ApiKeyInterceptor).build())
+            .client(
+                OkHttpClient.Builder()
+                    .addInterceptor(ApiKeyInterceptor)
+                    .build()
+            )
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create()
@@ -128,7 +127,29 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideReminderRepository(db: EventDatabase): ReminderRepository {
-        return ReminderRepositoryImpl(db)
+    fun provideReminderRepository(
+        app: Application,
+        db: ReminderDatabase
+    ): ReminderRepository {
+        return ReminderRepositoryImpl(app, db)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderApi(prefs: SharedPreferences): ReminderApi {
+        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
+
+        return Retrofit.Builder()
+            .baseUrl("https://tasky.pl-coding.com")
+            .client(
+                OkHttpClient.Builder()
+                    .addInterceptor(ApiKeyInterceptor)
+                    .addInterceptor(TokenInterceptor(prefs))
+                    .addInterceptor(logging)
+                    .build()
+            )
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create()
     }
 }

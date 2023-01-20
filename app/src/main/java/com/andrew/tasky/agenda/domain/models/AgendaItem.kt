@@ -4,7 +4,7 @@ import com.andrew.tasky.agenda.util.ReminderTime
 import java.io.Serializable
 import java.time.LocalDateTime
 
-sealed interface AgendaItem : Serializable {
+sealed interface AgendaItem {
 
     data class Event(
         val id: String? = null,
@@ -18,7 +18,7 @@ sealed interface AgendaItem : Serializable {
         val isAttendee: Boolean,
         val attendees: List<Attendee>? = emptyList(),
         val host: String
-    ) : AgendaItem
+    ) : AgendaItem, Serializable
 
     data class Task(
         val id: String? = null,
@@ -27,14 +27,14 @@ sealed interface AgendaItem : Serializable {
         val description: String,
         val startDateAndTime: LocalDateTime,
         val reminderTime: ReminderTime
-    ) : AgendaItem
+    ) : AgendaItem, Serializable
 
     data class Reminder(
         val id: String? = null,
-        val isDone: Boolean,
+        val isDone: Boolean = false,
         val title: String,
         val description: String,
         val startDateAndTime: LocalDateTime,
         val reminderTime: ReminderTime
-    ) : AgendaItem
+    ) : AgendaItem, Serializable
 }

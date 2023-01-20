@@ -2,14 +2,15 @@ package com.andrew.tasky.agenda.presentation.screens.reminder_detail
 
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModel
+import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
-import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.agenda.util.AgendaItemType
 import com.andrew.tasky.agenda.util.ReminderTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
@@ -19,7 +20,7 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class ReminderDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: AgendaItemRepository
+    private val repository: ReminderRepository
 ) : ViewModel() {
 
     private val agendaItemType = AgendaItemType.REMINDER
@@ -67,8 +68,9 @@ class ReminderDetailViewModel @Inject constructor(
     }
 
     fun saveAgendaItem() {
-        val agendaItem = AgendaItem.Reminder(
-            id = savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.id,
+        val reminder = AgendaItem.Reminder(
+            id = savedStateHandle
+                .get<AgendaItem.Reminder>("reminder")?.id ?: UUID.randomUUID().toString(),
             isDone = isDone.value,
             title = title.value,
             description = description.value,
@@ -80,20 +82,20 @@ class ReminderDetailViewModel @Inject constructor(
         )
         viewModelScope.launch {
             withContext(NonCancellable) {
-                repository.upsert(agendaItem)
+                repository.createReminder(reminder)
             }
         }
     }
 
-    fun deleteAgendaItem() {
-        viewModelScope.launch {
-            withContext(NonCancellable) {
-                savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.let {
-                    repository.deleteAgendaItem(it)
-                }
-            }
-        }
-    }
+    // fun deleteAgendaItem() {
+    //    viewModelScope.launch {
+    //        withContext(NonCancellable) {
+    //            savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.let {
+    //                repository.deleteAgendaItem(it)
+    //            }
+    //        }
+    //    }
+    // }
 
     init {
         savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.let { item ->

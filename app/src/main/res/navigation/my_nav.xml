@@ -56,7 +56,7 @@
         android:label="EventDetailFragment" >
         <argument
             android:name="agendaItem"
-            app:argType="com.andrew.tasky.agenda.domain.models.AgendaItem"
+            app:argType="com.andrew.tasky.agenda.domain.models.AgendaItem$Event"
             app:nullable="true"
             />
         <argument
@@ -73,8 +73,8 @@
         android:label="fragment_reminder_detail"
         tools:layout="@layout/fragment_reminder_detail" >
         <argument
-            android:name="agendaItem"
-            app:argType="com.andrew.tasky.agenda.domain.models.AgendaItem"
+            android:name="reminder"
+            app:argType="com.andrew.tasky.agenda.domain.models.AgendaItem$Reminder"
             app:nullable="true"
             />
         <argument
@@ -88,8 +88,8 @@
         android:label="fragment_task_detail"
         tools:layout="@layout/fragment_task_detail" >
         <argument
-            android:name="agendaItem"
-            app:argType="com.andrew.tasky.agenda.domain.models.AgendaItem"
+            android:name="task"
+            app:argType="com.andrew.tasky.agenda.domain.models.AgendaItem$Task"
             app:nullable="true"
             />
         <argument

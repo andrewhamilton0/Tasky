@@ -11,7 +11,6 @@ class TokenInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
 
         val token = prefs.getString("jwt", null)
-        Log.e("TOKEN", "token!!")
 
         val request = chain.request()
             .newBuilder()

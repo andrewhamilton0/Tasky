@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter
 class AgendaItemAdapter(
     private val onAgendaItemCardClick: (AgendaItem) -> Unit,
     private val onAgendaItemOptionClick: (AgendaItem, View) -> Unit,
-    private val onDoneButtonClick: (AgendaItem) -> Unit
+    // private val onDoneButtonClick: (AgendaItem) -> Unit
 ) : ListAdapter<UiAgendaItem, RecyclerView.ViewHolder>(Companion) {
 
     companion object : DiffUtil.ItemCallback<UiAgendaItem>() {
@@ -179,9 +179,9 @@ class AgendaItemAdapter(
                         }
                     }
 
-                    doneButton.setOnClickListener {
-                        onDoneButtonClick(agendaItem)
-                    }
+                    // doneButton.setOnClickListener {
+                    //    onDoneButtonClick(agendaItem)
+                    // }
 
                     agendaItemCard.setOnClickListener {
                         onAgendaItemCardClick(agendaItem)
