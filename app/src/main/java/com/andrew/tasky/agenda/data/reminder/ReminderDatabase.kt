@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.andrew.tasky.agenda.data.util.Converters
 
 @Database(
-    entities = [ReminderDto::class],
+    entities = [ReminderEntity::class],
     version = 1
 )
 

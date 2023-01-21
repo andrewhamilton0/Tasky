@@ -14,5 +14,7 @@ interface AgendaApi {
     ): AgendaResponse
 
     @POST("/syncAgenda")
-    suspend fun syncAgendaItems(): SyncAgendaResponse
+    suspend fun syncAgendaItems(
+        @Body request: SyncAgendaRequest
+    )
 }

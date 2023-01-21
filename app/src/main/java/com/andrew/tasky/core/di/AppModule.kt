@@ -5,16 +5,10 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
 import com.andrew.tasky.agenda.data.agenda.AgendaApi
-import com.andrew.tasky.agenda.data.agenda.AgendaItemDatabase
-import com.andrew.tasky.agenda.data.agenda.AgendaRepositoryImpl
-import com.andrew.tasky.agenda.data.event.EventDatabase
-import com.andrew.tasky.agenda.data.event.EventRepositoryImpl
+import com.andrew.tasky.agenda.data.reminder.ReminderApi
 import com.andrew.tasky.agenda.data.reminder.ReminderDatabase
 import com.andrew.tasky.agenda.data.reminder.ReminderRepositoryImpl
-import com.andrew.tasky.agenda.domain.AgendaRepository
-import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
-import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.auth.data.*
 import com.andrew.tasky.auth.domain.EmailPatternValidator
 import com.andrew.tasky.core.data.ApiKeyInterceptor
@@ -25,7 +19,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import okhttp3.OkHttpClient
-import retrofit2.Retrofit
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit.Builder
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 
@@ -41,27 +36,34 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthApi(): AuthApi {
-        return Retrofit.Builder()
+    fun provideTaskyClient(): Builder {
+        return Builder()
             .baseUrl("https://tasky.pl-coding.com")
-            .client(OkHttpClient.Builder().addInterceptor(ApiKeyInterceptor).build())
             .addConverterFactory(MoshiConverterFactory.create())
+            .client(OkHttpClient())
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthApi(taskyClient: Builder): AuthApi {
+        return taskyClient.client(
+            OkHttpClient.Builder()
+                .addInterceptor(ApiKeyInterceptor)
+                .build()
+        )
             .build()
             .create()
     }
 
     @Provides
     @Singleton
-    fun provideAgendaApi(prefs: SharedPreferences): AgendaApi {
-        return Retrofit.Builder()
-            .baseUrl("https://tasky.pl-coding.com")
-            .client(
-                OkHttpClient.Builder()
-                    .addInterceptor(ApiKeyInterceptor)
-                    .addInterceptor(TokenInterceptor(prefs))
-                    .build()
-            )
-            .addConverterFactory(MoshiConverterFactory.create())
+    fun provideAgendaApi(taskyClient: Builder, prefs: SharedPreferences): AgendaApi {
+        return taskyClient.client(
+            OkHttpClient.Builder()
+                .addInterceptor(ApiKeyInterceptor)
+                .addInterceptor(TokenInterceptor(prefs))
+                .build()
+        )
             .build()
             .create()
     }
@@ -128,7 +130,26 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideReminderRepository(db: EventDatabase): ReminderRepository {
-        return ReminderRepositoryImpl(db)
+    fun provideReminderRepository(
+        app: Application,
+        db: ReminderDatabase
+    ): ReminderRepository {
+        return ReminderRepositoryImpl(app, db)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderApi(prefs: SharedPreferences, taskyClient: Builder): ReminderApi {
+        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
+
+        return taskyClient.client(
+            OkHttpClient.Builder()
+                .addInterceptor(ApiKeyInterceptor)
+                .addInterceptor(TokenInterceptor(prefs))
+                .addInterceptor(logging)
+                .build()
+        )
+            .build()
+            .create()
     }
 }

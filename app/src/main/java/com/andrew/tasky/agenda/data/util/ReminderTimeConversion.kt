@@ -7,8 +7,12 @@ import kotlin.time.Duration.Companion.minutes
 
 object ReminderTimeConversion {
     fun toEnum(startTimeEpochSecond: Long, remindAtEpochSecond: Long): ReminderTime {
-        val startTime = LocalDateTime.ofEpochSecond(startTimeEpochSecond, 0, null)
-        val remindAtTime = LocalDateTime.ofEpochSecond(remindAtEpochSecond, 0, null)
+        val startTime = LocalDateTime.ofEpochSecond(
+            startTimeEpochSecond, 0, ZoneOffset.UTC
+        )
+        val remindAtTime = LocalDateTime.ofEpochSecond(
+            remindAtEpochSecond, 0, ZoneOffset.UTC
+        )
         val period = Period.between(
             remindAtTime.toLocalDate(),
             startTime.toLocalDate()
@@ -37,18 +41,20 @@ object ReminderTimeConversion {
     }
 
     fun toEpochSecond(startTimeEpochSecond: Long, reminderTime: ReminderTime): Long {
-        val startTime = LocalDateTime.ofEpochSecond(startTimeEpochSecond, 0, null)
+        val startTime = LocalDateTime.ofEpochSecond(
+            startTimeEpochSecond, 0, ZoneOffset.UTC
+        )
         return when (reminderTime) {
             ReminderTime.TEN_MINUTES_BEFORE ->
-                startTime.minusMinutes(10).toEpochSecond(null)
+                startTime.minusMinutes(10).toEpochSecond(ZoneOffset.UTC)
             ReminderTime.THIRTY_MINUTES_BEFORE ->
-                startTime.minusMinutes(30).toEpochSecond(null)
+                startTime.minusMinutes(30).toEpochSecond(ZoneOffset.UTC)
             ReminderTime.ONE_HOUR_BEFORE ->
-                startTime.minusHours(1).toEpochSecond(null)
+                startTime.minusHours(1).toEpochSecond(ZoneOffset.UTC)
             ReminderTime.SIX_HOURS_BEFORE ->
-                startTime.minusHours(6).toEpochSecond(null)
+                startTime.minusHours(6).toEpochSecond(ZoneOffset.UTC)
             ReminderTime.ONE_DAY_BEFORE ->
-                startTime.minusDays(1).toEpochSecond(null)
+                startTime.minusDays(1).toEpochSecond(ZoneOffset.UTC)
         }
     }
 }

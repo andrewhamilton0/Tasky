@@ -194,15 +194,15 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
 
     private fun openAgendaItemDetail(agendaItem: AgendaItem, isInEditMode: Boolean) {
 
-        when (agendaItem.type) {
-            AgendaItemType.TASK -> navController.navigate(
+        when (agendaItem) {
+            is AgendaItem.Task -> navController.navigate(
                 AgendaFragmentDirections
                     .actionAgendaFragmentToTaskDetailFragment(
                         agendaItem,
                         isInEditMode
                     )
             )
-            AgendaItemType.EVENT ->
+            is AgendaItem.Event ->
                 navController.navigate(
                     AgendaFragmentDirections
                         .actionAgendaFragmentToEventDetailFragment(
@@ -210,7 +210,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                             isInEditMode
                         )
                 )
-            AgendaItemType.REMINDER -> navController.navigate(
+            is AgendaItem.Reminder -> navController.navigate(
                 AgendaFragmentDirections
                     .actionAgendaFragmentToReminderDetailFragment(
                         agendaItem,

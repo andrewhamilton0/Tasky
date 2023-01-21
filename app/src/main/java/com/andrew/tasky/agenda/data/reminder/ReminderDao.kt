@@ -1,19 +1,16 @@
 package com.andrew.tasky.agenda.data.reminder
 
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import com.andrew.tasky.agenda.domain.models.AgendaItem
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface ReminderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(event: AgendaItem.Reminder): Long
+    suspend fun upsert(reminder: ReminderEntity): Long
 
-    @Query("SELECT * FROM ")
-    fun getEvents(): Flow<List<AgendaItem.Event>>
+    @Query("SELECT * FROM ReminderEntity")
+    fun getReminders(): Flow<List<ReminderEntity>>
 
     @Delete
-    suspend fun deleteEvent(event: AgendaItem.Reminder)
+    suspend fun deleteReminder(reminder: ReminderEntity)
 }
