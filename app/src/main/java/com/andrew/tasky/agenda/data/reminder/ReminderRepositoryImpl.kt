@@ -1,49 +1,60 @@
 package com.andrew.tasky.agenda.data.reminder
 
-import android.app.Application
-import androidx.work.*
+import com.andrew.tasky.agenda.data.database.AgendaDatabase
+import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.data.util.toReminderDto
 import com.andrew.tasky.agenda.data.util.toReminderEntity
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.data.AuthResult
-import com.google.gson.Gson
+import com.andrew.tasky.auth.util.getAuthResult
 import javax.inject.Inject
 
 class ReminderRepositoryImpl @Inject constructor(
-    private val appContext: Application,
-    private val db: ReminderDatabase
+    private val db: AgendaDatabase,
+    private val api: ReminderApi
 ) : ReminderRepository {
 
     override suspend fun createReminder(reminder: AgendaItem.Reminder) {
-        db.getReminderDao().upsert(reminder.toReminderEntity())
-
-        val reminderDtoAsJson = Gson().toJson(reminder.toReminderDto())
-        val uploadReminderRequest = OneTimeWorkRequestBuilder<UploadReminderWorker>()
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-            ).setInputData(
-                workDataOf(
-                    "CREATE_REMINDER" to reminderDtoAsJson
+        db.getReminderDao().upsertReminder(reminder.toReminderEntity())
+        val result = getAuthResult { api.createReminder(reminder.toReminderDto()) }
+        if (result !is AuthResult.Authorized) {
+            db.getReminderDao().upsertModifiedReminder(
+                ModifiedReminderEntity(
+                    id = reminder.id,
+                    modifiedType = ModifiedType.CREATE
                 )
             )
-            .build()
-        WorkManager
-            .getInstance(appContext)
-            .enqueue(uploadReminderRequest)
+        }
     }
 
-    override suspend fun updateReminder(reminder: AgendaItem.Reminder): AuthResult<Unit> {
-        TODO("Not yet implemented")
+    override suspend fun updateReminder(reminder: AgendaItem.Reminder) {
+        db.getReminderDao().upsertReminder(reminder.toReminderEntity())
+        val result = getAuthResult { api.updateReminder(reminder.toReminderDto()) }
+        if (result !is AuthResult.Authorized) {
+            db.getReminderDao().upsertModifiedReminder(
+                ModifiedReminderEntity(
+                    id = reminder.id,
+                    modifiedType = ModifiedType.UPDATE
+                )
+            )
+        }
     }
 
     override suspend fun getReminder(reminderId: String): AuthResult<AgendaItem.Reminder> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteReminder(reminderId: String): AuthResult<Unit> {
-        TODO("Not yet implemented")
+    override suspend fun deleteReminder(reminder: AgendaItem.Reminder) {
+        db.getReminderDao().deleteReminder(reminder.toReminderEntity())
+        val result = getAuthResult { api.deleteReminder(reminder.id) }
+        if (result !is AuthResult.Authorized) {
+            db.getReminderDao().upsertModifiedReminder(
+                ModifiedReminderEntity(
+                    id = reminder.id,
+                    modifiedType = ModifiedType.DELETE
+                )
+            )
+        }
     }
 }
