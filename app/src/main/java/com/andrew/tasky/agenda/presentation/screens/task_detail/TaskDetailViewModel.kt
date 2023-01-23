@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
-import com.andrew.tasky.agenda.domain.repository.AgendaItemRepository
 import com.andrew.tasky.agenda.util.AgendaItemType
 import com.andrew.tasky.agenda.util.ReminderTime
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,8 +21,7 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class TaskDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val localRepository: AgendaItemRepository,
-    private val remoteRepository: AgendaRepository
+    private val repository: AgendaRepository,
 ) : ViewModel() {
 
     private val agendaItemType = AgendaItemType.TASK
@@ -84,12 +82,12 @@ class TaskDetailViewModel @Inject constructor(
         )
         viewModelScope.launch {
             withContext(NonCancellable) {
-                localRepository.upsert(agendaItem)
-                if (savedStateHandle.get <AgendaItem.Task("agendaItem")?.apiId == null) {
-                    // remoteRepository.createTask(agendaItem) TODO
-                } else {
-                    // remoteRepository.updateTask(agendaItem) TODO
-                }
+                // localRepository.upsert(agendaItem)
+                // if (savedStateHandle.get <AgendaItem.Task("agendaItem")?.id == null) {
+                //    // remoteRepository.createTask(agendaItem) TODO
+                // } else {
+                //    // remoteRepository.updateTask(agendaItem) TODO
+                // }
             }
         }
     }
@@ -98,7 +96,7 @@ class TaskDetailViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(NonCancellable) {
                 savedStateHandle.get<AgendaItem.Task>("agendaItem")?.let { agendaItem ->
-                    localRepository.deleteAgendaItem(agendaItem)
+                    // repository.deleteAgendaItem(agendaItem)
                     // remoteRepository.deleteTask(agendaItem.apiId) TODO
                 }
             }

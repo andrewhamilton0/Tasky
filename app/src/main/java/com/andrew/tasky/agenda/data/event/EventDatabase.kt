@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.andrew.tasky.agenda.data.util.Converters
 
 @Database(
-    entities = [EventDto::class],
+    entities = [EventEntity::class],
     version = 1
 )
 

@@ -2,13 +2,10 @@ package com.andrew.tasky.agenda.data.reminder
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.andrew.tasky.agenda.data.util.ModifiedType
 
 @Entity
-data class ReminderEntity(
+data class ModifiedReminderEntity(
     @PrimaryKey val id: String,
-    val title: String,
-    val description: String,
-    val time: Long,
-    val remindAt: Long,
-    val isDone: Boolean
+    val modifiedType: ModifiedType
 )

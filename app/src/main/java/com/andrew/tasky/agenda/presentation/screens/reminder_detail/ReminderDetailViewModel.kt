@@ -82,7 +82,11 @@ class ReminderDetailViewModel @Inject constructor(
         )
         viewModelScope.launch {
             withContext(NonCancellable) {
-                repository.createReminder(reminder)
+                if (savedStateHandle.get<AgendaItem.Reminder>("reminder")?.id == null) {
+                    repository.createReminder(reminder)
+                } else {
+                    repository.updateReminder(reminder)
+                }
             }
         }
     }
@@ -90,15 +94,15 @@ class ReminderDetailViewModel @Inject constructor(
     fun deleteAgendaItem() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.let {
-                    repository.deleteAgendaItem(it)
+                savedStateHandle.get<AgendaItem.Reminder>("reminder")?.let {
+                    repository.deleteReminder(it)
                 }
             }
         }
     }
 
     init {
-        savedStateHandle.get<AgendaItem.Reminder>("agendaItem")?.let { item ->
+        savedStateHandle.get<AgendaItem.Reminder>("reminder")?.let { item ->
             setIsDone(item.isDone)
             setTitle(item.title)
             setDescription(item.description)
