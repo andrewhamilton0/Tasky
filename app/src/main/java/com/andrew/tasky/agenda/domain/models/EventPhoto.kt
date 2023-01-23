@@ -3,13 +3,15 @@ package com.andrew.tasky.agenda.domain.models
 import android.net.Uri
 import java.util.UUID
 
-sealed class EventPhoto(val key: String = UUID.randomUUID().toString()) {
+sealed class EventPhoto(open val key: String) {
 
     data class Remote(
+        override val key: String = UUID.randomUUID().toString(),
         val photoUrl: String,
-    ) : EventPhoto()
+    ) : EventPhoto(key = key)
 
     data class Local(
+        override val key: String = UUID.randomUUID().toString(),
         val uri: Uri
-    ) : EventPhoto()
+    ) : EventPhoto(key = key)
 }

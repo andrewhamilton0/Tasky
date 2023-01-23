@@ -1,18 +1,17 @@
 package com.andrew.tasky.agenda.data.event
 
 import androidx.room.*
-import com.andrew.tasky.agenda.domain.models.AgendaItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(event: AgendaItem.Event): Long
+    suspend fun upsert(event: EventEntity): Long
 
-    @Query("SELECT * FROM eventdto")
-    fun getEvents(): Flow<List<AgendaItem.Event>>
+    @Query("SELECT * FROM evententity")
+    fun getEvents(): Flow<List<EventEntity>>
 
     @Delete
-    suspend fun deleteEvent(event: AgendaItem.Event)
+    suspend fun deleteEvent(event: EventEntity)
 }
