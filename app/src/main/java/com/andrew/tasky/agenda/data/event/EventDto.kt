@@ -1,5 +1,10 @@
 package com.andrew.tasky.agenda.data.event
 
+import androidx.room.Entity
+import com.andrew.tasky.agenda.domain.models.Attendee
+import com.andrew.tasky.agenda.domain.models.EventPhoto
+
+@Entity
 data class EventDto(
     val id: String,
     val title: String,
@@ -9,6 +14,6 @@ data class EventDto(
     val remindAt: Long,
     val host: String,
     val isUserEventCreator: Boolean,
-    val attendees: List<AttendeeDto>,
-    val photos: List<PhotoDto>
+    val attendees: List<Attendee>,
+    val photos: List<EventPhoto>
 )

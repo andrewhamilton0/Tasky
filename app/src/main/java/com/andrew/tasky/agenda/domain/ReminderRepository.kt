@@ -5,7 +5,7 @@ import com.andrew.tasky.auth.data.AuthResult
 
 interface ReminderRepository {
     suspend fun createReminder(reminder: AgendaItem.Reminder)
-    suspend fun updateReminder(reminder: AgendaItem.Reminder)
+    suspend fun updateReminder(reminder: AgendaItem.Reminder): AuthResult<Unit>
     suspend fun getReminder(reminderId: String): AuthResult<AgendaItem.Reminder>
-    suspend fun deleteReminder(reminder: AgendaItem.Reminder)
+    suspend fun deleteReminder(reminderId: String): AuthResult<Unit>
 }
