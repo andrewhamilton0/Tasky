@@ -10,7 +10,7 @@ interface AgendaApi {
         @Query("timezone")
         timezone: String,
         @Query("time")
-        time: Long = System.currentTimeMillis()
+        time: Long
     ): AgendaResponse
 
     @POST("/syncAgenda")
