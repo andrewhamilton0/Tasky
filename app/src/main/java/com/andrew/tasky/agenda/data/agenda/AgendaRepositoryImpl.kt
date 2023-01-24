@@ -46,7 +46,7 @@ class AgendaRepositoryImpl(
             }
         ) {
             is AuthResult.Authorized -> {
-                val remoteReminders = results.data?.reminderDtos?.map { reminderDto ->
+                val remoteReminders = results.data?.reminders?.map { reminderDto ->
                     reminderDto.toReminder()
                 }
                 remoteReminders?.map { reminder ->

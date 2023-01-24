@@ -48,8 +48,11 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAuthApi(taskyClient: Builder): AuthApi {
+        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+
         return taskyClient.client(
             OkHttpClient.Builder()
+                .addInterceptor(logging)
                 .addInterceptor(ApiKeyInterceptor)
                 .build()
         )
@@ -72,7 +75,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAgendaApi(taskyClient: Builder, prefs: SharedPreferences): AgendaApi {
-        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
+        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
         return taskyClient.client(
             OkHttpClient.Builder()
@@ -122,7 +125,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideReminderApi(prefs: SharedPreferences, taskyClient: Builder): ReminderApi {
-        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
+        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
         return taskyClient.client(
             OkHttpClient.Builder()

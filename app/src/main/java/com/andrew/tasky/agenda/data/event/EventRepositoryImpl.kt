@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.event
 
+import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
@@ -7,7 +8,7 @@ import com.andrew.tasky.auth.data.AuthResult
 import javax.inject.Inject
 
 class EventRepositoryImpl @Inject constructor(
-    private val db: EventDatabase
+    private val db: AgendaDatabase
 ) : EventRepository {
 
     override suspend fun createEvent(): AuthResult<Unit> {
