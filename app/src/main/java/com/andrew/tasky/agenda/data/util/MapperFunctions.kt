@@ -7,8 +7,11 @@ import com.andrew.tasky.agenda.data.task.TaskDto
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.util.*
 
 fun TaskDto.toTask(): AgendaItem.Task {
     return AgendaItem.Task(
@@ -23,16 +26,14 @@ fun TaskDto.toTask(): AgendaItem.Task {
     )
 }
 
-fun ReminderDto.toReminder(): AgendaItem.Reminder {
-    return AgendaItem.Reminder(
+fun ReminderDto.toReminderEntity(isDone: Boolean): ReminderEntity {
+    return ReminderEntity(
         id = id,
         title = title,
         description = description ?: "",
-        startDateAndTime = LocalDateTime.ofEpochSecond(time, 0, ZoneOffset.UTC),
-        reminderTime = ReminderTimeConversion.toEnum(
-            startTimeEpochSecond = time,
-            remindAtEpochSecond = remindAt
-        )
+        time = time,
+        remindAt = remindAt,
+        isDone = isDone
     )
 }
 
@@ -41,9 +42,9 @@ fun AgendaItem.Reminder.toReminderDto(): ReminderDto {
         id = id,
         title = title,
         description = description,
-        time = startDateAndTime.toEpochSecond(ZoneOffset.UTC),
+        time = startDateAndTime.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond(),
         remindAt = ReminderTimeConversion.toEpochSecond(
-            startTimeEpochSecond = startDateAndTime.toEpochSecond(ZoneOffset.UTC),
+            startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
         )
     )
@@ -55,9 +56,9 @@ fun AgendaItem.Reminder.toReminderEntity(): ReminderEntity {
         isDone = isDone,
         title = title,
         description = description,
-        time = startDateAndTime.toEpochSecond(ZoneOffset.UTC),
+        time = startDateAndTime.atZone(TimeZone.getDefault().toZoneId()).toEpochSecond(),
         remindAt = ReminderTimeConversion.toEpochSecond(
-            startTimeEpochSecond = startDateAndTime.toEpochSecond(ZoneOffset.UTC),
+            startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
         )
     )
@@ -69,11 +70,24 @@ fun ReminderEntity.toReminder(): AgendaItem.Reminder {
         isDone = isDone,
         title = title,
         description = description,
-        startDateAndTime = LocalDateTime.ofEpochSecond(time, 0, ZoneOffset.UTC),
+        startDateAndTime = ZonedDateTime.ofInstant(
+            Instant.ofEpochSecond(time),
+            TimeZone.getDefault().toZoneId()
+        ).toLocalDateTime(),
         reminderTime = ReminderTimeConversion.toEnum(
             startTimeEpochSecond = time,
             remindAtEpochSecond = remindAt
         )
+    )
+}
+
+fun ReminderEntity.toReminderDto(): ReminderDto {
+    return ReminderDto(
+        id = id,
+        title = title,
+        description = description,
+        time = time,
+        remindAt = remindAt
     )
 }
 

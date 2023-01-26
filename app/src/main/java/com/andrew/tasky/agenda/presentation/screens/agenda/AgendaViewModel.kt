@@ -2,6 +2,11 @@ package com.andrew.tasky.agenda.presentation.screens.agenda
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.andrew.tasky.agenda.data.agenda.SyncModifiedAgendaItemsWorker
 import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -9,9 +14,8 @@ import com.andrew.tasky.agenda.domain.models.CalendarDateItem
 import com.andrew.tasky.agenda.util.DateType
 import com.andrew.tasky.agenda.util.UiAgendaItem
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.TimeZone
+import java.time.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -20,7 +24,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class AgendaViewModel@Inject constructor(
     private val agendaRepository: AgendaRepository,
-    private val reminderRepository: ReminderRepository
+    private val reminderRepository: ReminderRepository,
+    private val workManager: WorkManager
 ) : ViewModel() {
 
     private val _dateSelected = MutableStateFlow(LocalDate.now())
@@ -32,10 +37,7 @@ class AgendaViewModel@Inject constructor(
     }
 
     private suspend fun updateAgendaOfDate(date: LocalDate) {
-        agendaRepository.updateAgendaOfDate(
-            time = date.toEpochDay(),
-            timezone = TimeZone.getDefault().id
-        )
+        agendaRepository.updateAgendaOfDate(date = date)
     }
 
     val currentDateAndTimeFlow = flow<LocalDateTime> {
@@ -133,5 +135,18 @@ class AgendaViewModel@Inject constructor(
                 is AgendaItem.Task -> TODO()
             }
         }
+    }
+
+    private val syncModifiedAgendaItemsWorkRequest =
+        PeriodicWorkRequestBuilder<SyncModifiedAgendaItemsWorker>(15, TimeUnit.MINUTES)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            ).build()
+
+    init {
+        viewModelScope.launch { updateAgendaOfDate(date = dateSelected.value) }
+        workManager.enqueue(syncModifiedAgendaItemsWorkRequest)
     }
 }

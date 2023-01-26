@@ -9,7 +9,13 @@ interface ReminderDao {
     suspend fun upsertReminder(reminder: ReminderEntity): Long
 
     @Query("SELECT * FROM ReminderEntity")
-    fun getReminders(): Flow<List<ReminderEntity>>
+    fun getRemindersAsFlow(): Flow<List<ReminderEntity>>
+
+    @Query("SELECT * FROM ReminderEntity")
+    suspend fun getOneTimeListOfReminders(): List<ReminderEntity>
+
+    @Query("SELECT * FROM ReminderEntity WHERE id==:id")
+    suspend fun getReminderById(id: String): ReminderEntity
 
     @Delete
     suspend fun deleteReminder(reminder: ReminderEntity)
@@ -18,8 +24,11 @@ interface ReminderDao {
     suspend fun upsertModifiedReminder(modifiedReminder: ModifiedReminderEntity): Long
 
     @Query("SELECT * FROM ModifiedReminderEntity")
-    fun getModifiedReminders(): List<ModifiedReminderEntity>
+    suspend fun getModifiedReminders(): List<ModifiedReminderEntity>
 
     @Delete
     suspend fun deleteModifiedReminder(modifiedReminder: ModifiedReminderEntity)
+
+    @Query("DELETE FROM ModifiedReminderEntity WHERE id==:id")
+    suspend fun deleteModifiedReminderById(id: String): Int
 }

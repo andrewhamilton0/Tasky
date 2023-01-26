@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.reminder
 
+import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.data.util.toReminderDto
@@ -25,6 +26,7 @@ class ReminderRepositoryImpl @Inject constructor(
                     modifiedType = ModifiedType.CREATE
                 )
             )
+            Log.e("create reminder", "sent to modified reminders")
         }
     }
 
@@ -55,6 +57,50 @@ class ReminderRepositoryImpl @Inject constructor(
                     modifiedType = ModifiedType.DELETE
                 )
             )
+        }
+    }
+
+    override suspend fun uploadCreateAndUpdateModifiedReminders() {
+        val createRemindersDtos = db.getReminderDao().getModifiedReminders().filter {
+            it.modifiedType == ModifiedType.CREATE
+        }.map {
+            db.getReminderDao().getReminderById(it.id).toReminderDto()
+        }
+        createRemindersDtos.map { createRemindersDto ->
+            when (getAuthResult { api.createReminder(createRemindersDto) }) {
+                is AuthResult.Authorized -> {
+                    db.getReminderDao().deleteModifiedReminderById(createRemindersDto.id)
+                }
+                is AuthResult.Unauthorized -> Log.e(
+                    "SyncAgendaItem",
+                    "Unauthorized, could not create reminder"
+                )
+                is AuthResult.UnknownError -> Log.e(
+                    "SyncAgendaItem",
+                    "Unknown Error, could not create reminder"
+                )
+            }
+        }
+
+        val updateRemindersDtos = db.getReminderDao().getModifiedReminders().filter {
+            it.modifiedType == ModifiedType.UPDATE
+        }.map {
+            db.getReminderDao().getReminderById(it.id).toReminderDto()
+        }
+        updateRemindersDtos.map { updateRemindersDto ->
+            when (getAuthResult { api.updateReminder(updateRemindersDto) }) {
+                is AuthResult.Authorized -> {
+                    db.getReminderDao().deleteModifiedReminderById(updateRemindersDto.id)
+                }
+                is AuthResult.Unauthorized -> Log.e(
+                    "SyncAgendaItem",
+                    "Unauthorized, could not update reminder"
+                )
+                is AuthResult.UnknownError -> Log.e(
+                    "SyncAgendaItem",
+                    "Unknown Error, could not update reminder"
+                )
+            }
         }
     }
 }
