@@ -3,15 +3,18 @@ package com.andrew.tasky.agenda.data.util
 import android.util.Log
 import com.andrew.tasky.agenda.util.ReminderTime
 import java.time.*
+import java.util.TimeZone
 
 object ReminderTimeConversion {
     fun toEnum(startTimeEpochSecond: Long, remindAtEpochSecond: Long): ReminderTime {
-        val startTime = LocalDateTime.ofEpochSecond(
-            startTimeEpochSecond, 0, ZoneOffset.UTC
-        )
-        val remindAtTime = LocalDateTime.ofEpochSecond(
-            remindAtEpochSecond, 0, ZoneOffset.UTC
-        )
+        val startTime = ZonedDateTime.ofInstant(
+            Instant.ofEpochSecond(startTimeEpochSecond),
+            TimeZone.getDefault().toZoneId()
+        ).toLocalDateTime()
+        val remindAtTime = ZonedDateTime.ofInstant(
+            Instant.ofEpochSecond(remindAtEpochSecond),
+            TimeZone.getDefault().toZoneId()
+        ).toLocalDateTime()
         val period = Period.between(
             remindAtTime.toLocalDate(),
             startTime.toLocalDate()
@@ -39,21 +42,33 @@ object ReminderTimeConversion {
         }
     }
 
-    fun toEpochSecond(startTimeEpochSecond: Long, reminderTime: ReminderTime): Long {
-        val startTime = LocalDateTime.ofEpochSecond(
-            startTimeEpochSecond, 0, ZoneOffset.UTC
-        )
+    fun toEpochSecond(startLocalDateTime: LocalDateTime, reminderTime: ReminderTime): Long {
         return when (reminderTime) {
             ReminderTime.TEN_MINUTES_BEFORE ->
-                startTime.minusMinutes(10).toEpochSecond(ZoneOffset.UTC)
+                ZonedDateTime.of(
+                    startLocalDateTime.minusMinutes(10),
+                    TimeZone.getDefault().toZoneId()
+                ).toEpochSecond()
             ReminderTime.THIRTY_MINUTES_BEFORE ->
-                startTime.minusMinutes(30).toEpochSecond(ZoneOffset.UTC)
+                ZonedDateTime.of(
+                    startLocalDateTime.minusMinutes(30),
+                    TimeZone.getDefault().toZoneId()
+                ).toEpochSecond()
             ReminderTime.ONE_HOUR_BEFORE ->
-                startTime.minusHours(1).toEpochSecond(ZoneOffset.UTC)
+                ZonedDateTime.of(
+                    startLocalDateTime.minusHours(1),
+                    TimeZone.getDefault().toZoneId()
+                ).toEpochSecond()
             ReminderTime.SIX_HOURS_BEFORE ->
-                startTime.minusHours(6).toEpochSecond(ZoneOffset.UTC)
+                ZonedDateTime.of(
+                    startLocalDateTime.minusHours(6),
+                    TimeZone.getDefault().toZoneId()
+                ).toEpochSecond()
             ReminderTime.ONE_DAY_BEFORE ->
-                startTime.minusDays(1).toEpochSecond(ZoneOffset.UTC)
+                ZonedDateTime.of(
+                    startLocalDateTime.minusDays(1),
+                    TimeZone.getDefault().toZoneId()
+                ).toEpochSecond()
         }
     }
 }

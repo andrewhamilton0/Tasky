@@ -8,4 +8,5 @@ interface ReminderRepository {
     suspend fun updateReminder(reminder: AgendaItem.Reminder)
     suspend fun getReminder(reminderId: String): AuthResult<AgendaItem.Reminder>
     suspend fun deleteReminder(reminder: AgendaItem.Reminder)
+    suspend fun uploadCreateAndUpdateModifiedReminders()
 }

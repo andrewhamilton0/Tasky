@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
+import androidx.work.WorkManager
 import com.andrew.tasky.agenda.data.agenda.AgendaApi
 import com.andrew.tasky.agenda.data.agenda.AgendaRepositoryImpl
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
@@ -43,6 +44,12 @@ object AppModule {
             .baseUrl("https://tasky.pl-coding.com")
             .addConverterFactory(MoshiConverterFactory.create())
             .client(OkHttpClient())
+    }
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(app: Application): WorkManager {
+        return WorkManager.getInstance(app)
     }
 
     @Provides
@@ -91,10 +98,15 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAgendaRepository(
-        api: AgendaApi,
+        agendaApi: AgendaApi,
+        reminderRepository: ReminderRepository,
         db: AgendaDatabase
     ): AgendaRepository {
-        return AgendaRepositoryImpl(api = api, db = db)
+        return AgendaRepositoryImpl(
+            agendaApi = agendaApi,
+            reminderRepository = reminderRepository,
+            db = db
+        )
     }
 
     @Provides
