@@ -61,15 +61,20 @@ class ReminderRepositoryImpl @Inject constructor(
     }
 
     override suspend fun uploadCreateAndUpdateModifiedReminders() {
-        val createRemindersDtos = db.getReminderDao().getModifiedReminders().filter {
-            it.modifiedType == ModifiedType.CREATE
-        }.map {
-            db.getReminderDao().getReminderById(it.id).toReminderDto()
+
+        val modifiedReminders = db.getReminderDao().getModifiedReminders().groupBy {
+            it.modifiedType
         }
-        createRemindersDtos.map { createRemindersDto ->
-            when (getAuthResult { api.createReminder(createRemindersDto) }) {
+
+        val createRemindersDtos = modifiedReminders[ModifiedType.CREATE]?.map {
+            db.getReminderDao().getReminderById(it.id)?.toReminderDto()
+        }
+        createRemindersDtos?.map { createRemindersDto ->
+            when (getAuthResult { createRemindersDto?.let { api.createReminder(it) } }) {
                 is AuthResult.Authorized -> {
-                    db.getReminderDao().deleteModifiedReminderById(createRemindersDto.id)
+                    createRemindersDto?.let {
+                        db.getReminderDao().deleteModifiedReminderById(it.id)
+                    }
                 }
                 is AuthResult.Unauthorized -> Log.e(
                     "SyncAgendaItem",
@@ -82,15 +87,15 @@ class ReminderRepositoryImpl @Inject constructor(
             }
         }
 
-        val updateRemindersDtos = db.getReminderDao().getModifiedReminders().filter {
-            it.modifiedType == ModifiedType.UPDATE
-        }.map {
-            db.getReminderDao().getReminderById(it.id).toReminderDto()
+        val updateRemindersDtos = modifiedReminders[ModifiedType.UPDATE]?.map {
+            db.getReminderDao().getReminderById(it.id)?.toReminderDto()
         }
-        updateRemindersDtos.map { updateRemindersDto ->
-            when (getAuthResult { api.updateReminder(updateRemindersDto) }) {
+        updateRemindersDtos?.map { updateRemindersDto ->
+            when (getAuthResult { updateRemindersDto?.let { api.updateReminder(it) } }) {
                 is AuthResult.Authorized -> {
-                    db.getReminderDao().deleteModifiedReminderById(updateRemindersDto.id)
+                    updateRemindersDto?.let {
+                        db.getReminderDao().deleteModifiedReminderById(it.id)
+                    }
                 }
                 is AuthResult.Unauthorized -> Log.e(
                     "SyncAgendaItem",

@@ -8,14 +8,20 @@ interface ReminderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertReminder(reminder: ReminderEntity): Long
 
-    @Query("SELECT * FROM ReminderEntity")
-    fun getRemindersAsFlow(): Flow<List<ReminderEntity>>
+    @Query("SELECT * FROM ReminderEntity WHERE time BETWEEN :startEpochMilli AND :endEpochMilli")
+    fun getRemindersOfDateFlow(
+        startEpochMilli: Long,
+        endEpochMilli: Long
+    ): Flow<List<ReminderEntity>>
 
-    @Query("SELECT * FROM ReminderEntity")
-    suspend fun getOneTimeListOfReminders(): List<ReminderEntity>
+    @Query("SELECT * FROM ReminderEntity WHERE time BETWEEN :startEpochMilli AND :endEpochMilli")
+    suspend fun getRemindersOfDate(
+        startEpochMilli: Long,
+        endEpochMilli: Long
+    ): List<ReminderEntity>
 
     @Query("SELECT * FROM ReminderEntity WHERE id==:id")
-    suspend fun getReminderById(id: String): ReminderEntity
+    suspend fun getReminderById(id: String): ReminderEntity?
 
     @Delete
     suspend fun deleteReminder(reminder: ReminderEntity)
