@@ -32,12 +32,7 @@ class AgendaViewModel@Inject constructor(
     private val dateSelected = _dateSelected.asStateFlow()
 
     fun setDateSelected(dateUserSelected: LocalDate) {
-        viewModelScope.launch { updateAgendaOfDate(dateUserSelected) }
         _dateSelected.value = dateUserSelected
-    }
-
-    private suspend fun updateAgendaOfDate(date: LocalDate) {
-        agendaRepository.updateAgendaOfDate(date = date)
     }
 
     val currentDateAndTimeFlow = flow<LocalDateTime> {
@@ -49,14 +44,9 @@ class AgendaViewModel@Inject constructor(
         }
     }
 
-    private val agendaItems = agendaRepository
-        .getAgendaItems()
-        .combine(dateSelected) { items, selectedDate ->
-            items
-                .filter { it.startDateAndTime.toLocalDate() == selectedDate }
-                .sortedBy { it.startDateAndTime }
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    private val agendaItems = dateSelected.flatMapLatest { date ->
+        agendaRepository.getAgendaItems(date)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private fun indexOfTimeNeedle(
         agendaItems: List<AgendaItem>,
@@ -146,7 +136,6 @@ class AgendaViewModel@Inject constructor(
             ).build()
 
     init {
-        viewModelScope.launch { updateAgendaOfDate(date = dateSelected.value) }
         workManager.enqueue(syncModifiedAgendaItemsWorkRequest)
     }
 }
