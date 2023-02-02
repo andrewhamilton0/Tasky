@@ -25,7 +25,8 @@ fun AgendaItem.Task.toTaskDto(): TaskDto {
         remindAt = ReminderTimeConversion.toEpochMilli(
             startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
-        )
+        ),
+        isDone = isDone
     )
 }
 
@@ -63,6 +64,7 @@ fun TaskEntity.toTaskDto(): TaskDto {
         title = title,
         description = description,
         time = time,
-        remindAt = remindAt
+        remindAt = remindAt,
+        isDone = isDone
     )
 }

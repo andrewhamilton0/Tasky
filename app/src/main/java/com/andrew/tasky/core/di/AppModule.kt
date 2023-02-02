@@ -10,8 +10,11 @@ import com.andrew.tasky.agenda.data.agenda.AgendaRepositoryImpl
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.reminder.ReminderApi
 import com.andrew.tasky.agenda.data.reminder.ReminderRepositoryImpl
+import com.andrew.tasky.agenda.data.task.TaskApi
+import com.andrew.tasky.agenda.data.task.TaskRepositoryImpl
 import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
+import com.andrew.tasky.agenda.domain.TaskRepository
 import com.andrew.tasky.auth.data.*
 import com.andrew.tasky.auth.domain.EmailPatternValidator
 import com.andrew.tasky.core.data.ApiKeyInterceptor
@@ -56,7 +59,6 @@ object AppModule {
     @Singleton
     fun provideAuthApi(taskyClient: Builder): AuthApi {
         val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-
         return taskyClient.client(
             OkHttpClient.Builder()
                 .addInterceptor(logging)
@@ -83,7 +85,6 @@ object AppModule {
     @Singleton
     fun provideAgendaApi(taskyClient: Builder, prefs: SharedPreferences): AgendaApi {
         val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-
         return taskyClient.client(
             OkHttpClient.Builder()
                 .addInterceptor(ApiKeyInterceptor)
@@ -138,7 +139,30 @@ object AppModule {
     @Singleton
     fun provideReminderApi(prefs: SharedPreferences, taskyClient: Builder): ReminderApi {
         val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        return taskyClient.client(
+            OkHttpClient.Builder()
+                .addInterceptor(ApiKeyInterceptor)
+                .addInterceptor(TokenInterceptor(prefs))
+                .addInterceptor(logging)
+                .build()
+        )
+            .build()
+            .create()
+    }
 
+    @Provides
+    @Singleton
+    fun provideTaskRepository(
+        api: TaskApi,
+        db: AgendaDatabase
+    ): TaskRepository {
+        return TaskRepositoryImpl(db = db, api = api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTaskApi(prefs: SharedPreferences, taskyClient: Builder): TaskApi {
+        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         return taskyClient.client(
             OkHttpClient.Builder()
                 .addInterceptor(ApiKeyInterceptor)
