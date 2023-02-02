@@ -21,7 +21,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit.Builder
@@ -106,8 +105,7 @@ object AppModule {
         return AgendaRepositoryImpl(
             agendaApi = agendaApi,
             reminderRepository = reminderRepository,
-            db = db,
-            ioDispatcher = Dispatchers.IO
+            db = db
         )
     }
 

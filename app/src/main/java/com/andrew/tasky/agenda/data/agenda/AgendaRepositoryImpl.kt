@@ -2,6 +2,8 @@ package com.andrew.tasky.agenda.data.agenda
 
 import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
+import com.andrew.tasky.agenda.data.reminder.toReminder
+import com.andrew.tasky.agenda.data.reminder.toReminderEntity
 import com.andrew.tasky.agenda.data.util.*
 import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
@@ -20,65 +22,51 @@ class AgendaRepositoryImpl(
     private val agendaApi: AgendaApi,
     private val reminderRepository: ReminderRepository,
     private val db: AgendaDatabase,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : AgendaRepository {
 
-    override fun getAgendaItems(localDate: LocalDate): Flow<List<AgendaItem>> {
+    override suspend fun getAgendaItems(localDate: LocalDate): Flow<List<AgendaItem>> {
 
-        val calendar = Calendar.getInstance()
-        calendar.set(
-            localDate.year,
-            localDate.monthValue - 1,
-            localDate.dayOfMonth
-        )
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-        val startEpochMilli = calendar.timeInMillis
+        val startEpochMilli = localDateTimeToZonedEpochMilli(localDate.atStartOfDay())
+        val endEpochMilli = localDateTimeToZonedEpochMilli(localDate.atStartOfDay().plusDays(1))
 
-        calendar.add(Calendar.DATE, 1)
-        val endEpochMilli = calendar.timeInMillis
-
-        CoroutineScope(ioDispatcher).launch {
-            syncAgendaItems()
-            when (
-                val results = getAuthResult {
-                    agendaApi.getAgendaItems(
-                        timezone = TimeZone.getDefault().id,
-                        time = localDateTimeToZonedEpochMilli(
-                            LocalDateTime.of(localDate, LocalTime.now())
+        syncAgendaItems()
+        when (
+            val results = getAuthResult {
+                agendaApi.getAgendaItems(
+                    timezone = TimeZone.getDefault().id,
+                    time = localDateTimeToZonedEpochMilli(
+                        LocalDateTime.of(localDate, LocalTime.now())
+                    )
+                )
+            }
+        ) {
+            is AuthResult.Authorized -> {
+                val localReminders = db.getReminderDao().getRemindersOfDate(
+                    startEpochMilli = startEpochMilli,
+                    endEpochMilli = endEpochMilli
+                )
+                localReminders.forEach { localReminder ->
+                    val containsLocalId = results.data?.reminders?.any {
+                        it.id == localReminder.id
+                    } == true
+                    if (!containsLocalId) {
+                        db.getReminderDao().deleteReminder(localReminder)
+                    }
+                }
+                results.data?.reminders?.forEach { reminderDto ->
+                    val localReminder = db.getReminderDao().getReminderById(reminderDto.id)
+                    db.getReminderDao().upsertReminder(
+                        reminderDto.toReminderEntity(
+                            isDone = localReminder?.isDone ?: false
                         )
                     )
                 }
-            ) {
-                is AuthResult.Authorized -> {
-                    val localReminders = db.getReminderDao().getRemindersOfDate(
-                        startEpochMilli = startEpochMilli,
-                        endEpochMilli = endEpochMilli
-                    )
-                    localReminders.map { localReminder ->
-                        val remoteReminderIds =
-                            results.data?.reminders?.map { it.id } ?: emptyList()
-                        if (!remoteReminderIds.contains(localReminder.id)) {
-                            db.getReminderDao().deleteReminder(localReminder)
-                        }
-                    }
-                    results.data?.reminders?.map { reminderDto ->
-                        val localReminder = db.getReminderDao().getReminderById(reminderDto.id)
-                        db.getReminderDao().upsertReminder(
-                            reminderDto.toReminderEntity(
-                                isDone = localReminder?.isDone ?: false
-                            )
-                        )
-                    }
-                }
-                is AuthResult.Unauthorized -> {
-                    Log.e("Update Agenda of Date", "Unauthorized")
-                }
-                is AuthResult.UnknownError -> {
-                    Log.e("Update Agenda of Date", "Unknown Error")
-                }
+            }
+            is AuthResult.Unauthorized -> {
+                Log.e("Update Agenda of Date", "Unauthorized")
+            }
+            is AuthResult.UnknownError -> {
+                Log.e("Update Agenda of Date", "Unknown Error")
             }
         }
 
