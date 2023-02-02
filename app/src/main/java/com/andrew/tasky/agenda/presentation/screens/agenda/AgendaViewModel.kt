@@ -43,7 +43,6 @@ class AgendaViewModel@Inject constructor(
             dateAndTime = LocalDateTime.now()
         }
     }
-
     private val agendaItems = dateSelected.flatMapLatest { date ->
         agendaRepository.getAgendaItems(date)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

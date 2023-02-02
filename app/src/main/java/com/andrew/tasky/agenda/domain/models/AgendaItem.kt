@@ -25,7 +25,7 @@ sealed class AgendaItem(open val startDateAndTime: LocalDateTime) {
 
     @Parcelize
     data class Task(
-        val id: String? = null,
+        val id: String,
         val isDone: Boolean = false,
         val title: String,
         val description: String,
