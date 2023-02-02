@@ -5,7 +5,7 @@ import com.andrew.tasky.agenda.data.util.localDateTimeToZonedEpochMilli
 import com.andrew.tasky.agenda.data.util.zonedEpochMilliToLocalDateTime
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 
-fun TaskDto.toTaskEntity(isDone: Boolean): TaskEntity {
+fun TaskDto.toTaskEntity(): TaskEntity {
     return TaskEntity(
         id = id,
         title = title,

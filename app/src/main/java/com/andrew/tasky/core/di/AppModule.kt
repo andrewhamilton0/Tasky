@@ -101,11 +101,13 @@ object AppModule {
     fun provideAgendaRepository(
         agendaApi: AgendaApi,
         reminderRepository: ReminderRepository,
+        taskRepository: TaskRepository,
         db: AgendaDatabase
     ): AgendaRepository {
         return AgendaRepositoryImpl(
             agendaApi = agendaApi,
             reminderRepository = reminderRepository,
+            taskRepository = taskRepository,
             db = db
         )
     }
