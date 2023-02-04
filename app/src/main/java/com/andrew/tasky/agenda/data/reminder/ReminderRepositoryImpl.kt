@@ -3,8 +3,6 @@ package com.andrew.tasky.agenda.data.reminder
 import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.util.ModifiedType
-import com.andrew.tasky.agenda.data.util.toReminderDto
-import com.andrew.tasky.agenda.data.util.toReminderEntity
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.data.AuthResult
@@ -43,10 +41,6 @@ class ReminderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getReminder(reminderId: String): AuthResult<AgendaItem.Reminder> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun deleteReminder(reminder: AgendaItem.Reminder) {
         db.getReminderDao().deleteReminder(reminder.toReminderEntity())
         val result = getAuthResult { api.deleteReminder(reminder.id) }
@@ -61,7 +55,6 @@ class ReminderRepositoryImpl @Inject constructor(
     }
 
     override suspend fun uploadCreateAndUpdateModifiedReminders() {
-
         val modifiedReminders = db.getReminderDao().getModifiedReminders().groupBy {
             it.modifiedType
         }

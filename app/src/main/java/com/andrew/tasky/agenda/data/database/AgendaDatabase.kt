@@ -6,10 +6,18 @@ import androidx.room.TypeConverters
 import com.andrew.tasky.agenda.data.reminder.ModifiedReminderEntity
 import com.andrew.tasky.agenda.data.reminder.ReminderDao
 import com.andrew.tasky.agenda.data.reminder.ReminderEntity
+import com.andrew.tasky.agenda.data.task.ModifiedTaskEntity
+import com.andrew.tasky.agenda.data.task.TaskDao
+import com.andrew.tasky.agenda.data.task.TaskEntity
 import com.andrew.tasky.agenda.data.util.Converters
 
 @Database(
-    entities = [ReminderEntity::class, ModifiedReminderEntity::class],
+    entities = [
+        ReminderEntity::class,
+        ModifiedReminderEntity::class,
+        TaskEntity::class,
+        ModifiedTaskEntity::class
+    ],
     version = 1
 )
 
@@ -17,4 +25,5 @@ import com.andrew.tasky.agenda.data.util.Converters
 abstract class AgendaDatabase : RoomDatabase() {
 
     abstract fun getReminderDao(): ReminderDao
+    abstract fun getTaskDao(): TaskDao
 }

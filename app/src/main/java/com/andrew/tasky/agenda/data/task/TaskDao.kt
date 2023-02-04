@@ -1,11 +1,9 @@
 package com.andrew.tasky.agenda.data.task
 
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertTask(task: TaskEntity): Long

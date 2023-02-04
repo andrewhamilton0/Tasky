@@ -4,7 +4,6 @@ import androidx.lifecycle.*
 import androidx.lifecycle.ViewModel
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
-import com.andrew.tasky.agenda.util.AgendaItemType
 import com.andrew.tasky.agenda.util.ReminderTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
@@ -22,8 +21,6 @@ class ReminderDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: ReminderRepository
 ) : ViewModel() {
-
-    private val agendaItemType = AgendaItemType.REMINDER
 
     private val _isInEditMode = MutableStateFlow(false)
     val isInEditMode = _isInEditMode.asStateFlow()

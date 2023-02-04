@@ -9,6 +9,7 @@ import androidx.work.WorkManager
 import com.andrew.tasky.agenda.data.agenda.SyncModifiedAgendaItemsWorker
 import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
+import com.andrew.tasky.agenda.domain.TaskRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.CalendarDateItem
 import com.andrew.tasky.agenda.util.DateType
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 class AgendaViewModel@Inject constructor(
     private val agendaRepository: AgendaRepository,
     private val reminderRepository: ReminderRepository,
+    private val taskRepository: TaskRepository,
     private val workManager: WorkManager
 ) : ViewModel() {
 
@@ -79,7 +81,9 @@ class AgendaViewModel@Inject constructor(
                 is AgendaItem.Reminder -> {
                     reminderRepository.updateReminder(agendaItem.copy(isDone = !agendaItem.isDone))
                 }
-                is AgendaItem.Task -> TODO()
+                is AgendaItem.Task -> {
+                    taskRepository.updateTask(agendaItem.copy(isDone = !agendaItem.isDone))
+                }
             }
         }
     }
@@ -121,7 +125,7 @@ class AgendaViewModel@Inject constructor(
             when (agendaItem) {
                 is AgendaItem.Event -> TODO()
                 is AgendaItem.Reminder -> reminderRepository.deleteReminder(agendaItem)
-                is AgendaItem.Task -> TODO()
+                is AgendaItem.Task -> taskRepository.deleteTask(agendaItem)
             }
         }
     }

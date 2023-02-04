@@ -5,7 +5,7 @@ import com.andrew.tasky.agenda.data.util.localDateTimeToZonedEpochMilli
 import com.andrew.tasky.agenda.data.util.zonedEpochMilliToLocalDateTime
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 
-fun TaskDto.toTaskEntity(isDone: Boolean): TaskEntity {
+fun TaskDto.toTaskEntity(): TaskEntity {
     return TaskEntity(
         id = id,
         title = title,
@@ -25,7 +25,8 @@ fun AgendaItem.Task.toTaskDto(): TaskDto {
         remindAt = ReminderTimeConversion.toEpochMilli(
             startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
-        )
+        ),
+        isDone = isDone
     )
 }
 
@@ -63,6 +64,7 @@ fun TaskEntity.toTaskDto(): TaskDto {
         title = title,
         description = description,
         time = time,
-        remindAt = remindAt
+        remindAt = remindAt,
+        isDone = isDone
     )
 }
