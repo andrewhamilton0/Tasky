@@ -10,7 +10,7 @@ sealed class AgendaItem(open val startDateAndTime: LocalDateTime) {
 
     @Parcelize
     data class Event(
-        val id: String? = null,
+        val id: String,
         val isDone: Boolean,
         val title: String,
         val description: String,

@@ -17,7 +17,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 class AgendaRepositoryImpl(
@@ -27,10 +26,36 @@ class AgendaRepositoryImpl(
     private val db: AgendaDatabase,
 ) : AgendaRepository {
 
-    override suspend fun getAgendaItems(localDate: LocalDate): Flow<List<AgendaItem>> {
-
+    override suspend fun getAgendaItems(localDate: LocalDate) = flow<Flow<List<AgendaItem>>> {
         val startEpochMilli = localDateTimeToZonedEpochMilli(localDate.atStartOfDay())
         val endEpochMilli = localDateTimeToZonedEpochMilli(localDate.atStartOfDay().plusDays(1))
+
+        val reminders = db.getReminderDao().getRemindersOfDate(
+            startEpochMilli = startEpochMilli,
+            endEpochMilli = endEpochMilli
+        ).map {
+            it.map { reminderEntity ->
+                reminderEntity.toReminder()
+            }
+        }
+        val tasks = db.getTaskDao().getTasksOfDate(
+            startEpochMilli = startEpochMilli,
+            endEpochMilli = endEpochMilli
+        ).map {
+            it.map { taskEntity ->
+                taskEntity.toTask()
+            }
+        }
+
+        emit(
+            reminders.combine(tasks) { reminderFlow, taskFlow ->
+                reminderFlow + taskFlow
+            }.map {
+                it.sortedBy { agendaItem ->
+                    agendaItem.startDateAndTime
+                }
+            }
+        )
 
         syncAgendaItems()
         when (
@@ -47,7 +72,7 @@ class AgendaRepositoryImpl(
                 val localReminders = db.getReminderDao().getRemindersOfDate(
                     startEpochMilli = startEpochMilli,
                     endEpochMilli = endEpochMilli
-                )
+                ).first()
                 localReminders.forEach { localReminder ->
                     val containsLocalId = results.data?.reminders?.any {
                         it.id == localReminder.id
@@ -67,7 +92,7 @@ class AgendaRepositoryImpl(
                 val localTasks = db.getTaskDao().getTasksOfDate(
                     startEpochMilli = startEpochMilli,
                     endEpochMilli = endEpochMilli
-                )
+                ).first()
                 localTasks.forEach { localTask ->
                     val containsLocalId = results.data?.tasks?.any {
                         it.id == localTask.id
@@ -87,34 +112,6 @@ class AgendaRepositoryImpl(
                 Log.e("Update Agenda of Date", "Unknown Error")
             }
         }
-
-        val reminders = db.getReminderDao().getRemindersOfDateFlow(
-            startEpochMilli = startEpochMilli,
-            endEpochMilli = endEpochMilli
-        ).map {
-            it.map { reminderEntity ->
-                reminderEntity.toReminder()
-            }.sortedBy { reminder ->
-                reminder.startDateAndTime
-            }
-        }
-        val tasks = db.getTaskDao().getTasksOfDateFlow(
-            startEpochMilli = startEpochMilli,
-            endEpochMilli = endEpochMilli
-        ).map {
-            it.map { taskEntity ->
-                taskEntity.toTask()
-            }.sortedBy { task ->
-                task.startDateAndTime
-            }
-        }
-        return reminders.combine(tasks) { reminderFlow, taskFlow ->
-            reminderFlow + taskFlow
-        }.map {
-            it.sortedBy { agendaItem ->
-                agendaItem.startDateAndTime
-            }
-        }
         // Todo return event agenda items
     }
 
@@ -132,22 +129,28 @@ class AgendaRepositoryImpl(
         }.map {
             it.id
         }
-        val syncAgendaRequest = SyncAgendaRequest(emptyList(), taskDeleteIds, reminderDeleteIds)
-        when (getAuthResult { agendaApi.syncAgendaItems(syncAgendaRequest) }) {
-            is AuthResult.Authorized -> {
-                reminderDeleteIds.map {
-                    db.getReminderDao().deleteModifiedReminderById(it)
+
+        if (reminderDeleteIds.isNotEmpty() || taskDeleteIds.isNotEmpty()) {
+            val syncAgendaRequest = SyncAgendaRequest(emptyList(), taskDeleteIds, reminderDeleteIds)
+            when (getAuthResult { agendaApi.syncAgendaItems(syncAgendaRequest) }) {
+                is AuthResult.Authorized -> {
+                    reminderDeleteIds.forEach {
+                        db.getReminderDao().deleteModifiedReminderById(it)
+                    }
+                    taskDeleteIds.forEach {
+                        db.getTaskDao().deleteModifiedTaskById(it)
+                    }
                 }
+                is AuthResult.Unauthorized -> Log.e(
+                    "SyncAgendaItem",
+                    "Unauthorized, could not run agendaApi.syncAgendaItems(syncAgendaRequest)"
+                )
+                is AuthResult.UnknownError -> Log.e(
+                    "SyncAgendaItem",
+                    "Unknown Error, could not run agendaApi.syncAgendaItems(syncAgendaRequest)"
+                )
             }
-            is AuthResult.Unauthorized -> Log.e(
-                "SyncAgendaItem",
-                "Unauthorized, could not run agendaApi.syncAgendaItems(syncAgendaRequest)"
-            )
-            is AuthResult.UnknownError -> Log.e(
-                "SyncAgendaItem",
-                "Unknown Error, could not run agendaApi.syncAgendaItems(syncAgendaRequest)"
-            )
+            // Todo sync events
         }
-        // Todo sync events
     }
 }

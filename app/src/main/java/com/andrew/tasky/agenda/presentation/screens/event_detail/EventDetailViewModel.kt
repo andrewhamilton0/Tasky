@@ -1,7 +1,7 @@
 package com.andrew.tasky.agenda.presentation.screens.event_detail
 
 import androidx.lifecycle.*
-import com.andrew.tasky.agenda.domain.AgendaRepository
+import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
@@ -20,7 +21,7 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class EventDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: AgendaRepository
+    private val repository: EventRepository
 ) : ViewModel() {
 
     private val _isInEditMode = MutableStateFlow(false)
@@ -156,8 +157,9 @@ class EventDetailViewModel @Inject constructor(
     }
 
     fun saveAgendaItem() {
-        val agendaItem = AgendaItem.Event(
-            id = savedStateHandle.get<AgendaItem.Event>("agendaItem")?.id,
+        val event = AgendaItem.Event(
+            id = savedStateHandle.get<AgendaItem.Event>("event")?.id
+                ?: UUID.randomUUID().toString(),
             isDone = isDone.value,
             title = title.value,
             description = description.value,
@@ -181,7 +183,7 @@ class EventDetailViewModel @Inject constructor(
         // going to be cancelled.
         viewModelScope.launch {
             withContext(NonCancellable) {
-                // repository.upsert(agendaItem)
+                repository.createEvent(event)
             }
         }
     }
