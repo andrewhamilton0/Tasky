@@ -153,4 +153,11 @@ class AgendaRepositoryImpl(
             // Todo sync events
         }
     }
+
+    override suspend fun deleteAllAgendaTables() {
+        db.getReminderDao().deleteModifiedReminderDb()
+        db.getReminderDao().deleteReminderDb()
+        db.getTaskDao().deleteModifiedTaskDb()
+        db.getTaskDao().deleteTaskDb()
+    }
 }

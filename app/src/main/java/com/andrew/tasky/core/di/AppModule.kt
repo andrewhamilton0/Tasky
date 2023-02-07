@@ -19,6 +19,7 @@ import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.TaskRepository
 import com.andrew.tasky.auth.data.*
+import com.andrew.tasky.auth.domain.AuthRepository
 import com.andrew.tasky.auth.domain.EmailPatternValidator
 import com.andrew.tasky.core.data.ApiKeyInterceptor
 import com.andrew.tasky.core.data.TokenInterceptor
@@ -95,8 +96,12 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(api: AuthApi, prefs: SharedPreferences): AuthRepository {
-        return AuthRepositoryImpl(api, prefs)
+    fun provideAuthRepository(
+        api: AuthApi,
+        prefs: SharedPreferences,
+        agendaRepository: AgendaRepository
+    ): AuthRepository {
+        return AuthRepositoryImpl(api = api, prefs = prefs, agendaRepository = agendaRepository)
     }
 
     @Provides
