@@ -31,10 +31,4 @@ interface TaskDao {
 
     @Query("DELETE FROM ModifiedTaskEntity WHERE id==:id")
     suspend fun deleteModifiedTaskById(id: String): Int
-
-    @Query("DELETE FROM TaskEntity")
-    suspend fun deleteTaskDb()
-
-    @Query("DELETE FROM ModifiedTaskEntity")
-    suspend fun deleteModifiedTaskDb()
 }
