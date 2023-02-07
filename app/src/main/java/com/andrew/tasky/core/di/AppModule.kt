@@ -8,11 +8,14 @@ import androidx.work.WorkManager
 import com.andrew.tasky.agenda.data.agenda.AgendaApi
 import com.andrew.tasky.agenda.data.agenda.AgendaRepositoryImpl
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
+import com.andrew.tasky.agenda.data.event.EventApi
+import com.andrew.tasky.agenda.data.event.EventRepositoryImpl
 import com.andrew.tasky.agenda.data.reminder.ReminderApi
 import com.andrew.tasky.agenda.data.reminder.ReminderRepositoryImpl
 import com.andrew.tasky.agenda.data.task.TaskApi
 import com.andrew.tasky.agenda.data.task.TaskRepositoryImpl
 import com.andrew.tasky.agenda.domain.AgendaRepository
+import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.TaskRepository
 import com.andrew.tasky.auth.data.*
@@ -26,6 +29,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
 import retrofit2.Retrofit.Builder
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
@@ -47,6 +51,20 @@ object AppModule {
             .baseUrl("https://tasky.pl-coding.com")
             .addConverterFactory(MoshiConverterFactory.create())
             .client(OkHttpClient())
+    }
+
+    @Provides
+    @Singleton
+    fun provideAgendaItemRetrofitBuilder(prefs: SharedPreferences, taskyClient: Builder): Retrofit {
+        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        return taskyClient.client(
+            OkHttpClient.Builder()
+                .addInterceptor(ApiKeyInterceptor)
+                .addInterceptor(TokenInterceptor(prefs))
+                .addInterceptor(logging)
+                .build()
+        )
+            .build()
     }
 
     @Provides
@@ -83,17 +101,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAgendaApi(taskyClient: Builder, prefs: SharedPreferences): AgendaApi {
-        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-        return taskyClient.client(
-            OkHttpClient.Builder()
-                .addInterceptor(ApiKeyInterceptor)
-                .addInterceptor(TokenInterceptor(prefs))
-                .addInterceptor(logging)
-                .build()
-        )
-            .build()
-            .create()
+    fun provideAgendaApi(agendaItemRetrofitBuilder: Retrofit): AgendaApi {
+        return agendaItemRetrofitBuilder.create()
     }
 
     @Provides
@@ -122,12 +131,6 @@ object AppModule {
         ).build()
     }
 
-    // @Provides
-    // @Singleton
-    // fun provideEventRepository(db: EventDatabase): EventRepository {
-    //    return EventRepositoryImpl(db)
-    // }
-
     @Provides
     @Singleton
     fun provideReminderRepository(
@@ -139,17 +142,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideReminderApi(prefs: SharedPreferences, taskyClient: Builder): ReminderApi {
-        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-        return taskyClient.client(
-            OkHttpClient.Builder()
-                .addInterceptor(ApiKeyInterceptor)
-                .addInterceptor(TokenInterceptor(prefs))
-                .addInterceptor(logging)
-                .build()
-        )
-            .build()
-            .create()
+    fun provideReminderApi(agendaItemRetrofitBuilder: Retrofit): ReminderApi {
+        return agendaItemRetrofitBuilder.create()
     }
 
     @Provides
@@ -163,16 +157,22 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideTaskApi(prefs: SharedPreferences, taskyClient: Builder): TaskApi {
-        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-        return taskyClient.client(
-            OkHttpClient.Builder()
-                .addInterceptor(ApiKeyInterceptor)
-                .addInterceptor(TokenInterceptor(prefs))
-                .addInterceptor(logging)
-                .build()
-        )
-            .build()
-            .create()
+    fun provideTaskApi(agendaItemRetrofitBuilder: Retrofit): TaskApi {
+        return agendaItemRetrofitBuilder.create()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventRepository(
+        api: EventApi,
+        db: AgendaDatabase
+    ): EventRepository {
+        return EventRepositoryImpl(db = db, api = api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventApi(agendaItemRetrofitBuilder: Retrofit): EventApi {
+        return agendaItemRetrofitBuilder.create()
     }
 }

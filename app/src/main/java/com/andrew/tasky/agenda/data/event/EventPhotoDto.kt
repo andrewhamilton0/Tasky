@@ -1,6 +1,6 @@
 package com.andrew.tasky.agenda.data.event
 
-data class PhotoDto(
+data class EventPhotoDto(
     val key: String,
     val url: String
 )
