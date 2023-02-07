@@ -2,8 +2,8 @@ package com.andrew.tasky.auth.presentation.screens.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrew.tasky.auth.data.AuthRepository
 import com.andrew.tasky.auth.data.AuthResult
+import com.andrew.tasky.auth.domain.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
@@ -15,12 +15,8 @@ class LoginViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
 
-    private val resultChannel = Channel<AuthResult<Unit>>()
-    val authResults = resultChannel.receiveAsFlow()
-
-    init {
-        authenticate()
-    }
+    private val loginResultChannel = Channel<AuthResult<Unit>>()
+    val loginResults = loginResultChannel.receiveAsFlow()
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
@@ -28,14 +24,17 @@ class LoginViewModel @Inject constructor(
                 email = username,
                 password = password
             )
-            resultChannel.send(result)
+            loginResultChannel.send(result)
         }
     }
 
     private fun authenticate() {
         viewModelScope.launch {
-            val result = repository.authenticate()
-            resultChannel.send(result)
+            repository.authenticate()
         }
+    }
+
+    init {
+        authenticate()
     }
 }
