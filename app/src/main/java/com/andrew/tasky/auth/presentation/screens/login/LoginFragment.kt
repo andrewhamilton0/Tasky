@@ -2,13 +2,12 @@ package com.andrew.tasky.auth.presentation.screens.login
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
+import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
 import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,25 +38,15 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.authResults.collect { result ->
-                when (result) {
-                    is AuthResult.Authorized -> {
-                        navController.navigate(
-                            LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
-                        )
-                    }
-                    is AuthResult.Unauthorized -> Toast.makeText(
-                        requireContext(),
-                        requireContext().getString(R.string.unauthorized),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    is AuthResult.UnknownError -> Toast.makeText(
-                        requireContext(),
-                        requireContext().getString(R.string.unknown_error),
-                        Toast.LENGTH_LONG
-                    ).show()
+        collectLatestLifecycleFlow(viewModel.loginResults) { results ->
+            when (results) {
+                is AuthResult.Authorized -> {
+                    navController.navigate(
+                        LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
+                    )
                 }
+                is AuthResult.Unauthorized -> Unit
+                is AuthResult.UnknownError -> Unit
             }
         }
     }

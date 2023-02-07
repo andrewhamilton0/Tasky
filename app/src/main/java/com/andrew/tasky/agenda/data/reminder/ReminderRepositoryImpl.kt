@@ -24,7 +24,6 @@ class ReminderRepositoryImpl @Inject constructor(
                     modifiedType = ModifiedType.CREATE
                 )
             )
-            Log.e("create reminder", "sent to modified reminders")
         }
     }
 
@@ -62,7 +61,7 @@ class ReminderRepositoryImpl @Inject constructor(
         val createRemindersDtos = modifiedReminders[ModifiedType.CREATE]?.map {
             db.getReminderDao().getReminderById(it.id)?.toReminderDto()
         }
-        createRemindersDtos?.map { createRemindersDto ->
+        createRemindersDtos?.forEach { createRemindersDto ->
             when (getAuthResult { createRemindersDto?.let { api.createReminder(it) } }) {
                 is AuthResult.Authorized -> {
                     createRemindersDto?.let {
@@ -83,7 +82,7 @@ class ReminderRepositoryImpl @Inject constructor(
         val updateRemindersDtos = modifiedReminders[ModifiedType.UPDATE]?.map {
             db.getReminderDao().getReminderById(it.id)?.toReminderDto()
         }
-        updateRemindersDtos?.map { updateRemindersDto ->
+        updateRemindersDtos?.forEach { updateRemindersDto ->
             when (getAuthResult { updateRemindersDto?.let { api.updateReminder(it) } }) {
                 is AuthResult.Authorized -> {
                     updateRemindersDto?.let {
