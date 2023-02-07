@@ -17,17 +17,18 @@ class AuthRepositoryImpl(
         email: String,
         password: String
     ): AuthResult<Unit> {
-        val result = getAuthResult {
-            api.register(
-                request = RegisterRequest(
-                    fullName = fullName,
-                    email = email,
-                    password = password
+        return when (
+            getAuthResult {
+                api.register(
+                    request = RegisterRequest(
+                        fullName = fullName,
+                        email = email,
+                        password = password
+                    )
                 )
-            )
-            login(email, password)
-        }
-        return when (result) {
+                login(email, password)
+            }
+        ) {
             is AuthResult.Authorized -> AuthResult.Authorized()
             is AuthResult.Unauthorized -> AuthResult.Unauthorized()
             is AuthResult.UnknownError -> AuthResult.UnknownError()

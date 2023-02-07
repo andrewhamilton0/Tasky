@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.presentation.screens.agenda
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
@@ -14,21 +15,33 @@ import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.CalendarDateItem
 import com.andrew.tasky.agenda.util.DateType
 import com.andrew.tasky.agenda.util.UiAgendaItem
+import com.andrew.tasky.auth.data.AuthResult
+import com.andrew.tasky.auth.domain.AuthRepository
+import com.andrew.tasky.auth.util.PrefsKeys
+import com.andrew.tasky.core.StringToInitials
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class AgendaViewModel@Inject constructor(
     private val agendaRepository: AgendaRepository,
     private val reminderRepository: ReminderRepository,
     private val taskRepository: TaskRepository,
-    private val workManager: WorkManager
+    private val authRepository: AuthRepository,
+    workManager: WorkManager,
+    prefs: SharedPreferences
 ) : ViewModel() {
+
+    private val fullName = prefs.getString(PrefsKeys.FULL_NAME, "") ?: ""
+    val nameInitials = StringToInitials.convertStringToInitials(fullName)
 
     private val _dateSelected = MutableStateFlow(LocalDate.now())
     private val dateSelected = _dateSelected.asStateFlow()
@@ -126,6 +139,17 @@ class AgendaViewModel@Inject constructor(
                 is AgendaItem.Event -> TODO()
                 is AgendaItem.Reminder -> reminderRepository.deleteReminder(agendaItem)
                 is AgendaItem.Task -> taskRepository.deleteTask(agendaItem)
+            }
+        }
+    }
+
+    private val logoutResultChannel = Channel<AuthResult<Unit>>()
+    val logoutResults = logoutResultChannel.receiveAsFlow()
+
+    fun logout() {
+        viewModelScope.launch {
+            withContext(NonCancellable) {
+                logoutResultChannel.send(authRepository.logout())
             }
         }
     }
