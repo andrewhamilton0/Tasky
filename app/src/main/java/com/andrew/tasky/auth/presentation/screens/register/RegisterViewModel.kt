@@ -2,8 +2,8 @@ package com.andrew.tasky.auth.presentation.screens.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.andrew.tasky.auth.data.AuthRepository
 import com.andrew.tasky.auth.data.AuthResult
-import com.andrew.tasky.auth.domain.AuthRepository
 import com.andrew.tasky.auth.domain.EmailPatternValidator
 import com.andrew.tasky.auth.util.NameValidator
 import com.andrew.tasky.auth.util.PasswordValidator

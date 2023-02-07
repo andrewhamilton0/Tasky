@@ -21,9 +21,4 @@ interface AuthApi {
     suspend fun authenticate(
         @Header("Authorization") token: String
     )
-
-    @GET("/logout")
-    suspend fun logout(
-        @Header("Authorization") token: String
-    )
 }
