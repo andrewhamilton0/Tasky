@@ -31,10 +31,4 @@ interface ReminderDao {
 
     @Query("DELETE FROM ModifiedReminderEntity WHERE id==:id")
     suspend fun deleteModifiedReminderById(id: String): Int
-
-    @Query("DELETE FROM ReminderEntity")
-    suspend fun deleteReminderDb()
-
-    @Query("DELETE FROM ModifiedReminderEntity")
-    suspend fun deleteModifiedReminderDb()
 }

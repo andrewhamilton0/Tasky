@@ -3,7 +3,6 @@ package com.andrew.tasky.agenda.presentation.screens.agenda
 import android.os.Bundle
 import android.view.View
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
@@ -14,7 +13,6 @@ import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.presentation.adapters.AgendaItemAdapter
 import com.andrew.tasky.agenda.presentation.adapters.MiniCalendarAdapter
 import com.andrew.tasky.agenda.util.*
-import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.databinding.FragmentAgendaBinding
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
@@ -36,7 +34,6 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         navController = Navigation.findNavController(view)
         fragmentAgendaBinding = FragmentAgendaBinding.bind(view)
 
-        fragmentAgendaBinding.logoutButtonText.text = viewModel.nameInitials
         subscribeToObservables()
         setOnClickListeners()
         setupAgendaItemListRecyclerView()
@@ -62,27 +59,6 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         collectLatestLifecycleFlow(viewModel.currentDateType) { dateType ->
             setupCurrentDateSelectedTextView(dateType)
         }
-        collectLatestLifecycleFlow(viewModel.logoutResults) { results ->
-            when (results) {
-                is AuthResult.Authorized -> {
-                    navController.navigate(
-                        AgendaFragmentDirections
-                            .actionAgendaFragmentToLoginFragment()
-                    )
-                    Toast.makeText(context, R.string.logout_successful, Toast.LENGTH_SHORT).show()
-                }
-                is AuthResult.Unauthorized -> {
-                    navController.navigate(
-                        AgendaFragmentDirections
-                            .actionAgendaFragmentToLoginFragment()
-                    )
-                    Toast.makeText(context, R.string.token_not_found, Toast.LENGTH_SHORT).show()
-                }
-                is AuthResult.UnknownError -> {
-                    Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
     }
 
     private fun setOnClickListeners() {
@@ -101,7 +77,10 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                 popupMenu.setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
                         R.id.logout -> {
-                            viewModel.logout()
+                            navController.navigate(
+                                AgendaFragmentDirections
+                                    .actionAgendaFragmentToLoginFragment()
+                            )
                             true
                         }
                         else -> true
