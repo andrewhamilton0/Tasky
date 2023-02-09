@@ -1,7 +1,9 @@
 package com.andrew.tasky.auth.presentation.screens.login
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
@@ -45,8 +47,31 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
                     )
                 }
-                is AuthResult.Unauthorized -> Unit
-                is AuthResult.UnknownError -> Unit
+                is AuthResult.Unauthorized -> {
+                    Toast.makeText(
+                        context,
+                        R.string.username_and_password_do_not_match,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                is AuthResult.UnknownError -> {
+                    Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+        collectLatestLifecycleFlow(viewModel.authenticateResults) { results ->
+            when (results) {
+                is AuthResult.Authorized -> {
+                    navController.navigate(
+                        LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
+                    )
+                }
+                is AuthResult.Unauthorized -> {
+                    Log.e("LoginFragAuthResult", "Unauthorized")
+                }
+                is AuthResult.UnknownError -> {
+                    Log.e("LoginFragAuthResult", "Unknown error")
+                }
             }
         }
     }

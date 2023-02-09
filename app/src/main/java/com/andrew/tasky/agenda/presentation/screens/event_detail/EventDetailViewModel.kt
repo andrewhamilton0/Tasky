@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.presentation.screens.event_detail
 
+import android.content.SharedPreferences
 import androidx.lifecycle.*
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -21,7 +22,8 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class EventDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: EventRepository
+    private val repository: EventRepository,
+    private val prefs: SharedPreferences
 ) : ViewModel() {
 
     private val _isInEditMode = MutableStateFlow(false)
@@ -202,7 +204,7 @@ class EventDetailViewModel @Inject constructor(
     }
 
     init {
-        savedStateHandle.get<AgendaItem.Event>("agendaItem")?.let { item ->
+        savedStateHandle.get<AgendaItem.Event>("event")?.let { item ->
             item.isAttendee?.let { setIsAttendee(it) }
             setIsDone(item.isDone)
             setTitle(item.title)

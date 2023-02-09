@@ -1,5 +1,6 @@
 package com.andrew.tasky.auth.presentation.screens.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andrew.tasky.auth.data.AuthResult
@@ -28,9 +29,13 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private val authenticateResultChannel = Channel<AuthResult<Unit>>()
+    val authenticateResults = authenticateResultChannel.receiveAsFlow()
+
     private fun authenticate() {
         viewModelScope.launch {
-            repository.authenticate()
+            val results = repository.authenticate()
+            authenticateResultChannel.send(results)
         }
     }
 
