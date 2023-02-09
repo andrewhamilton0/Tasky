@@ -177,7 +177,9 @@ class EventDetailViewModel @Inject constructor(
             photos = photos.value,
             attendees = attendees.value,
             isAttendee = false, // TODO make isAttendee
-            host = "BLANK" // TODO make host
+            host = "BLANK", // TODO make host
+            deletedPhotoKeys = emptyList(), // TODO setup deletedPhotosKeys
+            isGoing = true // TODO setup is going
         )
         // viewModelScope gets cancelled as soon as the Fragment is popped from the backstack,
         // so if you pop it right after inserting an element, this coroutine will be cancelled
@@ -211,13 +213,12 @@ class EventDetailViewModel @Inject constructor(
             setDescription(item.description)
             setStartTime(item.startDateAndTime.toLocalTime())
             setStartDate(item.startDateAndTime.toLocalDate())
-            item.endDateAndTime?.let {
-                setEndTime(it.toLocalTime())
-                setEndDate(it.toLocalDate())
-            }
+            setEndTime(item.endDateAndTime.toLocalTime())
+            setEndDate(item.endDateAndTime.toLocalDate())
             setSelectedReminderTime(item.reminderTime)
-            item.photos?.let { setupPhotos(it) }
-            item.attendees?.let { setupAttendeeList(it) }
+            setupPhotos(item.photos)
+            setupAttendeeList(item.attendees)
+            setupAttendeeList(item.attendees)
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)
