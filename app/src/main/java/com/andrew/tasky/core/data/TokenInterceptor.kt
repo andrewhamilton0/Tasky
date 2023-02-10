@@ -1,7 +1,6 @@
 package com.andrew.tasky.core.data
 
 import android.content.SharedPreferences
-import com.andrew.tasky.auth.util.PrefsKeys
 import okhttp3.Interceptor
 import okhttp3.Response
 

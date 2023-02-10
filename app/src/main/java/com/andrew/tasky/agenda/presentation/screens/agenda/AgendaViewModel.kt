@@ -15,20 +15,15 @@ import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.CalendarDateItem
 import com.andrew.tasky.agenda.util.DateType
 import com.andrew.tasky.agenda.util.UiAgendaItem
-import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.auth.domain.AuthRepository
-import com.andrew.tasky.auth.util.PrefsKeys
 import com.andrew.tasky.core.StringToInitials
+import com.andrew.tasky.core.data.PrefsKeys
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class AgendaViewModel@Inject constructor(
@@ -36,6 +31,7 @@ class AgendaViewModel@Inject constructor(
     private val reminderRepository: ReminderRepository,
     private val taskRepository: TaskRepository,
     private val authRepository: AuthRepository,
+    private val ioDispatcher: CoroutineDispatcher,
     workManager: WorkManager,
     prefs: SharedPreferences
 ) : ViewModel() {
@@ -143,13 +139,10 @@ class AgendaViewModel@Inject constructor(
         }
     }
 
-    private val logoutResultChannel = Channel<AuthResult<Unit>>()
-    val logoutResults = logoutResultChannel.receiveAsFlow()
-
     fun logout() {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             withContext(NonCancellable) {
-                logoutResultChannel.send(authRepository.logout())
+                authRepository.logout()
             }
         }
     }

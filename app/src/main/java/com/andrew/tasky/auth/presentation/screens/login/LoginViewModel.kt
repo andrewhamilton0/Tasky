@@ -1,6 +1,5 @@
 package com.andrew.tasky.auth.presentation.screens.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andrew.tasky.auth.data.AuthResult
