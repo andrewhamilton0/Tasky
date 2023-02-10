@@ -1,4 +1,4 @@
-package com.andrew.tasky.auth.util
+package com.andrew.tasky.core.data
 
 object PrefsKeys {
     const val JWT = "jwt"

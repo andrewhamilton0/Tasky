@@ -1,15 +1,18 @@
 package com.andrew.tasky.auth.data
 
 import android.content.SharedPreferences
+import androidx.work.*
 import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.auth.domain.AuthRepository
-import com.andrew.tasky.auth.util.PrefsKeys
 import com.andrew.tasky.auth.util.getAuthResult
+import com.andrew.tasky.core.WorkerParamKeys
+import com.andrew.tasky.core.data.PrefsKeys
 
 class AuthRepositoryImpl(
     private val api: AuthApi,
     private val prefs: SharedPreferences,
-    private val agendaRepository: AgendaRepository
+    private val agendaRepository: AgendaRepository,
+    private val workManager: WorkManager
 ) : AuthRepository {
 
     override suspend fun register(
@@ -69,21 +72,24 @@ class AuthRepositoryImpl(
         }
     }
 
-    override suspend fun logout(): AuthResult<Unit> {
-        val result = getAuthResult {
-            val token = prefs.getString(
-                PrefsKeys.JWT, null
-            ) ?: return AuthResult.Unauthorized()
-            api.logout("Bearer $token")
-        }
-        return when (result) {
-            is AuthResult.Authorized -> {
-                prefs.edit().clear().apply()
-                agendaRepository.deleteAllAgendaTables()
-                AuthResult.Authorized()
-            }
-            is AuthResult.Unauthorized -> AuthResult.Unauthorized()
-            is AuthResult.UnknownError -> AuthResult.UnknownError()
-        }
+    override suspend fun logout() {
+        val token = prefs.getString(
+            PrefsKeys.JWT, null
+        )
+        val data = Data.Builder().putString(
+            WorkerParamKeys.TOKEN,
+            token
+        ).build()
+
+        val logoutWorker = OneTimeWorkRequestBuilder<LogoutWorker>()
+            .setInputData(data)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            ).build()
+        workManager.enqueue(logoutWorker)
+        prefs.edit().clear().apply()
+        agendaRepository.deleteAllAgendaTables()
     }
 }

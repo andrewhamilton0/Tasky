@@ -1,36 +1,37 @@
-package com.andrew.tasky.agenda.data.agenda
+package com.andrew.tasky.auth.data
 
 import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.andrew.tasky.agenda.domain.AgendaRepository
-import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.auth.util.getAuthResult
+import com.andrew.tasky.core.WorkerParamKeys
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
-class SyncModifiedAgendaItemsWorker @AssistedInject constructor(
+class LogoutWorker @AssistedInject constructor(
     @Assisted val appContext: Context,
     @Assisted val workerParams: WorkerParameters,
-    val agendaRepository: AgendaRepository
+    private val authApi: AuthApi
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        val result = getAuthResult { agendaRepository.syncAgendaItems() }
+        Log.e("Logout work request", "running")
+        val token = workerParams.inputData.getString(WorkerParamKeys.TOKEN)
+        val result = getAuthResult { authApi.logout("Bearer $token") }
         return when (result) {
             is AuthResult.Authorized -> {
                 Result.success()
             }
             is AuthResult.Unauthorized -> {
-                Log.e("Sync Agenda work request", "unauthorized")
+                Log.e("Logout work request", "unauthorized")
                 Result.failure()
             }
             is AuthResult.UnknownError -> {
-                Log.e("Sync Agenda work request", "unknown error")
-                Result.failure()
+                Log.e("Logout work request", "unknown error")
+                Result.retry()
             }
         }
     }
