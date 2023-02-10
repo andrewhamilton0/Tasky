@@ -26,7 +26,7 @@ class AgendaRepositoryImpl(
     private val db: AgendaDatabase,
 ) : AgendaRepository {
 
-    override suspend fun getAgendaItems(localDate: LocalDate) = flow<Flow<List<AgendaItem>>> {
+    override suspend fun getAgendaItems(localDate: LocalDate) = flow<List<AgendaItem>> {
         val startEpochMilli = localDateTimeToZonedEpochMilli(localDate.atStartOfDay())
         val endEpochMilli = localDateTimeToZonedEpochMilli(localDate.atStartOfDay().plusDays(1))
 
@@ -54,7 +54,7 @@ class AgendaRepositoryImpl(
                 it.sortedBy { agendaItem ->
                     agendaItem.startDateAndTime
                 }
-            }
+            }.first()
         )
 
         syncAgendaItems()
@@ -112,7 +112,15 @@ class AgendaRepositoryImpl(
                 Log.e("Update Agenda of Date", "Unknown Error")
             }
         }
-        // Todo return event agenda items
+        emitAll(
+            reminders.combine(tasks) { reminderFlow, taskFlow ->
+                reminderFlow + taskFlow
+            }.map {
+                it.sortedBy { agendaItem ->
+                    agendaItem.startDateAndTime
+                }
+            }
+        )
     }
 
     override suspend fun syncAgendaItems() {
@@ -132,7 +140,8 @@ class AgendaRepositoryImpl(
 
         if (reminderDeleteIds.isNotEmpty() || taskDeleteIds.isNotEmpty()) {
             val syncAgendaRequest = SyncAgendaRequest(emptyList(), taskDeleteIds, reminderDeleteIds)
-            when (getAuthResult { agendaApi.syncAgendaItems(syncAgendaRequest) }) {
+            val result = getAuthResult { agendaApi.syncAgendaItems(syncAgendaRequest) }
+            when (result) {
                 is AuthResult.Authorized -> {
                     reminderDeleteIds.forEach {
                         db.getReminderDao().deleteModifiedReminderById(it)
@@ -155,9 +164,6 @@ class AgendaRepositoryImpl(
     }
 
     override suspend fun deleteAllAgendaTables() {
-        db.getReminderDao().deleteModifiedReminderDb()
-        db.getReminderDao().deleteReminderDb()
-        db.getTaskDao().deleteModifiedTaskDb()
-        db.getTaskDao().deleteTaskDb()
+        db.clearAllTables()
     }
 }

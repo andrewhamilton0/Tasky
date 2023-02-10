@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.presentation.screens.event_detail
 
+import android.content.SharedPreferences
 import androidx.lifecycle.*
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -21,7 +22,8 @@ import kotlinx.coroutines.withContext
 @HiltViewModel
 class EventDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: EventRepository
+    private val repository: EventRepository,
+    private val prefs: SharedPreferences
 ) : ViewModel() {
 
     private val _isInEditMode = MutableStateFlow(false)
@@ -175,7 +177,9 @@ class EventDetailViewModel @Inject constructor(
             photos = photos.value,
             attendees = attendees.value,
             isAttendee = false, // TODO make isAttendee
-            host = "BLANK" // TODO make host
+            host = "BLANK", // TODO make host
+            deletedPhotoKeys = emptyList(), // TODO setup deletedPhotosKeys
+            isGoing = true // TODO setup is going
         )
         // viewModelScope gets cancelled as soon as the Fragment is popped from the backstack,
         // so if you pop it right after inserting an element, this coroutine will be cancelled
@@ -202,20 +206,19 @@ class EventDetailViewModel @Inject constructor(
     }
 
     init {
-        savedStateHandle.get<AgendaItem.Event>("agendaItem")?.let { item ->
+        savedStateHandle.get<AgendaItem.Event>("event")?.let { item ->
             item.isAttendee?.let { setIsAttendee(it) }
             setIsDone(item.isDone)
             setTitle(item.title)
             setDescription(item.description)
             setStartTime(item.startDateAndTime.toLocalTime())
             setStartDate(item.startDateAndTime.toLocalDate())
-            item.endDateAndTime?.let {
-                setEndTime(it.toLocalTime())
-                setEndDate(it.toLocalDate())
-            }
+            setEndTime(item.endDateAndTime.toLocalTime())
+            setEndDate(item.endDateAndTime.toLocalDate())
             setSelectedReminderTime(item.reminderTime)
-            item.photos?.let { setupPhotos(it) }
-            item.attendees?.let { setupAttendeeList(it) }
+            setupPhotos(item.photos)
+            setupAttendeeList(item.attendees)
+            setupAttendeeList(item.attendees)
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)

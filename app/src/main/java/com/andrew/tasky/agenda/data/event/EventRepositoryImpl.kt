@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.event
 
+import android.util.Log
 import androidx.core.net.toFile
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.domain.EventRepository
@@ -20,23 +21,34 @@ class EventRepositoryImpl @Inject constructor(
 ) : EventRepository {
 
     override suspend fun createEvent(event: AgendaItem.Event) {
-        getAuthResult {
+        val result = getAuthResult {
             api.createEvent(
                 eventData = MultipartBody.Part
-                    .create(Json.encodeToString(event.toCreateEventRequest()).toRequestBody()),
-                photoData = event.photos?.map { eventPhoto ->
-                    when (eventPhoto) {
-                        is EventPhoto.Local -> {
-                            MultipartBody.Part
-                                .create(eventPhoto.uri.toFile().readBytes().toRequestBody())
-                        }
-                        is EventPhoto.Remote -> {
-                            MultipartBody.Part
-                                .create(eventPhoto.photoUrl.encodeToByteArray().toRequestBody())
-                        }
-                    }
-                } ?: emptyList()
+                    .createFormData(
+                        name = "create_event_request",
+                        value = Json.encodeToString(event.toCreateEventRequest())
+                    ),
+                photoData = event.photos.filterIsInstance<EventPhoto.Local>().mapIndexed {
+                    index, eventPhoto ->
+                    MultipartBody.Part
+                        .createFormData(
+                            name = "photo$index",
+                            filename = eventPhoto.key,
+                            body = eventPhoto.uri.toFile().readBytes().toRequestBody()
+                        )
+                }
             )
+        }
+        when (result) {
+            is AuthResult.Authorized -> {
+                Log.e("EventRepoCreateEvent", "Authorized")
+            }
+            is AuthResult.Unauthorized -> {
+                Log.e("EventRepoCreateEvent", "Unauthorized")
+            }
+            is AuthResult.UnknownError -> {
+                Log.e("EventRepoCreateEvent", "UnknownError")
+            }
         }
     }
 

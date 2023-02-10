@@ -71,6 +71,7 @@
     <string name="unauthorized">Unauthorized</string>
     <string name="unknown_error">Unknown Error, try connecting to internet</string>
     <string name="token_not_found">Token not found</string>
+    <string name="username_and_password_do_not_match">Username and Password do not match</string>
 
     <!--logout messages -->
     <string name="logout_successful">Logout successful</string>

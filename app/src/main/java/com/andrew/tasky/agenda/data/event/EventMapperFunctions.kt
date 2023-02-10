@@ -15,8 +15,27 @@ fun AgendaItem.Event.toCreateEventRequest(): CreateEventRequest {
             reminderTime = reminderTime,
             startLocalDateTime = startDateAndTime
         ),
-        attendeeIds = attendees?.map {
+        attendeeIds = attendees.map {
             it.userId
-        } ?: emptyList()
+        }
+    )
+}
+
+fun AgendaItem.Event.toUpdateEventRequest(): UpdateEventRequest {
+    return UpdateEventRequest(
+        id = id,
+        title = title,
+        description = description,
+        from = localDateTimeToZonedEpochMilli(startDateAndTime),
+        to = localDateTimeToZonedEpochMilli(endDateAndTime),
+        remindAt = ReminderTimeConversion.toEpochMilli(
+            reminderTime = reminderTime,
+            startLocalDateTime = startDateAndTime
+        ),
+        attendeeIds = attendees.map {
+            it.userId
+        },
+        deletedPhotoKeys = deletedPhotoKeys,
+        isGoing = isGoing
     )
 }

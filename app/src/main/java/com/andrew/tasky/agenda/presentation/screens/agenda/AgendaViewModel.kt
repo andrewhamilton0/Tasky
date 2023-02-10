@@ -59,7 +59,7 @@ class AgendaViewModel@Inject constructor(
         }
     }
     private val agendaItems = dateSelected.flatMapLatest { date ->
-        agendaRepository.getAgendaItems(date).flattenMerge()
+        agendaRepository.getAgendaItems(date)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private fun indexOfTimeNeedle(
