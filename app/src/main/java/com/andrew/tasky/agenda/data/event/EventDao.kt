@@ -7,11 +7,20 @@ import kotlinx.coroutines.flow.Flow
 interface EventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(event: EventEntity): Long
+    suspend fun upsertEvent(event: EventEntity)
 
-    @Query("SELECT * FROM evententity")
-    fun getEvents(): Flow<List<EventEntity>>
+    @Query(
+        "SELECT * FROM EventEntity WHERE startDateAndTime BETWEEN " +
+            ":startEpochMilli AND :endEpochMilli"
+    )
+    fun getEventsOfDate(
+        startEpochMilli: Long,
+        endEpochMilli: Long
+    ): Flow<List<EventEntity>>
 
     @Delete
     suspend fun deleteEvent(event: EventEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertModifiedEvent(modifiedEventEntity: ModifiedEventEntity)
 }

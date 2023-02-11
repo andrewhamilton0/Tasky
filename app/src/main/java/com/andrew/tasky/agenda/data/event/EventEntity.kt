@@ -4,21 +4,20 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
-import com.andrew.tasky.agenda.util.ReminderTime
-import java.time.LocalDateTime
 
 @Entity
 data class EventEntity(
     @PrimaryKey val id: String,
+    val isDone: Boolean,
     val title: String,
     val description: String,
-    val isDone: Boolean,
-    val startDateAndTime: LocalDateTime,
-    val endDateAndTime: LocalDateTime,
-    val reminderTime: ReminderTime,
-    val isAttendee: Boolean,
+    val startDateAndTime: Long,
+    val endDateAndTime: Long,
+    val reminderTime: Long,
+    val photos: List<EventPhoto> = emptyList(),
+    val isCreator: Boolean,
+    val attendees: List<Attendee> = emptyList(),
     val host: String,
-    val isUserEventCreator: Boolean,
-    val attendees: List<Attendee>,
-    val photos: List<EventPhoto>
+    val deletedPhotoKeys: List<String> = emptyList(),
+    val isGoing: Boolean
 )

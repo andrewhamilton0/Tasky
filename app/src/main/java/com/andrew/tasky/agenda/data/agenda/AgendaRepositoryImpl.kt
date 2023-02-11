@@ -2,6 +2,7 @@ package com.andrew.tasky.agenda.data.agenda
 
 import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
+import com.andrew.tasky.agenda.data.event.toEvent
 import com.andrew.tasky.agenda.data.reminder.toReminder
 import com.andrew.tasky.agenda.data.reminder.toReminderEntity
 import com.andrew.tasky.agenda.data.task.toTask
@@ -27,8 +28,8 @@ class AgendaRepositoryImpl(
 ) : AgendaRepository {
 
     override suspend fun getAgendaItems(localDate: LocalDate) = flow<List<AgendaItem>> {
-        val startEpochMilli = localDateTimeToZonedEpochMilli(localDate.atStartOfDay())
-        val endEpochMilli = localDateTimeToZonedEpochMilli(localDate.atStartOfDay().plusDays(1))
+        val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
+        val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
 
         val reminders = db.getReminderDao().getRemindersOfDate(
             startEpochMilli = startEpochMilli,
@@ -46,10 +47,21 @@ class AgendaRepositoryImpl(
                 taskEntity.toTask()
             }
         }
+        val events = db.getEventDao().getEventsOfDate(
+            startEpochMilli = startEpochMilli,
+            endEpochMilli = endEpochMilli
+        ).map {
+            it.map {
+                eventEntity ->
+                eventEntity.toEvent()
+            }
+        }
 
         emit(
             reminders.combine(tasks) { reminderFlow, taskFlow ->
                 reminderFlow + taskFlow
+            }.combine(events) { reminderTaskFlow, eventsFlow ->
+                reminderTaskFlow + eventsFlow
             }.map {
                 it.sortedBy { agendaItem ->
                     agendaItem.startDateAndTime
@@ -62,9 +74,7 @@ class AgendaRepositoryImpl(
             val results = getAuthResult {
                 agendaApi.getAgendaItems(
                     timezone = TimeZone.getDefault().id,
-                    time = localDateTimeToZonedEpochMilli(
-                        LocalDateTime.of(localDate, LocalTime.now())
-                    )
+                    time = LocalDateTime.of(localDate, LocalTime.now()).toZonedEpochMilli()
                 )
             }
         ) {
@@ -115,6 +125,8 @@ class AgendaRepositoryImpl(
         emitAll(
             reminders.combine(tasks) { reminderFlow, taskFlow ->
                 reminderFlow + taskFlow
+            }.combine(events) { reminderTaskFlow, eventsFlow ->
+                reminderTaskFlow + eventsFlow
             }.map {
                 it.sortedBy { agendaItem ->
                     agendaItem.startDateAndTime

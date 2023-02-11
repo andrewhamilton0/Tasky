@@ -1,8 +1,8 @@
 package com.andrew.tasky.agenda.data.reminder
 
 import com.andrew.tasky.agenda.data.util.ReminderTimeConversion
-import com.andrew.tasky.agenda.data.util.localDateTimeToZonedEpochMilli
-import com.andrew.tasky.agenda.data.util.zonedEpochMilliToLocalDateTime
+import com.andrew.tasky.agenda.data.util.toLocalDateTime
+import com.andrew.tasky.agenda.data.util.toZonedEpochMilli
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 
 fun ReminderDto.toReminderEntity(isDone: Boolean): ReminderEntity {
@@ -21,7 +21,7 @@ fun AgendaItem.Reminder.toReminderDto(): ReminderDto {
         id = id,
         title = title,
         description = description,
-        time = localDateTimeToZonedEpochMilli(startDateAndTime),
+        time = startDateAndTime.toZonedEpochMilli(),
         remindAt = ReminderTimeConversion.toEpochMilli(
             startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
@@ -35,7 +35,7 @@ fun AgendaItem.Reminder.toReminderEntity(): ReminderEntity {
         isDone = isDone,
         title = title,
         description = description,
-        time = localDateTimeToZonedEpochMilli(startDateAndTime),
+        time = startDateAndTime.toZonedEpochMilli(),
         remindAt = ReminderTimeConversion.toEpochMilli(
             startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
@@ -49,7 +49,7 @@ fun ReminderEntity.toReminder(): AgendaItem.Reminder {
         isDone = isDone,
         title = title,
         description = description,
-        startDateAndTime = zonedEpochMilliToLocalDateTime(time),
+        startDateAndTime = time.toLocalDateTime(),
         reminderTime = ReminderTimeConversion.toEnum(
             startTimeEpochMilli = time,
             remindAtEpochMilli = remindAt

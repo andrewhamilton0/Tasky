@@ -1,8 +1,8 @@
 package com.andrew.tasky.agenda.data.task
 
 import com.andrew.tasky.agenda.data.util.ReminderTimeConversion
-import com.andrew.tasky.agenda.data.util.localDateTimeToZonedEpochMilli
-import com.andrew.tasky.agenda.data.util.zonedEpochMilliToLocalDateTime
+import com.andrew.tasky.agenda.data.util.toLocalDateTime
+import com.andrew.tasky.agenda.data.util.toZonedEpochMilli
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 
 fun TaskDto.toTaskEntity(): TaskEntity {
@@ -21,7 +21,7 @@ fun AgendaItem.Task.toTaskDto(): TaskDto {
         id = id,
         title = title,
         description = description,
-        time = localDateTimeToZonedEpochMilli(startDateAndTime),
+        time = startDateAndTime.toZonedEpochMilli(),
         remindAt = ReminderTimeConversion.toEpochMilli(
             startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
@@ -36,7 +36,7 @@ fun AgendaItem.Task.toTaskEntity(): TaskEntity {
         isDone = isDone,
         title = title,
         description = description,
-        time = localDateTimeToZonedEpochMilli(startDateAndTime),
+        time = startDateAndTime.toZonedEpochMilli(),
         remindAt = ReminderTimeConversion.toEpochMilli(
             startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
@@ -50,7 +50,7 @@ fun TaskEntity.toTask(): AgendaItem.Task {
         isDone = isDone,
         title = title,
         description = description,
-        startDateAndTime = zonedEpochMilliToLocalDateTime(time),
+        startDateAndTime = time.toLocalDateTime(),
         reminderTime = ReminderTimeConversion.toEnum(
             startTimeEpochMilli = time,
             remindAtEpochMilli = remindAt

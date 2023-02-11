@@ -184,9 +184,10 @@ object AppModule {
     @Singleton
     fun provideEventRepository(
         api: EventApi,
-        db: AgendaDatabase
+        db: AgendaDatabase,
+        app: Application
     ): EventRepository {
-        return EventRepositoryImpl(db = db, api = api)
+        return EventRepositoryImpl(db = db, api = api, appContext = app)
     }
 
     @Provides

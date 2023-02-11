@@ -44,10 +44,10 @@ class EventDetailViewModel @Inject constructor(
         _title.value = title
     }
 
-    private val _isAttendee = MutableStateFlow(false)
-    val isAttendee = _isAttendee.asStateFlow()
-    fun setIsAttendee(isAttendee: Boolean) {
-        _isAttendee.value = isAttendee
+    private val _isCreator = MutableStateFlow(true)
+    val isCreator = _isCreator.asStateFlow()
+    private fun setIsCreator(isCreator: Boolean) {
+        _isCreator.value = isCreator
     }
 
     private val _description = MutableStateFlow("Blank Description")
@@ -101,12 +101,12 @@ class EventDetailViewModel @Inject constructor(
         _photo.value = photoList
     }
 
-    val uiEventPhotos = photos.combine(isAttendee) { photos, isAttendee ->
+    val uiEventPhotos = photos.combine(isCreator) { photos, isCreator ->
         photos.map { photo ->
             UiEventPhoto.Photo(photo)
         }.toMutableList<UiEventPhoto>()
             .apply {
-                if ((size in 1..9) && (!isAttendee)) {
+                if ((size in 1..9) && (isCreator)) {
                     add(UiEventPhoto.AddPhoto)
                 }
             }
@@ -140,14 +140,14 @@ class EventDetailViewModel @Inject constructor(
         _selectedAttendeeFilterType.value = type
     }
 
-    val isCreatorEditing = combine(isAttendee, isInEditMode) { isAttendee, isEditing ->
-        !isAttendee && isEditing
+    val isCreatorEditing = combine(isCreator, isInEditMode) { isCreator, isEditing ->
+        isCreator && isEditing
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
-    val allowedToSeePhotoLayout = combine(isAttendee, uiEventPhotos) { isAttendee, photos ->
+    val allowedToSeePhotoLayout = combine(isCreator, uiEventPhotos) { isCreator, photos ->
         when {
-            !isAttendee -> true
-            isAttendee && photos.isNotEmpty() -> true
+            isCreator -> true
+            !isCreator && photos.isNotEmpty() -> true
             else -> false
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
@@ -176,7 +176,7 @@ class EventDetailViewModel @Inject constructor(
             reminderTime = selectedReminderTime.value,
             photos = photos.value,
             attendees = attendees.value,
-            isAttendee = false, // TODO make isAttendee
+            isCreator = false, // TODO make isCreator
             host = "BLANK", // TODO make host
             deletedPhotoKeys = emptyList(), // TODO setup deletedPhotosKeys
             isGoing = true // TODO setup is going
@@ -207,7 +207,7 @@ class EventDetailViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<AgendaItem.Event>("event")?.let { item ->
-            item.isAttendee?.let { setIsAttendee(it) }
+            item.isCreator?.let { setIsCreator(it) }
             setIsDone(item.isDone)
             setTitle(item.title)
             setDescription(item.description)

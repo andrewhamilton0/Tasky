@@ -5,16 +5,16 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.*
 
-fun localDateTimeToZonedEpochMilli(localDateTime: LocalDateTime): Long {
+fun LocalDateTime.toZonedEpochMilli(): Long {
     return ZonedDateTime.of(
-        localDateTime,
+        this,
         TimeZone.getDefault().toZoneId()
     ).toInstant().toEpochMilli()
 }
 
-fun zonedEpochMilliToLocalDateTime(time: Long): LocalDateTime {
+fun Long.toLocalDateTime(): LocalDateTime {
     return ZonedDateTime.ofInstant(
-        Instant.ofEpochMilli(time),
+        Instant.ofEpochMilli(this),
         TimeZone.getDefault().toZoneId()
     ).toLocalDateTime()
 }

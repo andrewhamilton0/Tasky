@@ -240,41 +240,41 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             collectLatestLifecycleFlow(viewModel.description) { description ->
                 addDescriptionLayout.descriptionTextView.text = description
             }
-            collectLatestLifecycleFlow(viewModel.isAttendee) { isAttendee ->
+            collectLatestLifecycleFlow(viewModel.isCreator) { isCreator ->
 
                 addTitleAndDoneButtonLayout.apply {
-                    editTitleButton.isVisible = !isAttendee
-                    editTitleButton.isEnabled = !isAttendee
-                    titleTextView.isEnabled = !isAttendee
+                    editTitleButton.isVisible = isCreator
+                    editTitleButton.isEnabled = isCreator
+                    titleTextView.isEnabled = isCreator
                 }
 
                 addDescriptionLayout.apply {
-                    editDescriptionButton.isVisible = !isAttendee
-                    editDescriptionButton.isEnabled = !isAttendee
-                    descriptionTextView.isEnabled = !isAttendee
+                    editDescriptionButton.isVisible = isCreator
+                    editDescriptionButton.isEnabled = isCreator
+                    descriptionTextView.isEnabled = isCreator
                 }
 
                 startTimeAndDateLayout.apply {
-                    timeTextView.isEnabled = !isAttendee
-                    timeButton.isEnabled = !isAttendee
-                    timeButton.isVisible = !isAttendee
-                    dateTextView.isEnabled = !isAttendee
-                    dateButton.isEnabled = !isAttendee
-                    dateButton.isVisible = !isAttendee
+                    timeTextView.isEnabled = isCreator
+                    timeButton.isEnabled = isCreator
+                    timeButton.isVisible = isCreator
+                    dateTextView.isEnabled = isCreator
+                    dateButton.isEnabled = isCreator
+                    dateButton.isVisible = isCreator
                 }
 
                 endTimeAndDateLayout.apply {
-                    timeTextView.isEnabled = !isAttendee
-                    timeButton.isEnabled = !isAttendee
-                    timeButton.isVisible = !isAttendee
-                    dateTextView.isEnabled = !isAttendee
-                    dateButton.isEnabled = !isAttendee
-                    dateButton.isVisible = !isAttendee
+                    timeTextView.isEnabled = isCreator
+                    timeButton.isEnabled = isCreator
+                    timeButton.isVisible = isCreator
+                    dateTextView.isEnabled = isCreator
+                    dateButton.isEnabled = isCreator
+                    dateButton.isVisible = isCreator
                 }
 
-                attendeesLayout.addAttendeeButton.isVisible = !isAttendee
+                attendeesLayout.addAttendeeButton.isVisible = isCreator
                 val goingAttendeeAdapter = AttendeeItemAdapter(
-                    isAttendee,
+                    isUserCreator = isCreator,
                     onDeleteIconClick = viewModel::deleteAttendee
                 )
                 attendeesLayout.goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
@@ -286,7 +286,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 }
 
                 val notGoingAttendeeAdapter = AttendeeItemAdapter(
-                    isAttendee,
+                    isUserCreator = isCreator,
                     onDeleteIconClick = viewModel::deleteAttendee
                 )
                 attendeesLayout.notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
@@ -297,7 +297,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                     notGoingAttendeeAdapter.submitList(notGoingAttendees)
                 }
 
-                if (!isAttendee) {
+                if (isCreator) {
                     deleteBtn.deleteAgendaItemButton.text = String.format(
                         resources
                             .getString(R.string.delete_blank),
