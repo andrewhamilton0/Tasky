@@ -6,8 +6,8 @@ import java.time.*
 
 object ReminderTimeConversion {
     fun toEnum(startTimeEpochMilli: Long, remindAtEpochMilli: Long): ReminderTime {
-        val startTime = zonedEpochMilliToLocalDateTime(startTimeEpochMilli)
-        val remindAtTime = zonedEpochMilliToLocalDateTime(remindAtEpochMilli)
+        val startTime = startTimeEpochMilli.toLocalDateTime()
+        val remindAtTime = remindAtEpochMilli.toLocalDateTime()
         val period = Period.between(
             remindAtTime.toLocalDate(),
             startTime.toLocalDate()
@@ -38,15 +38,15 @@ object ReminderTimeConversion {
     fun toEpochMilli(startLocalDateTime: LocalDateTime, reminderTime: ReminderTime): Long {
         return when (reminderTime) {
             ReminderTime.TEN_MINUTES_BEFORE ->
-                localDateTimeToZonedEpochMilli(startLocalDateTime.minusMinutes(10))
+                startLocalDateTime.minusMinutes(10).toZonedEpochMilli()
             ReminderTime.THIRTY_MINUTES_BEFORE ->
-                localDateTimeToZonedEpochMilli(startLocalDateTime.minusMinutes(30))
+                startLocalDateTime.minusMinutes(30).toZonedEpochMilli()
             ReminderTime.ONE_HOUR_BEFORE ->
-                localDateTimeToZonedEpochMilli(startLocalDateTime.minusHours(1))
+                startLocalDateTime.minusHours(1).toZonedEpochMilli()
             ReminderTime.SIX_HOURS_BEFORE ->
-                localDateTimeToZonedEpochMilli(startLocalDateTime.minusHours(6))
+                startLocalDateTime.minusHours(6).toZonedEpochMilli()
             ReminderTime.ONE_DAY_BEFORE ->
-                localDateTimeToZonedEpochMilli(startLocalDateTime.minusDays(1))
+                startLocalDateTime.minusDays(1).toZonedEpochMilli()
         }
     }
 }

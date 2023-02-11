@@ -11,7 +11,7 @@ import com.andrew.tasky.core.StringToInitials
 import com.andrew.tasky.databinding.ItemAttendeeBinding
 
 class AttendeeItemAdapter(
-    private var isUserAttendee: Boolean,
+    private var isUserCreator: Boolean,
     private val onDeleteIconClick: (Attendee) -> Unit
 ) : ListAdapter<Attendee, AttendeeItemAdapter.AttendeeItemViewHolder>(Companion) {
 
@@ -39,7 +39,7 @@ class AttendeeItemAdapter(
 
             val item = currentList[position]
 
-            deleteAttendeeButton.isVisible = !item.isCreator && !isUserAttendee
+            deleteAttendeeButton.isVisible = !item.isCreator && isUserCreator
             creatorTextView.isVisible = item.isCreator
 
             attendeeFullNameTextView.text = item.fullName
