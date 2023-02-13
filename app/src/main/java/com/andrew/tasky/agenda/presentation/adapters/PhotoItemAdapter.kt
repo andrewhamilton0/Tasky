@@ -1,8 +1,10 @@
 package com.andrew.tasky.agenda.presentation.adapters
 
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -64,17 +66,19 @@ class PhotoItemAdapter(
             }
             is PhotoItemViewHolder -> {
                 holder.binding.apply {
+                    plusSign.isVisible = false
                     val uiEventPhoto = currentList[position] as UiEventPhoto.Photo
-                    when (val item = uiEventPhoto.eventPhoto) {
+                    val photo = uiEventPhoto.eventPhoto
+                    when (photo) {
                         is EventPhoto.Local -> {
-                            image.setImageURI(item.uri)
+                            image.setImageURI(Uri.parse(photo.uri))
                             holder.itemView.setOnClickListener {
                                 onPhotoClick(position)
                             }
                         }
                         is EventPhoto.Remote -> {
                             Glide.with(context)
-                                .load(item.photoUrl)
+                                .load(photo.photoUrl)
                                 .into(image)
                         }
                     }

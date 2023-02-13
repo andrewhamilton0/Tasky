@@ -58,7 +58,7 @@ class AgendaRepositoryImpl(
         }
 
         // Added underscore to get rid of name shadowing error
-        emitAll(
+        emit(
             reminders.combine(tasks) { _reminders, _tasks ->
                 _reminders + _tasks
             }.combine(events) { _remindersAndTasks, _events ->
@@ -67,7 +67,7 @@ class AgendaRepositoryImpl(
                 it.sortedBy { agendaItem ->
                     agendaItem.startDateAndTime
                 }
-            }
+            }.first()
         )
 
         syncAgendaItems()
@@ -123,6 +123,18 @@ class AgendaRepositoryImpl(
                 Log.e("Update Agenda of Date", "Unknown Error")
             }
         }
+
+        emitAll(
+            reminders.combine(tasks) { _reminders, _tasks ->
+                _reminders + _tasks
+            }.combine(events) { _remindersAndTasks, _events ->
+                _remindersAndTasks + _events
+            }.map {
+                it.sortedBy { agendaItem ->
+                    agendaItem.startDateAndTime
+                }
+            }
+        )
     }
 
     override suspend fun syncAgendaItems() {

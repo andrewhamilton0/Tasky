@@ -185,9 +185,15 @@ object AppModule {
     fun provideEventRepository(
         api: EventApi,
         db: AgendaDatabase,
-        app: Application
+        app: Application,
+        ioDispatcher: CoroutineDispatcher
     ): EventRepository {
-        return EventRepositoryImpl(db = db, api = api, appContext = app)
+        return EventRepositoryImpl(
+            db = db,
+            api = api,
+            appContext = app,
+            ioDispatcher = ioDispatcher
+        )
     }
 
     @Provides

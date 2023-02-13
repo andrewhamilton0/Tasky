@@ -1,5 +1,7 @@
 package com.andrew.tasky.agenda.data.event
 
+import com.andrew.tasky.agenda.data.event.photo.RemoteEventPhotoDto
+
 data class EventDto(
     val id: String,
     val title: String,
@@ -10,5 +12,5 @@ data class EventDto(
     val host: String,
     val isUserEventCreator: Boolean,
     val attendees: List<AttendeeDto>,
-    val photos: List<EventPhotoDto>
+    val photos: List<RemoteEventPhotoDto>
 )
