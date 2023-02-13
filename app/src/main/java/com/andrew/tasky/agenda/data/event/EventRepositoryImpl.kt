@@ -3,7 +3,7 @@ package com.andrew.tasky.agenda.data.event
 import android.content.Context
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.util.ModifiedType
-import com.andrew.tasky.agenda.data.util.compressByteArrayToSize
+import com.andrew.tasky.agenda.data.util.UriByteConverter
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
@@ -36,16 +36,14 @@ class EventRepositoryImpl @Inject constructor(
                 photoData = event.photos.filterIsInstance<EventPhoto.Local>().mapIndexed {
                     index, eventPhoto ->
                     val imageByte = withContext(Dispatchers.IO) {
-                        appContext.contentResolver.openInputStream(eventPhoto.uri).use {
-                            it!!.readBytes()
-                        }
+                        UriByteConverter(appContext)
+                            .uriToByteArray(uri = eventPhoto.uri, targetSize = 1000000)
                     }
-                    val compressedImageByte = compressByteArrayToSize(imageByte, 1000000)
                     MultipartBody.Part
                         .createFormData(
                             name = "photo$index",
                             filename = eventPhoto.key,
-                            body = compressedImageByte.toRequestBody()
+                            body = imageByte.toRequestBody()
                         )
                 }
             )

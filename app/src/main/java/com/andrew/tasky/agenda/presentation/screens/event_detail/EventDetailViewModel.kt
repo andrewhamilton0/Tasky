@@ -46,9 +46,6 @@ class EventDetailViewModel @Inject constructor(
 
     private val _isCreator = MutableStateFlow(true)
     val isCreator = _isCreator.asStateFlow()
-    private fun setIsCreator(isCreator: Boolean) {
-        _isCreator.value = isCreator
-    }
 
     private val _description = MutableStateFlow("Blank Description")
     val description = _description.asStateFlow()
@@ -97,9 +94,6 @@ class EventDetailViewModel @Inject constructor(
         }
         _photo.value = updatedPhotos
     }
-    private fun setupPhotos(photoList: List<EventPhoto>) {
-        _photo.value = photoList
-    }
 
     val uiEventPhotos = photos.combine(isCreator) { photos, isCreator ->
         photos.map { photo ->
@@ -116,9 +110,6 @@ class EventDetailViewModel @Inject constructor(
     val attendees = _attendees.asStateFlow()
     fun addAttendee(attendee: Attendee) {
         _attendees.value += attendee
-    }
-    private fun setupAttendeeList(attendeeList: List<Attendee>) {
-        _attendees.value = attendeeList
     }
 
     val goingAttendees = attendees.map {
@@ -207,7 +198,7 @@ class EventDetailViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<AgendaItem.Event>("event")?.let { item ->
-            item.isCreator?.let { setIsCreator(it) }
+            _isCreator.value = item.isCreator
             setIsDone(item.isDone)
             setTitle(item.title)
             setDescription(item.description)
@@ -216,9 +207,8 @@ class EventDetailViewModel @Inject constructor(
             setEndTime(item.endDateAndTime.toLocalTime())
             setEndDate(item.endDateAndTime.toLocalDate())
             setSelectedReminderTime(item.reminderTime)
-            setupPhotos(item.photos)
-            setupAttendeeList(item.attendees)
-            setupAttendeeList(item.attendees)
+            _photo.value = item.photos
+            _attendees.value = item.attendees
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)
