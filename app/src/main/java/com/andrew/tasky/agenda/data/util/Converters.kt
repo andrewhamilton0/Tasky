@@ -1,8 +1,9 @@
 package com.andrew.tasky.agenda.data.util
 
 import androidx.room.TypeConverter
+import com.andrew.tasky.agenda.data.event.photo.LocalEventPhotoDto
+import com.andrew.tasky.agenda.data.event.photo.RemoteEventPhotoDto
 import com.andrew.tasky.agenda.domain.models.Attendee
-import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.google.gson.Gson
 
 class Converters {
@@ -28,12 +29,22 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromEventPhotoList(list: List<EventPhoto>): String {
+    fun fromLocalEventPhotoDtoList(list: List<LocalEventPhotoDto>): String {
         return Gson().toJson(list)
     }
 
     @TypeConverter
-    fun toEventPhotoList(value: String): List<EventPhoto> {
-        return Gson().fromJson(value, Array<EventPhoto>::class.java).toList()
+    fun toLocalEventPhotoDtoList(value: String): List<LocalEventPhotoDto> {
+        return Gson().fromJson(value, Array<LocalEventPhotoDto>::class.java).toList()
+    }
+
+    @TypeConverter
+    fun fromRemoteEventPhotoDtoList(list: List<RemoteEventPhotoDto>): String {
+        return Gson().toJson(list)
+    }
+
+    @TypeConverter
+    fun toRemoteEventPhotoDtoList(value: String): List<RemoteEventPhotoDto> {
+        return Gson().fromJson(value, Array<RemoteEventPhotoDto>::class.java).toList()
     }
 }

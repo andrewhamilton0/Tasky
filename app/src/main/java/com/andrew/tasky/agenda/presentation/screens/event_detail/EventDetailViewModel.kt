@@ -1,6 +1,7 @@
 package com.andrew.tasky.agenda.presentation.screens.event_detail
 
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.lifecycle.*
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -85,7 +86,8 @@ class EventDetailViewModel @Inject constructor(
 
     private val _photo = MutableStateFlow(listOf<EventPhoto>())
     val photos = _photo.asStateFlow()
-    fun addPhoto(photo: EventPhoto) {
+    fun addPhoto(uri: Uri) {
+        val photo = EventPhoto.Local(uri = uri.toString())
         _photo.value += photo
     }
     fun deletePhoto(indexToDelete: Int) {

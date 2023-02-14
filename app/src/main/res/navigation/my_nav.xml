@@ -55,7 +55,7 @@
         android:name="com.andrew.tasky.agenda.presentation.screens.event_detail.EventDetailFragment"
         android:label="EventDetailFragment" >
         <argument
-            android:name="agendaItem"
+            android:name="event"
             app:argType="com.andrew.tasky.agenda.domain.models.AgendaItem$Event"
             app:nullable="true"
             />

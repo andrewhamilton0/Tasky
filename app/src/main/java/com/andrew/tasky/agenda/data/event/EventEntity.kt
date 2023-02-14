@@ -2,8 +2,9 @@ package com.andrew.tasky.agenda.data.event
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.andrew.tasky.agenda.data.event.photo.LocalEventPhotoDto
+import com.andrew.tasky.agenda.data.event.photo.RemoteEventPhotoDto
 import com.andrew.tasky.agenda.domain.models.Attendee
-import com.andrew.tasky.agenda.domain.models.EventPhoto
 
 @Entity
 data class EventEntity(
@@ -14,7 +15,8 @@ data class EventEntity(
     val startDateAndTime: Long,
     val endDateAndTime: Long,
     val reminderTime: Long,
-    val photos: List<EventPhoto> = emptyList(),
+    val remotePhotos: List<RemoteEventPhotoDto>,
+    val localPhotos: List<LocalEventPhotoDto>,
     val isCreator: Boolean,
     val attendees: List<Attendee> = emptyList(),
     val host: String,
