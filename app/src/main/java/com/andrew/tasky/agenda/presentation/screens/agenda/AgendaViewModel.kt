@@ -156,5 +156,8 @@ class AgendaViewModel@Inject constructor(
 
     init {
         workManager.enqueue(syncModifiedAgendaItemsWorkRequest)
+        viewModelScope.launch {
+            dateSelected.collectLatest { agendaRepository.updateAgendaItemCache(it) }
+        }
     }
 }
