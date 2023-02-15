@@ -5,17 +5,25 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 
 class UriByteConverter(
-    val appContext: Context
+    private val appContext: Context,
+    private val ioDispatcher: CoroutineDispatcher
 ) {
-    fun uriToByteArray(uri: Uri, targetSize: Int): ByteArray {
-        val imageByte = appContext.contentResolver.openInputStream(uri).use {
-            it!!.readBytes()
+    suspend fun uriToByteArray(uri: Uri): ByteArray {
+        return withContext(ioDispatcher) {
+            return@withContext appContext.contentResolver.openInputStream(uri).use {
+                it!!.readBytes()
+            }
         }
-        val bitmap = BitmapFactory.decodeByteArray(imageByte, 0, imageByte.size)
+    }
+
+    fun imageSizeCompressor(byteArray: ByteArray, targetSize: Int): ByteArray {
+        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
         var quality = 100
-        var result = imageByte
+        var result = byteArray
         while (result.size > targetSize && quality > 0) {
             val stream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream)

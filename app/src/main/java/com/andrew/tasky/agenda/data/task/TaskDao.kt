@@ -26,9 +26,6 @@ interface TaskDao {
     @Query("SELECT * FROM ModifiedTaskEntity")
     suspend fun getModifiedTasks(): List<ModifiedTaskEntity>
 
-    @Delete
-    suspend fun deleteModifiedTask(modifiedTask: ModifiedTaskEntity)
-
     @Query("DELETE FROM ModifiedTaskEntity WHERE id==:id")
     suspend fun deleteModifiedTaskById(id: String): Int
 }

@@ -18,9 +18,18 @@ interface EventDao {
         endEpochMilli: Long
     ): Flow<List<EventEntity>>
 
+    @Query("SELECT * FROM EventEntity WHERE id==:id")
+    suspend fun getEventById(id: String): EventEntity?
+
     @Delete
     suspend fun deleteEvent(event: EventEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertModifiedEvent(modifiedEventEntity: ModifiedEventEntity)
+
+    @Query("SELECT * FROM ModifiedEventEntity")
+    suspend fun getModifiedEvents(): List<ModifiedEventEntity>
+
+    @Query("DELETE FROM ModifiedEventEntity WHERE id==:id")
+    suspend fun deleteModifiedEventById(id: String): Int
 }

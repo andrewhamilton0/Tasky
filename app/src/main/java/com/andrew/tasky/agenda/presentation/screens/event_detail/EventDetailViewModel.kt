@@ -200,7 +200,7 @@ class EventDetailViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<AgendaItem.Event>("event")?.let { item ->
-            _isCreator.value = item.isCreator
+            _isCreator.update { item.isCreator }
             setIsDone(item.isDone)
             setTitle(item.title)
             setDescription(item.description)
@@ -209,8 +209,8 @@ class EventDetailViewModel @Inject constructor(
             setEndTime(item.endDateAndTime.toLocalTime())
             setEndDate(item.endDateAndTime.toLocalDate())
             setSelectedReminderTime(item.reminderTime)
-            _photo.value = item.photos
-            _attendees.value = item.attendees
+            _photo.update { item.photos }
+            _attendees.update { item.attendees }
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)
