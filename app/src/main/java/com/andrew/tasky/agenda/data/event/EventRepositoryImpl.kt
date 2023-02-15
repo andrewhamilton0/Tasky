@@ -3,6 +3,7 @@ package com.andrew.tasky.agenda.data.event
 import android.content.Context
 import android.net.Uri
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
+import com.andrew.tasky.agenda.data.util.BitmapCompressor
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.data.util.UriByteConverter
 import com.andrew.tasky.agenda.domain.EventRepository
@@ -44,7 +45,7 @@ class EventRepositoryImpl @Inject constructor(
                         uri = Uri.parse(eventPhoto.uri),
                     )
 
-                    val compressedImageByte = uriByteConverter.imageSizeCompressor(
+                    val compressedImageByte = BitmapCompressor().compressByteArray(
                         byteArray = imageByte,
                         targetSize = 1000000
                     )
@@ -103,7 +104,7 @@ class EventRepositoryImpl @Inject constructor(
                     val imageByte = uriByteConverter.uriToByteArray(
                         uri = Uri.parse(eventPhoto.uri),
                     )
-                    val compressedImageByte = uriByteConverter.imageSizeCompressor(
+                    val compressedImageByte = BitmapCompressor().compressByteArray(
                         byteArray = imageByte,
                         targetSize = 1000000
                     )

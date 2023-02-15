@@ -31,7 +31,7 @@ class AgendaRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher
 ) : AgendaRepository {
 
-    override suspend fun getAgendaItems(localDate: LocalDate) = flow<List<AgendaItem>> {
+    override suspend fun getAgendaItems(localDate: LocalDate): Flow<List<AgendaItem>> {
         val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
         val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
 
@@ -61,28 +61,28 @@ class AgendaRepositoryImpl(
             }
         }
 
-        // Added underscore to get rid of name shadowing error
-        emit(
-            reminders.combine(tasks) { _reminders, _tasks ->
-                _reminders + _tasks
-            }.combine(events) { _remindersAndTasks, _events ->
-                _remindersAndTasks + _events
-            }.map {
-                it.sortedBy { agendaItem ->
-                    agendaItem.startDateAndTime
-                }
-            }.first()
-        )
+        return reminders.combine(tasks) { _reminders, _tasks ->
+            _reminders + _tasks
+        }.combine(events) { _remindersAndTasks, _events ->
+            _remindersAndTasks + _events
+        }.map {
+            it.sortedBy { agendaItem ->
+                agendaItem.startDateAndTime
+            }
+        }
+    }
+
+    override suspend fun updateAgendaItemCache(localDate: LocalDate) {
+        val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
+        val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
 
         syncAgendaItems()
-        when (
-            val results = getAuthResult {
-                agendaApi.getAgendaItems(
-                    timezone = TimeZone.getDefault().id,
-                    time = LocalDateTime.of(localDate, LocalTime.now()).toZonedEpochMilli()
-                )
-            }
-        ) {
+        val results = getAuthResult { agendaApi.getAgendaItems(
+                timezone = TimeZone.getDefault().id,
+                time = LocalDateTime.of(localDate, LocalTime.now()).toZonedEpochMilli()
+            )
+        }
+        when (results) {
             is AuthResult.Authorized -> {
                 val localReminders = db.getReminderDao().getRemindersOfDate(
                     startEpochMilli = startEpochMilli,
@@ -148,18 +148,6 @@ class AgendaRepositoryImpl(
                 Log.e("Update Agenda of Date", "Unknown Error")
             }
         }
-
-        emitAll(
-            reminders.combine(tasks) { _reminders, _tasks ->
-                _reminders + _tasks
-            }.combine(events) { _remindersAndTasks, _events ->
-                _remindersAndTasks + _events
-            }.map {
-                it.sortedBy { agendaItem ->
-                    agendaItem.startDateAndTime
-                }
-            }
-        )
     }
 
     override suspend fun syncAgendaItems() {
