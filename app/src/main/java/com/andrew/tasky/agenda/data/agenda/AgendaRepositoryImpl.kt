@@ -10,6 +10,7 @@ import com.andrew.tasky.agenda.data.task.toTask
 import com.andrew.tasky.agenda.data.task.toTaskEntity
 import com.andrew.tasky.agenda.data.util.*
 import com.andrew.tasky.agenda.domain.AgendaRepository
+import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.TaskRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -27,6 +28,7 @@ class AgendaRepositoryImpl(
     private val agendaApi: AgendaApi,
     private val reminderRepository: ReminderRepository,
     private val taskRepository: TaskRepository,
+    private val eventRepository: EventRepository,
     private val db: AgendaDatabase,
     private val ioDispatcher: CoroutineDispatcher
 ) : AgendaRepository {
@@ -61,10 +63,8 @@ class AgendaRepositoryImpl(
             }
         }
 
-        return reminders.combine(tasks) { _reminders, _tasks ->
-            _reminders + _tasks
-        }.combine(events) { _remindersAndTasks, _events ->
-            _remindersAndTasks + _events
+        return combine(reminders, tasks, events) { _reminders, _tasks, _events ->
+            _reminders + _tasks + _events
         }.map {
             it.sortedBy { agendaItem ->
                 agendaItem.startDateAndTime
@@ -76,8 +76,9 @@ class AgendaRepositoryImpl(
         val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
         val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
 
-        syncAgendaItems()
-        val results = getAuthResult { agendaApi.getAgendaItems(
+        syncModifiedAgendaItems()
+        val results = getAuthResult {
+            agendaApi.getAgendaItems(
                 timezone = TimeZone.getDefault().id,
                 time = LocalDateTime.of(localDate, LocalTime.now()).toZonedEpochMilli()
             )
@@ -150,9 +151,10 @@ class AgendaRepositoryImpl(
         }
     }
 
-    override suspend fun syncAgendaItems() {
+    override suspend fun syncModifiedAgendaItems() {
         reminderRepository.uploadCreateAndUpdateModifiedReminders()
         taskRepository.uploadCreateAndUpdateModifiedTasks()
+        eventRepository.uploadCreateAndUpdateModifiedEvents()
 
         val reminderDeleteIds = db.getReminderDao().getModifiedReminders().filter {
             it.modifiedType == ModifiedType.DELETE
@@ -164,9 +166,21 @@ class AgendaRepositoryImpl(
         }.map {
             it.id
         }
+        val eventDeleteIds = db.getEventDao().getModifiedEvents().filter {
+            it.modifiedType == ModifiedType.DELETE
+        }.map {
+            it.id
+        }
 
-        if (reminderDeleteIds.isNotEmpty() || taskDeleteIds.isNotEmpty()) {
-            val syncAgendaRequest = SyncAgendaRequest(emptyList(), taskDeleteIds, reminderDeleteIds)
+        if (reminderDeleteIds.isNotEmpty() ||
+            taskDeleteIds.isNotEmpty() ||
+            eventDeleteIds.isNotEmpty()
+        ) {
+            val syncAgendaRequest = SyncAgendaRequest(
+                eventDeleteIds,
+                taskDeleteIds,
+                reminderDeleteIds
+            )
             val result = getAuthResult { agendaApi.syncAgendaItems(syncAgendaRequest) }
             when (result) {
                 is AuthResult.Authorized -> {
@@ -175,6 +189,9 @@ class AgendaRepositoryImpl(
                     }
                     taskDeleteIds.forEach {
                         db.getTaskDao().deleteModifiedTaskById(it)
+                    }
+                    eventDeleteIds.forEach {
+                        db.getEventDao().deleteModifiedEventById(it)
                     }
                 }
                 is AuthResult.Unauthorized -> Log.e(
@@ -186,7 +203,6 @@ class AgendaRepositoryImpl(
                     "Unknown Error, could not run agendaApi.syncAgendaItems(syncAgendaRequest)"
                 )
             }
-            // Todo sync events
         }
     }
 

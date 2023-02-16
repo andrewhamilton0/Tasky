@@ -26,112 +26,145 @@ class EventRepositoryImpl @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher
 ) : EventRepository {
 
-    override suspend fun createEvent(event: AgendaItem.Event) {
-        db.getEventDao().upsertEvent(event.toEventEntity())
-        val result = getAuthResult {
-            api.createEvent(
-                eventData = MultipartBody.Part
-                    .createFormData(
-                        name = "create_event_request",
-                        value = Json.encodeToString(event.toCreateEventRequest())
-                    ),
-                photoData = event.photos.filterIsInstance<EventPhoto.Local>().mapIndexed {
-                    index, eventPhoto ->
-                    val uriByteConverter = UriByteConverter(
-                        appContext = appContext,
-                        ioDispatcher = ioDispatcher
-                    )
-                    val imageByte = uriByteConverter.uriToByteArray(
-                        uri = Uri.parse(eventPhoto.uri),
-                    )
-
-                    val compressedImageByte = BitmapCompressor().compressByteArray(
-                        byteArray = imageByte,
-                        targetSize = 1000000
-                    )
-                    MultipartBody.Part
+    override suspend fun upsertEvent(event: AgendaItem.Event): AuthResult<Unit> {
+        if (db.getEventDao().getEventById(event.id) == null ||
+            db.getEventDao().getModifiedEventById(event.id)?.modifiedType == ModifiedType.CREATE
+        ) {
+            db.getEventDao().upsertEvent(event.toEventEntity())
+            val result = getAuthResult {
+                api.createEvent(
+                    eventData = MultipartBody.Part
                         .createFormData(
-                            name = "photo$index",
-                            filename = eventPhoto.key,
-                            body = compressedImageByte.toRequestBody()
+                            name = "create_event_request",
+                            value = Json.encodeToString(event.toCreateEventRequest())
+                        ),
+                    photoData = event.photos.filterIsInstance<EventPhoto.Local>().mapIndexed {
+                        index, eventPhoto ->
+                        val uriByteConverter = UriByteConverter(
+                            appContext = appContext,
+                            ioDispatcher = ioDispatcher
                         )
-                }
-            )
-        }
-        when (result) {
-            is AuthResult.Authorized -> {
-                result.data?.let {
-                    db.getEventDao().upsertEvent(
-                        it.toEventEntity(
-                            isDone = event.isDone,
-                            isGoing = event.isGoing
+                        val imageByte = uriByteConverter.uriToByteArray(
+                            uri = Uri.parse(eventPhoto.uri),
                         )
-                    )
-                }
-            }
-            else -> db.getEventDao().upsertModifiedEvent(
-                ModifiedEventEntity(
-                    id = event.id,
-                    modifiedType = ModifiedType.CREATE
+
+                        val compressedImageByte = BitmapCompressor().compressByteArray(
+                            byteArray = imageByte,
+                            targetSize = 1000000
+                        )
+                        MultipartBody.Part
+                            .createFormData(
+                                name = "photo$index",
+                                filename = eventPhoto.key,
+                                body = compressedImageByte.toRequestBody()
+                            )
+                    }
                 )
-            )
-        }
-    }
-
-    override suspend fun getEvent(eventId: String): AuthResult<AgendaItem.Event> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteEvent(eventId: String): AuthResult<Unit> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun updateEvent(event: AgendaItem.Event) {
-        db.getEventDao().upsertEvent(event.toEventEntity())
-        val result = getAuthResult {
-            api.updateEvent(
-                eventData = MultipartBody.Part
-                    .createFormData(
-                        name = "update_event_request",
-                        value = Json.encodeToString(event.toUpdateEventRequest())
-                    ),
-                photoData = event.photos.filterIsInstance<EventPhoto.Local>().mapIndexed {
-                    index, eventPhoto ->
-                    val uriByteConverter = UriByteConverter(
-                        appContext = appContext,
-                        ioDispatcher = ioDispatcher
-                    )
-                    val imageByte = uriByteConverter.uriToByteArray(
-                        uri = Uri.parse(eventPhoto.uri),
-                    )
-                    val compressedImageByte = BitmapCompressor().compressByteArray(
-                        byteArray = imageByte,
-                        targetSize = 1000000
-                    )
-                    MultipartBody.Part
-                        .createFormData(
-                            name = "photo$index",
-                            filename = eventPhoto.key,
-                            body = compressedImageByte.toRequestBody()
+            }
+            return when (result) {
+                is AuthResult.Authorized -> {
+                    result.data?.let {
+                        db.getEventDao().upsertEvent(
+                            it.toEventEntity(
+                                isDone = event.isDone,
+                                isGoing = event.isGoing
+                            )
                         )
+                    }
+                    AuthResult.Authorized()
                 }
-            )
-        }
-        when (result) {
-            is AuthResult.Authorized -> {
-                result.data?.let {
-                    db.getEventDao().upsertEvent(
-                        it.toEventEntity(
-                            isDone = event.isDone,
-                            isGoing = event.isGoing
+                is AuthResult.Unauthorized -> {
+                    db.getEventDao().upsertModifiedEvent(
+                        ModifiedEventEntity(
+                            id = event.id,
+                            modifiedType = ModifiedType.CREATE
                         )
                     )
+                    AuthResult.Unauthorized()
+                }
+                is AuthResult.UnknownError -> {
+                    db.getEventDao().upsertModifiedEvent(
+                        ModifiedEventEntity(
+                            id = event.id,
+                            modifiedType = ModifiedType.CREATE
+                        )
+                    )
+                    AuthResult.UnknownError()
                 }
             }
-            else -> db.getEventDao().upsertModifiedEvent(
+        } else {
+            db.getEventDao().upsertEvent(event.toEventEntity())
+            val result = getAuthResult {
+                api.updateEvent(
+                    eventData = MultipartBody.Part
+                        .createFormData(
+                            name = "update_event_request",
+                            value = Json.encodeToString(event.toUpdateEventRequest())
+                        ),
+                    photoData = event.photos.filterIsInstance<EventPhoto.Local>().mapIndexed {
+                        index, eventPhoto ->
+                        val uriByteConverter = UriByteConverter(
+                            appContext = appContext,
+                            ioDispatcher = ioDispatcher
+                        )
+                        val imageByte = uriByteConverter.uriToByteArray(
+                            uri = Uri.parse(eventPhoto.uri),
+                        )
+                        val compressedImageByte = BitmapCompressor().compressByteArray(
+                            byteArray = imageByte,
+                            targetSize = 1000000
+                        )
+                        MultipartBody.Part
+                            .createFormData(
+                                name = "photo$index",
+                                filename = eventPhoto.key,
+                                body = compressedImageByte.toRequestBody()
+                            )
+                    }
+                )
+            }
+            return when (result) {
+                is AuthResult.Authorized -> {
+                    result.data?.let {
+                        db.getEventDao().upsertEvent(
+                            it.toEventEntity(
+                                isDone = event.isDone,
+                                isGoing = event.isGoing
+                            )
+                        )
+                    }
+                    AuthResult.Authorized()
+                }
+                is AuthResult.Unauthorized -> {
+                    db.getEventDao().upsertModifiedEvent(
+                        ModifiedEventEntity(
+                            id = event.id,
+                            modifiedType = ModifiedType.UPDATE
+                        )
+                    )
+                    AuthResult.Unauthorized()
+                }
+                is AuthResult.UnknownError -> {
+                    db.getEventDao().upsertModifiedEvent(
+                        ModifiedEventEntity(
+                            id = event.id,
+                            modifiedType = ModifiedType.UPDATE
+                        )
+                    )
+                    AuthResult.Unauthorized()
+                }
+            }
+        }
+    }
+
+    override suspend fun deleteEvent(event: AgendaItem.Event) {
+        db.getEventDao().deleteEvent(event.toEventEntity())
+        val result = getAuthResult { api.deleteEvent(event.id) }
+        if (result !is AuthResult.Authorized) {
+            db.getEventDao().upsertModifiedEvent(
                 ModifiedEventEntity(
                     id = event.id,
-                    modifiedType = ModifiedType.UPDATE
+                    modifiedType = ModifiedType.DELETE
                 )
             )
         }
@@ -146,27 +179,18 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun uploadCreateAndUpdateModifiedEvents() {
-        val modifiedEvents = db.getEventDao().getModifiedEvents().groupBy {
-            it.modifiedType
-        }
 
-        val createEvents = modifiedEvents[ModifiedType.CREATE]?.map {
+        val createAndUpdateModifiedEvents = db.getEventDao().getModifiedEvents().filter {
+            it.modifiedType == ModifiedType.CREATE || it.modifiedType == ModifiedType.UPDATE
+        }.map {
             db.getEventDao().getEventById(it.id)?.toEvent()
         }
-        createEvents?.forEach { event ->
+        createAndUpdateModifiedEvents.forEach { event ->
             event?.let {
-                createEvent(event)
-                db.getEventDao().deleteModifiedEventById(event.id)
-            }
-        }
-
-        val updateEvents = modifiedEvents[ModifiedType.UPDATE]?.map {
-            db.getEventDao().getEventById(it.id)?.toEvent()
-        }
-        updateEvents?.forEach { event ->
-            event?.let {
-                updateEvent(event)
-                db.getEventDao().deleteModifiedEventById(event.id)
+                val results = upsertEvent(event)
+                if (results is AuthResult.Authorized) {
+                    db.getEventDao().deleteModifiedEventById(event.id)
+                }
             }
         }
     }

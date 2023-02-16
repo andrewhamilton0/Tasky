@@ -27,6 +27,9 @@ interface EventDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertModifiedEvent(modifiedEventEntity: ModifiedEventEntity)
 
+    @Query("SELECT * FROM ModifiedEventEntity WHERE id==:id")
+    suspend fun getModifiedEventById(id: String): ModifiedEventEntity?
+
     @Query("SELECT * FROM ModifiedEventEntity")
     suspend fun getModifiedEvents(): List<ModifiedEventEntity>
 

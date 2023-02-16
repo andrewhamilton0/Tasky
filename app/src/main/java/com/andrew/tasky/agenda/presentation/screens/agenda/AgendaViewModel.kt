@@ -9,6 +9,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.andrew.tasky.agenda.data.agenda.SyncModifiedAgendaItemsWorker
 import com.andrew.tasky.agenda.domain.AgendaRepository
+import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.TaskRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -30,6 +31,7 @@ class AgendaViewModel@Inject constructor(
     private val agendaRepository: AgendaRepository,
     private val reminderRepository: ReminderRepository,
     private val taskRepository: TaskRepository,
+    private val eventRepository: EventRepository,
     private val authRepository: AuthRepository,
     workManager: WorkManager,
     prefs: SharedPreferences
@@ -129,11 +131,13 @@ class AgendaViewModel@Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DateType.Today)
 
     fun deleteAgendaItem(agendaItem: AgendaItem) {
-        viewModelScope.launch {
-            when (agendaItem) {
-                is AgendaItem.Event -> TODO()
-                is AgendaItem.Reminder -> reminderRepository.deleteReminder(agendaItem)
-                is AgendaItem.Task -> taskRepository.deleteTask(agendaItem)
+        viewModelScope.launch() {
+            withContext(NonCancellable) {
+                when (agendaItem) {
+                    is AgendaItem.Event -> eventRepository.deleteEvent(agendaItem)
+                    is AgendaItem.Reminder -> reminderRepository.deleteReminder(agendaItem)
+                    is AgendaItem.Task -> taskRepository.deleteTask(agendaItem)
+                }
             }
         }
     }
