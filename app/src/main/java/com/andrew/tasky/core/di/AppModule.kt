@@ -130,13 +130,15 @@ object AppModule {
         agendaApi: AgendaApi,
         reminderRepository: ReminderRepository,
         taskRepository: TaskRepository,
-        db: AgendaDatabase
+        db: AgendaDatabase,
+        ioDispatcher: CoroutineDispatcher
     ): AgendaRepository {
         return AgendaRepositoryImpl(
             agendaApi = agendaApi,
             reminderRepository = reminderRepository,
             taskRepository = taskRepository,
-            db = db
+            db = db,
+            ioDispatcher = ioDispatcher
         )
     }
 

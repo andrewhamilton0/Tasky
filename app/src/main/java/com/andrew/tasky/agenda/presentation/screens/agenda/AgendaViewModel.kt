@@ -31,7 +31,6 @@ class AgendaViewModel@Inject constructor(
     private val reminderRepository: ReminderRepository,
     private val taskRepository: TaskRepository,
     private val authRepository: AuthRepository,
-    private val ioDispatcher: CoroutineDispatcher,
     workManager: WorkManager,
     prefs: SharedPreferences
 ) : ViewModel() {
@@ -140,7 +139,7 @@ class AgendaViewModel@Inject constructor(
     }
 
     fun logout() {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             withContext(NonCancellable) {
                 authRepository.logout()
             }
@@ -157,5 +156,8 @@ class AgendaViewModel@Inject constructor(
 
     init {
         workManager.enqueue(syncModifiedAgendaItemsWorkRequest)
+        viewModelScope.launch {
+            dateSelected.collectLatest { agendaRepository.updateAgendaItemCache(it) }
+        }
     }
 }

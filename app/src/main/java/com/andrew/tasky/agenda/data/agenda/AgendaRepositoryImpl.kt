@@ -3,6 +3,7 @@ package com.andrew.tasky.agenda.data.agenda
 import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.event.toEvent
+import com.andrew.tasky.agenda.data.event.toEventEntity
 import com.andrew.tasky.agenda.data.reminder.toReminder
 import com.andrew.tasky.agenda.data.reminder.toReminderEntity
 import com.andrew.tasky.agenda.data.task.toTask
@@ -18,16 +19,19 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
 
 class AgendaRepositoryImpl(
     private val agendaApi: AgendaApi,
     private val reminderRepository: ReminderRepository,
     private val taskRepository: TaskRepository,
     private val db: AgendaDatabase,
+    private val ioDispatcher: CoroutineDispatcher
 ) : AgendaRepository {
 
-    override suspend fun getAgendaItems(localDate: LocalDate) = flow<List<AgendaItem>> {
+    override suspend fun getAgendaItems(localDate: LocalDate): Flow<List<AgendaItem>> {
         val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
         val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
 
@@ -57,28 +61,28 @@ class AgendaRepositoryImpl(
             }
         }
 
-        // Added underscore to get rid of name shadowing error
-        emit(
-            reminders.combine(tasks) { _reminders, _tasks ->
-                _reminders + _tasks
-            }.combine(events) { _remindersAndTasks, _events ->
-                _remindersAndTasks + _events
-            }.map {
-                it.sortedBy { agendaItem ->
-                    agendaItem.startDateAndTime
-                }
-            }.first()
-        )
+        return reminders.combine(tasks) { _reminders, _tasks ->
+            _reminders + _tasks
+        }.combine(events) { _remindersAndTasks, _events ->
+            _remindersAndTasks + _events
+        }.map {
+            it.sortedBy { agendaItem ->
+                agendaItem.startDateAndTime
+            }
+        }
+    }
+
+    override suspend fun updateAgendaItemCache(localDate: LocalDate) {
+        val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
+        val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
 
         syncAgendaItems()
-        when (
-            val results = getAuthResult {
-                agendaApi.getAgendaItems(
-                    timezone = TimeZone.getDefault().id,
-                    time = LocalDateTime.of(localDate, LocalTime.now()).toZonedEpochMilli()
-                )
-            }
-        ) {
+        val results = getAuthResult { agendaApi.getAgendaItems(
+                timezone = TimeZone.getDefault().id,
+                time = LocalDateTime.of(localDate, LocalTime.now()).toZonedEpochMilli()
+            )
+        }
+        when (results) {
             is AuthResult.Authorized -> {
                 val localReminders = db.getReminderDao().getRemindersOfDate(
                     startEpochMilli = startEpochMilli,
@@ -115,6 +119,27 @@ class AgendaRepositoryImpl(
                 results.data?.tasks?.forEach { taskDto ->
                     db.getTaskDao().upsertTask(taskDto.toTaskEntity())
                 }
+                val localEvents = db.getEventDao().getEventsOfDate(
+                    startEpochMilli = startEpochMilli,
+                    endEpochMilli = endEpochMilli
+                ).first()
+                localEvents.forEach { localEvent ->
+                    val containsLocalId = results.data?.reminders?.any {
+                        it.id == localEvent.id
+                    } == true
+                    if (!containsLocalId) {
+                        db.getEventDao().deleteEvent(localEvent)
+                    }
+                }
+                results.data?.events?.forEach { eventDto ->
+                    val localEvent = db.getEventDao().getEventById(eventDto.id)
+                    db.getEventDao().upsertEvent(
+                        eventDto.toEventEntity(
+                            isDone = localEvent?.isDone ?: false,
+                            isGoing = localEvent?.isGoing ?: true
+                        )
+                    )
+                }
             }
             is AuthResult.Unauthorized -> {
                 Log.e("Update Agenda of Date", "Unauthorized")
@@ -123,18 +148,6 @@ class AgendaRepositoryImpl(
                 Log.e("Update Agenda of Date", "Unknown Error")
             }
         }
-
-        emitAll(
-            reminders.combine(tasks) { _reminders, _tasks ->
-                _reminders + _tasks
-            }.combine(events) { _remindersAndTasks, _events ->
-                _remindersAndTasks + _events
-            }.map {
-                it.sortedBy { agendaItem ->
-                    agendaItem.startDateAndTime
-                }
-            }
-        )
     }
 
     override suspend fun syncAgendaItems() {
@@ -178,6 +191,8 @@ class AgendaRepositoryImpl(
     }
 
     override suspend fun deleteAllAgendaTables() {
-        db.clearAllTables()
+        withContext(ioDispatcher) {
+            db.clearAllTables()
+        }
     }
 }

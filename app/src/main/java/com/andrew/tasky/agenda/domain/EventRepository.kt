@@ -8,7 +8,8 @@ interface EventRepository {
     suspend fun createEvent(event: AgendaItem.Event)
     suspend fun getEvent(eventId: String): AuthResult<AgendaItem.Event>
     suspend fun deleteEvent(eventId: String): AuthResult<Unit>
-    suspend fun updateEvent(): AuthResult<Unit>
+    suspend fun updateEvent(event: AgendaItem.Event)
     suspend fun getAttendee(email: String): AuthResult<Attendee>
     suspend fun deleteAttendee(eventId: String): AuthResult<Unit>
+    suspend fun uploadCreateAndUpdateModifiedEvents()
 }
