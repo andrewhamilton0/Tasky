@@ -63,7 +63,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 viewModel.setEditMode(true)
             }
             header.saveButton.setOnClickListener {
-                viewModel.saveAgendaItem()
+                viewModel.saveEvent()
                 navController.popBackStack()
             }
 
@@ -306,7 +306,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                         showDeleteConfirmationDialog(
                             agendaItemType,
                             onResultDeleteAgendaItem = {
-                                viewModel.deleteAgendaItem()
+                                viewModel.deleteEvent()
                                 navController.popBackStack()
                             }
                         )

@@ -151,7 +151,7 @@ class EventDetailViewModel @Inject constructor(
         NOT_GOING
     }
 
-    fun saveAgendaItem() {
+    fun saveEvent() {
         val event = AgendaItem.Event(
             id = savedStateHandle.get<AgendaItem.Event>("event")?.id
                 ?: UUID.randomUUID().toString(),
@@ -180,7 +180,7 @@ class EventDetailViewModel @Inject constructor(
         // going to be cancelled.
         viewModelScope.launch {
             withContext(NonCancellable) {
-                repository.createEvent(event)
+                repository.upsertEvent(event)
             }
         }
     }
@@ -188,11 +188,11 @@ class EventDetailViewModel @Inject constructor(
     fun leaveEvent() {
     }
 
-    fun deleteAgendaItem() {
+    fun deleteEvent() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<AgendaItem.Event>("agendaItem")?.let {
-                    // repository.deleteAgendaItem(it)
+                savedStateHandle.get<AgendaItem.Event>("event")?.let {
+                    repository.deleteEvent(it)
                 }
             }
         }

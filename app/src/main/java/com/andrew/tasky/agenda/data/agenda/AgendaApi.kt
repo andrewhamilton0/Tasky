@@ -17,4 +17,7 @@ interface AgendaApi {
     suspend fun syncAgendaItems(
         @Body request: SyncAgendaRequest
     )
+
+    @GET("/fullAgenda")
+    suspend fun getFullAgenda(): AgendaResponse
 }

@@ -19,7 +19,7 @@ class SyncModifiedAgendaItemsWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        val result = getAuthResult { agendaRepository.syncAgendaItems() }
+        val result = getAuthResult { agendaRepository.syncModifiedAgendaItems() }
         return when (result) {
             is AuthResult.Authorized -> {
                 Result.success()
