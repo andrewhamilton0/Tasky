@@ -86,13 +86,19 @@ class AgendaViewModel@Inject constructor(
 
     fun switchIsDone(agendaItem: AgendaItem) {
         viewModelScope.launch {
-            when (agendaItem) {
-                is AgendaItem.Event -> TODO()
-                is AgendaItem.Reminder -> {
-                    reminderRepository.updateReminder(agendaItem.copy(isDone = !agendaItem.isDone))
-                }
-                is AgendaItem.Task -> {
-                    taskRepository.updateTask(agendaItem.copy(isDone = !agendaItem.isDone))
+            withContext(NonCancellable) {
+                when (agendaItem) {
+                    is AgendaItem.Event -> {
+                        eventRepository.upsertEvent(agendaItem.copy(isDone = !agendaItem.isDone))
+                    }
+                    is AgendaItem.Reminder -> {
+                        reminderRepository.updateReminder(
+                            agendaItem.copy(isDone = !agendaItem.isDone)
+                        )
+                    }
+                    is AgendaItem.Task -> {
+                        taskRepository.updateTask(agendaItem.copy(isDone = !agendaItem.isDone))
+                    }
                 }
             }
         }
@@ -131,7 +137,7 @@ class AgendaViewModel@Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DateType.Today)
 
     fun deleteAgendaItem(agendaItem: AgendaItem) {
-        viewModelScope.launch() {
+        viewModelScope.launch {
             withContext(NonCancellable) {
                 when (agendaItem) {
                     is AgendaItem.Event -> eventRepository.deleteEvent(agendaItem)

@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.agenda.presentation.adapters.PhotoItemAdapter
-import com.andrew.tasky.agenda.presentation.dialogs.AddAttendeeDialog
 import com.andrew.tasky.agenda.util.*
 import com.andrew.tasky.databinding.FragmentEventDetailBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -164,7 +163,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
 
             attendeesLayout.addAttendeeButton.setOnClickListener {
-                showAddAttendeeDialog()
+                showAttendeeDialog(onEmailResult = viewModel::addAttendee)
             }
             attendeesLayout.allButton.setOnClickListener {
                 viewModel.setAttendeeFilterType(EventDetailViewModel.AttendeeFilterTypes.ALL)
@@ -494,12 +493,5 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                     viewModel.photos.value[index].toString(), index
                 )
         )
-    }
-
-    private fun showAddAttendeeDialog() {
-        val addAttendeeDialog = AddAttendeeDialog()
-        val supportFragmentManager = requireActivity().supportFragmentManager
-
-        addAttendeeDialog.show(supportFragmentManager, "AddAttendeeDialog")
     }
 }

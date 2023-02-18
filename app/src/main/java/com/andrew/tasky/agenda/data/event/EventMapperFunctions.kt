@@ -62,7 +62,8 @@ fun AgendaItem.Event.toEventEntity(): EventEntity {
         ),
         isGoing = isGoing,
         remotePhotos = photos.filterIsInstance<EventPhoto.Remote>().map { it.toRemotePhotoDto() },
-        localPhotos = photos.filterIsInstance<EventPhoto.Local>().map { it.toLocalEventPhotoDto() }
+        localPhotos = photos.filterIsInstance<EventPhoto.Local>().map { it.toLocalEventPhotoDto() },
+        attendees = attendees
     )
 }
 
@@ -111,6 +112,7 @@ fun EventEntity.toEvent(): AgendaItem.Event {
         host = host,
         isCreator = isCreator,
         isGoing = isGoing,
-        photos = localPhotos.map { it.toEventPhoto() } + remotePhotos.map { it.toEventPhoto() }
+        photos = localPhotos.map { it.toEventPhoto() } + remotePhotos.map { it.toEventPhoto() },
+        attendees = attendees
     )
 }

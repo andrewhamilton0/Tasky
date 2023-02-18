@@ -69,9 +69,11 @@
     <string name="error_invalid_password_format">Password must contain at least %1$d characters,
         one number, one uppercase, and one lowercase letter</string>
     <string name="unauthorized">Unauthorized</string>
-    <string name="unknown_error">Unknown Error, try connecting to internet</string>
+    <string name="unknown_error">Unknown Error</string>
     <string name="token_not_found">Token not found</string>
     <string name="username_and_password_do_not_match">Username and Password do not match</string>
+    <string name="attendee_already_added">Attendee already added</string>
+    <string name="user_not_found">User not found</string>
 
     <!--logout messages -->
     <string name="logout_successful">Logout successful</string>

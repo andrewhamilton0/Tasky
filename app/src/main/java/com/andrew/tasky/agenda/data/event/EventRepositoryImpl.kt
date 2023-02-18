@@ -8,7 +8,6 @@ import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.data.util.UriByteConverter
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
-import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.auth.util.getAuthResult
@@ -30,6 +29,7 @@ class EventRepositoryImpl @Inject constructor(
         if (db.getEventDao().getEventById(event.id) == null ||
             db.getEventDao().getModifiedEventById(event.id)?.modifiedType == ModifiedType.CREATE
         ) {
+            println("CREATING EVENT")
             db.getEventDao().upsertEvent(event.toEventEntity())
             val result = getAuthResult {
                 api.createEvent(
@@ -94,6 +94,7 @@ class EventRepositoryImpl @Inject constructor(
             }
         } else {
             db.getEventDao().upsertEvent(event.toEventEntity())
+            println("UPDATING EVENT")
             val result = getAuthResult {
                 api.updateEvent(
                     eventData = MultipartBody.Part
@@ -170,8 +171,13 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAttendee(email: String): AuthResult<Attendee> {
-        TODO("Not yet implemented")
+    override suspend fun getAttendee(email: String): AuthResult<GetAttendeeResponse> {
+        val result = getAuthResult { api.getAttendee(email) }
+        when (result) {
+            is AuthResult.Authorized -> return AuthResult.Authorized(result.data)
+            is AuthResult.Unauthorized -> return AuthResult.Unauthorized()
+            is AuthResult.UnknownError -> return AuthResult.UnknownError()
+        }
     }
 
     override suspend fun deleteAttendee(eventId: String): AuthResult<Unit> {

@@ -17,10 +17,10 @@ sealed class AgendaItem(open val startDateAndTime: LocalDateTime) {
         override val startDateAndTime: LocalDateTime,
         val endDateAndTime: LocalDateTime,
         val reminderTime: ReminderTime,
-        val photos: @RawValue List<EventPhoto> = emptyList(),
+        val photos: @RawValue List<EventPhoto>,
         val isCreator: Boolean,
-        val attendees: @RawValue List<Attendee> = emptyList(),
-        val host: String,
+        val attendees: @RawValue List<Attendee>,
+        val host: String?,
         val deletedPhotoKeys: List<String> = emptyList(),
         val isGoing: Boolean
     ) : AgendaItem(startDateAndTime = startDateAndTime), Parcelable

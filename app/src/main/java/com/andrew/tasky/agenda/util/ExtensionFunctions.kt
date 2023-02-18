@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation.findNavController
 import com.andrew.tasky.R
+import com.andrew.tasky.agenda.presentation.dialogs.AddAttendeeDialog
 import com.andrew.tasky.agenda.presentation.dialogs.DatePickerDialog
 import com.andrew.tasky.agenda.presentation.dialogs.DeleteConfirmationDialog
 import com.andrew.tasky.agenda.presentation.dialogs.TimePickerDialog
@@ -176,4 +177,22 @@ fun Fragment.showTimePickerDialog(onResult: (LocalTime) -> Unit) {
         }
     }
     timePickerDialog.show(supportFragmentManager, "TimePickerDialog")
+}
+
+fun Fragment.showAttendeeDialog(onEmailResult: (String) -> Unit) {
+    val attendeeDialog = AddAttendeeDialog()
+    val supportFragmentManager = requireActivity().supportFragmentManager
+
+    supportFragmentManager.setFragmentResultListener(
+        "REQUEST_KEY",
+        viewLifecycleOwner
+    ) { resultKey, bundle ->
+        if (resultKey == "REQUEST_KEY") {
+            val attendee = bundle.getString("ATTENDEE")
+            if (attendee != null) {
+                onEmailResult(attendee)
+            }
+        }
+    }
+    attendeeDialog.show(supportFragmentManager, "AddAttendeeDialog")
 }

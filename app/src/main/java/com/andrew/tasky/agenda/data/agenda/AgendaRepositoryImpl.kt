@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.agenda
 
+import android.icu.util.TimeZone
 import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.event.toEvent
@@ -19,7 +20,6 @@ import com.andrew.tasky.auth.util.getAuthResult
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -99,11 +99,10 @@ class AgendaRepositoryImpl(
                 }
                 results.data?.reminders?.forEach { reminderDto ->
                     val localReminder = db.getReminderDao().getReminderById(reminderDto.id)
-                    db.getReminderDao().upsertReminder(
-                        reminderDto.toReminderEntity(
-                            isDone = localReminder?.isDone ?: false
-                        )
+                    val remoteReminder = reminderDto.toReminderEntity(
+                        isDone = localReminder?.isDone ?: false
                     )
+                    db.getReminderDao().upsertReminder(remoteReminder)
                 }
                 val localTasks = db.getTaskDao().getTasksOfDate(
                     startEpochMilli = startEpochMilli,
@@ -134,12 +133,13 @@ class AgendaRepositoryImpl(
                 }
                 results.data?.events?.forEach { eventDto ->
                     val localEvent = db.getEventDao().getEventById(eventDto.id)
-                    db.getEventDao().upsertEvent(
-                        eventDto.toEventEntity(
-                            isDone = localEvent?.isDone ?: false,
-                            isGoing = localEvent?.isGoing ?: true
-                        )
+                    val remoteEvent = eventDto.toEventEntity(
+                        isDone = localEvent?.isDone ?: false,
+                        isGoing = localEvent?.isGoing ?: true
                     )
+                    if (localEvent != remoteEvent) {
+                        db.getEventDao().upsertEvent(remoteEvent)
+                    }
                 }
             }
             is AuthResult.Unauthorized -> {
