@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.event
 
+import com.andrew.tasky.agenda.data.event.attendee.AttendeeDto
 import com.andrew.tasky.agenda.data.event.photo.toEventPhoto
 import com.andrew.tasky.agenda.data.event.photo.toLocalEventPhotoDto
 import com.andrew.tasky.agenda.data.event.photo.toRemotePhotoDto

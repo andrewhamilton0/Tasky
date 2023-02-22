@@ -3,6 +3,7 @@ package com.andrew.tasky.agenda.presentation.screens.event_detail
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
@@ -474,6 +475,9 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                     }
                 }
             }
+        }
+        collectLatestLifecycleFlow(viewModel.attendeeToastMessage) {
+            Toast.makeText(context, it.asString(requireContext()), Toast.LENGTH_SHORT).show()
         }
     }
 

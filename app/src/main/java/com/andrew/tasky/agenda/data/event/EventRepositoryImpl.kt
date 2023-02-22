@@ -3,14 +3,15 @@ package com.andrew.tasky.agenda.data.event
 import android.content.Context
 import android.net.Uri
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
+import com.andrew.tasky.agenda.data.event.attendee.GetAttendeeResponse
 import com.andrew.tasky.agenda.data.util.BitmapCompressor
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.data.util.UriByteConverter
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.EventPhoto
-import com.andrew.tasky.auth.data.AuthResult
-import com.andrew.tasky.auth.util.getAuthResult
+import com.andrew.tasky.auth.util.getResourceResult
+import com.andrew.tasky.core.Resource
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.serialization.encodeToString
@@ -25,13 +26,13 @@ class EventRepositoryImpl @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher
 ) : EventRepository {
 
-    override suspend fun upsertEvent(event: AgendaItem.Event): AuthResult<Unit> {
+    override suspend fun upsertEvent(event: AgendaItem.Event): Resource<Unit> {
         if (db.getEventDao().getEventById(event.id) == null ||
             db.getEventDao().getModifiedEventById(event.id)?.modifiedType == ModifiedType.CREATE
         ) {
             println("CREATING EVENT")
             db.getEventDao().upsertEvent(event.toEventEntity())
-            val result = getAuthResult {
+            val result = getResourceResult {
                 api.createEvent(
                     eventData = MultipartBody.Part
                         .createFormData(
@@ -62,7 +63,16 @@ class EventRepositoryImpl @Inject constructor(
                 )
             }
             return when (result) {
-                is AuthResult.Authorized -> {
+                is Resource.Error -> {
+                    db.getEventDao().upsertModifiedEvent(
+                        ModifiedEventEntity(
+                            id = event.id,
+                            modifiedType = ModifiedType.CREATE
+                        )
+                    )
+                    Resource.Error()
+                }
+                is Resource.Success -> {
                     result.data?.let {
                         db.getEventDao().upsertEvent(
                             it.toEventEntity(
@@ -71,31 +81,13 @@ class EventRepositoryImpl @Inject constructor(
                             )
                         )
                     }
-                    AuthResult.Authorized()
-                }
-                is AuthResult.Unauthorized -> {
-                    db.getEventDao().upsertModifiedEvent(
-                        ModifiedEventEntity(
-                            id = event.id,
-                            modifiedType = ModifiedType.CREATE
-                        )
-                    )
-                    AuthResult.Unauthorized()
-                }
-                is AuthResult.UnknownError -> {
-                    db.getEventDao().upsertModifiedEvent(
-                        ModifiedEventEntity(
-                            id = event.id,
-                            modifiedType = ModifiedType.CREATE
-                        )
-                    )
-                    AuthResult.UnknownError()
+                    Resource.Success()
                 }
             }
         } else {
             db.getEventDao().upsertEvent(event.toEventEntity())
             println("UPDATING EVENT")
-            val result = getAuthResult {
+            val result = getResourceResult {
                 api.updateEvent(
                     eventData = MultipartBody.Part
                         .createFormData(
@@ -125,7 +117,16 @@ class EventRepositoryImpl @Inject constructor(
                 )
             }
             return when (result) {
-                is AuthResult.Authorized -> {
+                is Resource.Error -> {
+                    db.getEventDao().upsertModifiedEvent(
+                        ModifiedEventEntity(
+                            id = event.id,
+                            modifiedType = ModifiedType.UPDATE
+                        )
+                    )
+                    Resource.Error()
+                }
+                is Resource.Success -> {
                     result.data?.let {
                         db.getEventDao().upsertEvent(
                             it.toEventEntity(
@@ -134,25 +135,7 @@ class EventRepositoryImpl @Inject constructor(
                             )
                         )
                     }
-                    AuthResult.Authorized()
-                }
-                is AuthResult.Unauthorized -> {
-                    db.getEventDao().upsertModifiedEvent(
-                        ModifiedEventEntity(
-                            id = event.id,
-                            modifiedType = ModifiedType.UPDATE
-                        )
-                    )
-                    AuthResult.Unauthorized()
-                }
-                is AuthResult.UnknownError -> {
-                    db.getEventDao().upsertModifiedEvent(
-                        ModifiedEventEntity(
-                            id = event.id,
-                            modifiedType = ModifiedType.UPDATE
-                        )
-                    )
-                    AuthResult.Unauthorized()
+                    Resource.Success()
                 }
             }
         }
@@ -160,8 +143,8 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun deleteEvent(event: AgendaItem.Event) {
         db.getEventDao().deleteEvent(event.toEventEntity())
-        val result = getAuthResult { api.deleteEvent(event.id) }
-        if (result !is AuthResult.Authorized) {
+        val result = getResourceResult { api.deleteEvent(event.id) }
+        if (result is Resource.Error) {
             db.getEventDao().upsertModifiedEvent(
                 ModifiedEventEntity(
                     id = event.id,
@@ -171,16 +154,15 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAttendee(email: String): AuthResult<GetAttendeeResponse> {
-        val result = getAuthResult { api.getAttendee(email) }
+    override suspend fun getAttendee(email: String): Resource<GetAttendeeResponse> {
+        val result = getResourceResult { api.getAttendee(email) }
         when (result) {
-            is AuthResult.Authorized -> return AuthResult.Authorized(result.data)
-            is AuthResult.Unauthorized -> return AuthResult.Unauthorized()
-            is AuthResult.UnknownError -> return AuthResult.UnknownError()
+            is Resource.Success -> return Resource.Success(result.data)
+            is Resource.Error -> return Resource.Error(errorMessage = result.message)
         }
     }
 
-    override suspend fun deleteAttendee(eventId: String): AuthResult<Unit> {
+    override suspend fun deleteAttendee(eventId: String): Resource<Unit> {
         TODO("Not yet implemented")
     }
 
@@ -194,7 +176,7 @@ class EventRepositoryImpl @Inject constructor(
         createAndUpdateModifiedEvents.forEach { event ->
             event?.let {
                 val results = upsertEvent(event)
-                if (results is AuthResult.Authorized) {
+                if (results is Resource.Success) {
                     db.getEventDao().deleteModifiedEventById(event.id)
                 }
             }
