@@ -5,8 +5,8 @@ import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.domain.TaskRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
-import com.andrew.tasky.auth.data.AuthResult
-import com.andrew.tasky.auth.util.getAuthResult
+import com.andrew.tasky.auth.util.getResourceResult
+import com.andrew.tasky.core.Resource
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
@@ -16,41 +16,43 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun createTask(task: AgendaItem.Task) {
         db.getTaskDao().upsertTask(task.toTaskEntity())
-        val result = getAuthResult { api.createTask(task.toTaskDto()) }
-        if (result !is AuthResult.Authorized) {
+        val result = getResourceResult { api.createTask(task.toTaskDto()) }
+        if (result is Resource.Error) {
             db.getTaskDao().upsertModifiedTask(
                 ModifiedTaskEntity(
                     id = task.id,
                     modifiedType = ModifiedType.CREATE
                 )
             )
-            Log.e("create task", "sent to modified tasks")
+            Log.e("createTask error", result.message ?: "unknown error")
         }
     }
 
     override suspend fun updateTask(task: AgendaItem.Task) {
         db.getTaskDao().upsertTask(task.toTaskEntity())
-        val result = getAuthResult { api.updateTask(task.toTaskDto()) }
-        if (result !is AuthResult.Authorized) {
+        val result = getResourceResult { api.updateTask(task.toTaskDto()) }
+        if (result is Resource.Error) {
             db.getTaskDao().upsertModifiedTask(
                 ModifiedTaskEntity(
                     id = task.id,
                     modifiedType = ModifiedType.UPDATE
                 )
             )
+            Log.e("updateTask error", result.message ?: "unknown error")
         }
     }
 
     override suspend fun deleteTask(task: AgendaItem.Task) {
         db.getTaskDao().deleteTask(task.toTaskEntity())
-        val result = getAuthResult { api.deleteTask(task.id) }
-        if (result !is AuthResult.Authorized) {
+        val result = getResourceResult { api.deleteTask(task.id) }
+        if (result is Resource.Error) {
             db.getTaskDao().upsertModifiedTask(
                 ModifiedTaskEntity(
                     id = task.id,
                     modifiedType = ModifiedType.DELETE
                 )
             )
+            Log.e("deleteTask error", result.message ?: "unknown error")
         }
     }
 
@@ -63,20 +65,19 @@ class TaskRepositoryImpl @Inject constructor(
             db.getTaskDao().getTaskById(it.id)?.toTaskDto()
         }
         createTasksDtos?.map { createTasksDto ->
-            when (getAuthResult { createTasksDto?.let { api.createTask(it) } }) {
-                is AuthResult.Authorized -> {
-                    createTasksDto?.let {
-                        db.getTaskDao().deleteModifiedTaskById(it.id)
+            if (createTasksDto != null) {
+                val result = getResourceResult { api.createTask(createTasksDto) }
+                when (result) {
+                    is Resource.Error -> {
+                        Log.e(
+                            "uploadCreateAndUpdateModifiedTasks create error",
+                            result.message ?: "Unknown Error"
+                        )
+                    }
+                    is Resource.Success -> {
+                        db.getTaskDao().deleteModifiedTaskById(createTasksDto.id)
                     }
                 }
-                is AuthResult.Unauthorized -> Log.e(
-                    "SyncAgendaItem",
-                    "Unauthorized, could not create task"
-                )
-                is AuthResult.UnknownError -> Log.e(
-                    "SyncAgendaItem",
-                    "Unknown Error, could not create task"
-                )
             }
         }
 
@@ -84,20 +85,19 @@ class TaskRepositoryImpl @Inject constructor(
             db.getTaskDao().getTaskById(it.id)?.toTaskDto()
         }
         updateTasksDtos?.map { updateTasksDto ->
-            when (getAuthResult { updateTasksDto?.let { api.updateTask(it) } }) {
-                is AuthResult.Authorized -> {
-                    updateTasksDto?.let {
-                        db.getTaskDao().deleteModifiedTaskById(it.id)
+            if (updateTasksDto != null) {
+                val result = getResourceResult { api.updateTask(updateTasksDto) }
+                when (result) {
+                    is Resource.Error -> {
+                        Log.e(
+                            "uploadCreateAndUpdateModifiedTasks update error",
+                            result.message ?: "Unknown Error"
+                        )
+                    }
+                    is Resource.Success -> {
+                        db.getTaskDao().deleteModifiedTaskById(updateTasksDto.id)
                     }
                 }
-                is AuthResult.Unauthorized -> Log.e(
-                    "SyncAgendaItem",
-                    "Unauthorized, could not update task"
-                )
-                is AuthResult.UnknownError -> Log.e(
-                    "SyncAgendaItem",
-                    "Unknown Error, could not update task"
-                )
             }
         }
     }
