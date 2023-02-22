@@ -3,12 +3,15 @@ package com.andrew.tasky.agenda.presentation.screens.event_detail
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.lifecycle.*
+import com.andrew.tasky.R
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.util.ReminderTime
 import com.andrew.tasky.agenda.util.UiEventPhoto
+import com.andrew.tasky.auth.data.AuthResult
+import com.andrew.tasky.core.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -16,6 +19,7 @@ import java.time.LocalTime
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -109,10 +113,61 @@ class EventDetailViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _attendees = MutableStateFlow(listOf<Attendee>())
-    val attendees = _attendees.asStateFlow()
-    fun addAttendee(attendee: Attendee) {
-        _attendees.value += attendee
+    private val attendees = _attendees.asStateFlow()
+
+    fun addAttendee(email: String) {
+        viewModelScope.launch {
+            withContext(NonCancellable) {
+                val result = repository.getAttendee(email)
+                when (result) {
+                    is AuthResult.Authorized -> {
+                        if (result.data != null) {
+                            if (result.data.doesUserExist) {
+                                if (!attendees.value.contains(result.data.attendee)) {
+                                    _attendees.value += result.data.attendee
+                                } else {
+                                    attendeeToastMessageChannel.send(
+                                        UiText.StringRecourse(
+                                            resId = R.string.attendee_already_added
+                                        )
+                                    )
+                                }
+                            } else {
+                                attendeeToastMessageChannel.send(
+                                    UiText.StringRecourse(
+                                        resId = R.string.user_not_found
+                                    )
+                                )
+                            }
+                        } else {
+                            attendeeToastMessageChannel.send(
+                                UiText.StringRecourse(
+                                    resId = R.string.unknown_error
+                                )
+                            )
+                        }
+                    }
+                    is AuthResult.Unauthorized -> {
+                        attendeeToastMessageChannel.send(
+                            UiText.StringRecourse(
+                                resId = R.string.unauthorized
+                            )
+                        )
+                    }
+                    is AuthResult.UnknownError -> {
+                        attendeeToastMessageChannel.send(
+                            UiText.StringRecourse(
+                                resId = R.string.unknown_error
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
+
+    private val attendeeToastMessageChannel = Channel<UiText>()
+    val attendeeToastMessage = attendeeToastMessageChannel.receiveAsFlow()
 
     val goingAttendees = attendees.map {
         it.filter { attendee -> attendee.isGoing }
@@ -169,10 +224,10 @@ class EventDetailViewModel @Inject constructor(
             reminderTime = selectedReminderTime.value,
             photos = photos.value,
             attendees = attendees.value,
-            isCreator = false, // TODO make isCreator
-            host = "BLANK", // TODO make host
+            isCreator = savedStateHandle.get<AgendaItem.Event>("event")?.isCreator ?: true,
+            host = savedStateHandle.get<AgendaItem.Event>("event")?.host,
             deletedPhotoKeys = emptyList(), // TODO setup deletedPhotosKeys
-            isGoing = true // TODO setup is going
+            isGoing = savedStateHandle.get<AgendaItem.Event>("event")?.isGoing ?: true
         )
         // viewModelScope gets cancelled as soon as the Fragment is popped from the backstack,
         // so if you pop it right after inserting an element, this coroutine will be cancelled

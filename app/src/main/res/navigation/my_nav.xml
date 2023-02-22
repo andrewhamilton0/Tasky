@@ -118,4 +118,9 @@
         </argument>
     </fragment>
     <action android:id="@+id/action_global_editFragment" app:destination="@id/editFragment"/>
+    <action
+        android:id="@+id/action_global_agendaFragment"
+        app:destination="@id/agendaFragment"
+        app:popUpTo="@id/loginFragment"
+        app:popUpToInclusive="true" />
 </navigation>
