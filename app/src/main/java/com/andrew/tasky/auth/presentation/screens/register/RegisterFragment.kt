@@ -12,8 +12,8 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
-import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.auth.util.PasswordValidator
+import com.andrew.tasky.core.Resource
 import com.andrew.tasky.databinding.FragmentRegisterBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -66,21 +66,18 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.authResults.collect { result ->
                 when (result) {
-                    is AuthResult.Authorized -> {
+                    is Resource.Error -> {
+                        Toast.makeText(
+                            requireContext(),
+                            result.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    is Resource.Success -> {
                         navController.navigate(
                             RegisterFragmentDirections.actionRegisterFragmentToAgendaFragment()
                         )
                     }
-                    is AuthResult.Unauthorized -> Toast.makeText(
-                        requireContext(),
-                        requireContext().getString(R.string.unauthorized),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    is AuthResult.UnknownError -> Toast.makeText(
-                        requireContext(),
-                        requireContext().getString(R.string.unknown_error),
-                        Toast.LENGTH_LONG
-                    ).show()
                 }
             }
         }

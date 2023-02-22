@@ -10,7 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
-import com.andrew.tasky.auth.data.AuthResult
+import com.andrew.tasky.core.Resource
 import com.andrew.tasky.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,35 +42,25 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         collectLatestLifecycleFlow(viewModel.loginResults) { results ->
             when (results) {
-                is AuthResult.Authorized -> {
+                is Resource.Error -> {
+                    Toast.makeText(context, results.message, Toast.LENGTH_LONG).show()
+                }
+                is Resource.Success -> {
                     navController.navigate(
                         LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
                     )
-                }
-                is AuthResult.Unauthorized -> {
-                    Toast.makeText(
-                        context,
-                        R.string.username_and_password_do_not_match,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-                is AuthResult.UnknownError -> {
-                    Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_LONG).show()
                 }
             }
         }
         collectLatestLifecycleFlow(viewModel.authenticateResults) { results ->
             when (results) {
-                is AuthResult.Authorized -> {
+                is Resource.Error -> {
+                    Log.e("LoginFragAuthResult", results.message ?: "Unknown error")
+                }
+                is Resource.Success -> {
                     navController.navigate(
                         LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
                     )
-                }
-                is AuthResult.Unauthorized -> {
-                    Log.e("LoginFragAuthResult", "Unauthorized")
-                }
-                is AuthResult.UnknownError -> {
-                    Log.e("LoginFragAuthResult", "Unknown error")
                 }
             }
         }
