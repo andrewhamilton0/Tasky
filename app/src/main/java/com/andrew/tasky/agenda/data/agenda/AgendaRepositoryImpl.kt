@@ -15,8 +15,8 @@ import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.TaskRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
-import com.andrew.tasky.auth.data.AuthResult
-import com.andrew.tasky.auth.util.getAuthResult
+import com.andrew.tasky.auth.util.getResourceResult
+import com.andrew.tasky.core.Resource
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -77,14 +77,17 @@ class AgendaRepositoryImpl(
         val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
 
         syncModifiedAgendaItems()
-        val results = getAuthResult {
+        val results = getResourceResult {
             agendaApi.getAgendaItems(
                 timezone = TimeZone.getDefault().id,
                 time = LocalDateTime.of(localDate, LocalTime.now()).toZonedEpochMilli()
             )
         }
         when (results) {
-            is AuthResult.Authorized -> {
+            is Resource.Error -> {
+                Log.e("Update Agenda of Date Error", results.message ?: "Unknown Error")
+            }
+            is Resource.Success -> {
                 val localReminders = db.getReminderDao().getRemindersOfDate(
                     startEpochMilli = startEpochMilli,
                     endEpochMilli = endEpochMilli
@@ -142,16 +145,10 @@ class AgendaRepositoryImpl(
                     }
                 }
             }
-            is AuthResult.Unauthorized -> {
-                Log.e("Update Agenda of Date", "Unauthorized")
-            }
-            is AuthResult.UnknownError -> {
-                Log.e("Update Agenda of Date", "Unknown Error")
-            }
         }
     }
 
-    override suspend fun syncModifiedAgendaItems() {
+    override suspend fun syncModifiedAgendaItems(): Resource<Unit> {
         reminderRepository.uploadCreateAndUpdateModifiedReminders()
         taskRepository.uploadCreateAndUpdateModifiedTasks()
         eventRepository.uploadCreateAndUpdateModifiedEvents()
@@ -181,9 +178,12 @@ class AgendaRepositoryImpl(
                 taskDeleteIds,
                 reminderDeleteIds
             )
-            val result = getAuthResult { agendaApi.syncAgendaItems(syncAgendaRequest) }
-            when (result) {
-                is AuthResult.Authorized -> {
+            val results = getResourceResult { agendaApi.syncAgendaItems(syncAgendaRequest) }
+            when (results) {
+                is Resource.Error -> {
+                    Log.e("SyncAgendaItem Error", results.message ?: "Unknown Error")
+                }
+                is Resource.Success -> {
                     reminderDeleteIds.forEach {
                         db.getReminderDao().deleteModifiedReminderById(it)
                     }
@@ -194,16 +194,10 @@ class AgendaRepositoryImpl(
                         db.getEventDao().deleteModifiedEventById(it)
                     }
                 }
-                is AuthResult.Unauthorized -> Log.e(
-                    "SyncAgendaItem",
-                    "Unauthorized, could not run agendaApi.syncAgendaItems(syncAgendaRequest)"
-                )
-                is AuthResult.UnknownError -> Log.e(
-                    "SyncAgendaItem",
-                    "Unknown Error, could not run agendaApi.syncAgendaItems(syncAgendaRequest)"
-                )
             }
+            return results
         }
+        return Resource.Success()
     }
 
     override suspend fun deleteAllAgendaTables() {
