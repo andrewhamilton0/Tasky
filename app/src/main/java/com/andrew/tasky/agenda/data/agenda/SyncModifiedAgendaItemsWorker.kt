@@ -6,8 +6,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.andrew.tasky.agenda.domain.AgendaRepository
-import com.andrew.tasky.auth.data.AuthResult
-import com.andrew.tasky.auth.util.getAuthResult
+import com.andrew.tasky.core.Resource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -19,17 +18,13 @@ class SyncModifiedAgendaItemsWorker @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        val result = getAuthResult { agendaRepository.syncModifiedAgendaItems() }
+        val result = agendaRepository.syncModifiedAgendaItems()
         return when (result) {
-            is AuthResult.Authorized -> {
+            is Resource.Error -> {
                 Result.success()
             }
-            is AuthResult.Unauthorized -> {
-                Log.e("Sync Agenda work request", "unauthorized")
-                Result.failure()
-            }
-            is AuthResult.UnknownError -> {
-                Log.e("Sync Agenda work request", "unknown error")
+            is Resource.Success -> {
+                Log.e("Sync Agenda work request", result.message ?: "unknown error")
                 Result.failure()
             }
         }

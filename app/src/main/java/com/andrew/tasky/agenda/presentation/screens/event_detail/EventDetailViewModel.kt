@@ -10,7 +10,7 @@ import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.util.ReminderTime
 import com.andrew.tasky.agenda.util.UiEventPhoto
-import com.andrew.tasky.auth.data.AuthResult
+import com.andrew.tasky.core.Resource
 import com.andrew.tasky.core.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
@@ -120,7 +120,22 @@ class EventDetailViewModel @Inject constructor(
             withContext(NonCancellable) {
                 val result = repository.getAttendee(email)
                 when (result) {
-                    is AuthResult.Authorized -> {
+                    is Resource.Error -> {
+                        if (result.message != null) {
+                            attendeeToastMessageChannel.send(
+                                UiText.DynamicString(
+                                    value = result.message
+                                )
+                            )
+                        } else {
+                            attendeeToastMessageChannel.send(
+                                UiText.StringRecourse(
+                                    resId = R.string.unknown_error
+                                )
+                            )
+                        }
+                    }
+                    is Resource.Success -> {
                         if (result.data != null) {
                             if (result.data.doesUserExist) {
                                 if (!attendees.value.contains(result.data.attendee)) {
@@ -146,20 +161,6 @@ class EventDetailViewModel @Inject constructor(
                                 )
                             )
                         }
-                    }
-                    is AuthResult.Unauthorized -> {
-                        attendeeToastMessageChannel.send(
-                            UiText.StringRecourse(
-                                resId = R.string.unauthorized
-                            )
-                        )
-                    }
-                    is AuthResult.UnknownError -> {
-                        attendeeToastMessageChannel.send(
-                            UiText.StringRecourse(
-                                resId = R.string.unknown_error
-                            )
-                        )
                     }
                 }
             }
