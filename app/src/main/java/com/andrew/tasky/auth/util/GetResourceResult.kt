@@ -3,6 +3,7 @@ package com.andrew.tasky.auth.util
 import com.andrew.tasky.R
 import com.andrew.tasky.core.ErrorMessageDto
 import com.andrew.tasky.core.Resource
+import com.andrew.tasky.core.UiText
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,17 +21,24 @@ suspend fun <T> getResourceResult(apiToBeCalled: suspend () -> Response<T>): Res
             } else {
                 val errorResponse: ErrorMessageDto? = convertErrorBody(response.errorBody())
                 Resource.Error(
-                    errorMessage = errorResponse?.message ?: R.string.unknown_error.toString()
+                    errorMessage = errorResponse?.message?.let { UiText.DynamicString(value = it) }
+                        ?: UiText.Resource(resId = R.string.unknown_error)
                 )
             }
         } catch (e: HttpException) {
             Resource.Error(
-                errorMessage = e.message ?: R.string.unknown_error.toString()
+                errorMessage = UiText.Resource(resId = R.string.unknown_error)
             )
         } catch (e: IOException) {
-            Resource.Error(R.string.please_check_your_internet_connection.toString())
+            Resource.Error(
+                errorMessage = UiText.Resource(
+                    resId = R.string.please_check_your_internet_connection
+                )
+            )
         } catch (e: Exception) {
-            Resource.Error(R.string.unknown_error.toString())
+            Resource.Error(
+                errorMessage = UiText.Resource(resId = R.string.unknown_error)
+            )
         }
     }
 }

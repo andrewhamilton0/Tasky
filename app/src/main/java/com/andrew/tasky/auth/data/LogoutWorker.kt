@@ -23,7 +23,10 @@ class LogoutWorker @AssistedInject constructor(
         val result = getResourceResult { authApi.logout("Bearer $token") }
         return when (result) {
             is Resource.Error -> {
-                Log.e("Logout work request", result.message ?: "unknown error")
+                Log.e(
+                    "Logout work request",
+                    result.message?.asString(appContext) ?: "unknown error"
+                )
                 // Should I have this set to failure or retry, will it retry forever if set to retry
                 // and never succeeds? Could this be an issue? I do have a policy that checks
                 // network connection before trying

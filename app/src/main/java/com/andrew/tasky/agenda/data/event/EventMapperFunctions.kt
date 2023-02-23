@@ -1,6 +1,6 @@
 package com.andrew.tasky.agenda.data.event
 
-import com.andrew.tasky.agenda.data.event.attendee.AttendeeDto
+import com.andrew.tasky.agenda.data.event.attendee.toAttendee
 import com.andrew.tasky.agenda.data.event.photo.toEventPhoto
 import com.andrew.tasky.agenda.data.event.photo.toLocalEventPhotoDto
 import com.andrew.tasky.agenda.data.event.photo.toRemotePhotoDto
@@ -8,7 +8,6 @@ import com.andrew.tasky.agenda.data.util.ReminderTimeConversion
 import com.andrew.tasky.agenda.data.util.toLocalDateTime
 import com.andrew.tasky.agenda.data.util.toZonedEpochMilli
 import com.andrew.tasky.agenda.domain.models.AgendaItem
-import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 
 fun AgendaItem.Event.toCreateEventRequest(): CreateEventRequest {
@@ -83,18 +82,6 @@ fun EventDto.toEventEntity(isDone: Boolean, isGoing: Boolean): EventEntity {
         remotePhotos = photos,
         localPhotos = emptyList(),
         isGoing = isGoing
-    )
-}
-
-fun AttendeeDto.toAttendee(hostId: String): Attendee {
-    return Attendee(
-        email = email,
-        fullName = fullName,
-        userId = userId,
-        eventId = eventId,
-        isGoing = isGoing,
-        remindAt = remindAt,
-        isCreator = hostId == userId
     )
 }
 

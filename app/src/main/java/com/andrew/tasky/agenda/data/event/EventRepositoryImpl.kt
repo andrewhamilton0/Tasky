@@ -2,16 +2,18 @@ package com.andrew.tasky.agenda.data.event
 
 import android.content.Context
 import android.net.Uri
+import com.andrew.tasky.R
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
-import com.andrew.tasky.agenda.data.event.attendee.GetAttendeeResponse
 import com.andrew.tasky.agenda.data.util.BitmapCompressor
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.data.util.UriByteConverter
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
+import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.auth.util.getResourceResult
 import com.andrew.tasky.core.Resource
+import com.andrew.tasky.core.UiText
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.serialization.encodeToString
@@ -154,10 +156,18 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAttendee(email: String): Resource<GetAttendeeResponse> {
+    override suspend fun getAttendee(email: String): Resource<Attendee> {
         val result = getResourceResult { api.getAttendee(email) }
         when (result) {
-            is Resource.Success -> return Resource.Success(result.data)
+            is Resource.Success -> {
+                return if (result.data?.doesUserExist == true) {
+                    Resource.Success(result.data.attendee)
+                } else {
+                    return Resource.Error(
+                        errorMessage = UiText.Resource(R.string.user_not_found)
+                    )
+                }
+            }
             is Resource.Error -> return Resource.Error(errorMessage = result.message)
         }
     }

@@ -69,7 +69,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                     is Resource.Error -> {
                         Toast.makeText(
                             requireContext(),
-                            result.message,
+                            result.message?.asString(requireContext()),
                             Toast.LENGTH_LONG
                         ).show()
                     }

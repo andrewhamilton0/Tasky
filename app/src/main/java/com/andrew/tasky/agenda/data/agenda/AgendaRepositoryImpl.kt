@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.agenda
 
+import android.content.Context
 import android.icu.util.TimeZone
 import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
@@ -30,7 +31,8 @@ class AgendaRepositoryImpl(
     private val taskRepository: TaskRepository,
     private val eventRepository: EventRepository,
     private val db: AgendaDatabase,
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
+    private val appContext: Context
 ) : AgendaRepository {
 
     override suspend fun getAgendaItems(localDate: LocalDate): Flow<List<AgendaItem>> {
@@ -85,7 +87,10 @@ class AgendaRepositoryImpl(
         }
         when (results) {
             is Resource.Error -> {
-                Log.e("Update Agenda of Date Error", results.message ?: "Unknown Error")
+                Log.e(
+                    "Update Agenda of Date Error",
+                    results.message?.asString(appContext) ?: "Unknown Error"
+                )
             }
             is Resource.Success -> {
                 val localReminders = db.getReminderDao().getRemindersOfDate(
@@ -181,7 +186,10 @@ class AgendaRepositoryImpl(
             val results = getResourceResult { agendaApi.syncAgendaItems(syncAgendaRequest) }
             when (results) {
                 is Resource.Error -> {
-                    Log.e("SyncAgendaItem Error", results.message ?: "Unknown Error")
+                    Log.e(
+                        "SyncAgendaItem Error",
+                        results.message?.asString(appContext) ?: "Unknown Error"
+                    )
                 }
                 is Resource.Success -> {
                     reminderDeleteIds.forEach {

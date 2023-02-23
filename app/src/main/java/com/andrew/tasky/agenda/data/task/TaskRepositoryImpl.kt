@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.task
 
+import android.content.Context
 import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.util.ModifiedType
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
-    private val api: TaskApi
+    private val api: TaskApi,
+    private val appContext: Context
 ) : TaskRepository {
 
     override suspend fun createTask(task: AgendaItem.Task) {
@@ -24,7 +26,10 @@ class TaskRepositoryImpl @Inject constructor(
                     modifiedType = ModifiedType.CREATE
                 )
             )
-            Log.e("createTask error", result.message ?: "unknown error")
+            Log.e(
+                "createTask error",
+                result.message?.asString(appContext) ?: "unknown error"
+            )
         }
     }
 
@@ -38,7 +43,10 @@ class TaskRepositoryImpl @Inject constructor(
                     modifiedType = ModifiedType.UPDATE
                 )
             )
-            Log.e("updateTask error", result.message ?: "unknown error")
+            Log.e(
+                "updateTask error",
+                result.message?.asString(appContext) ?: "unknown error"
+            )
         }
     }
 
@@ -52,7 +60,10 @@ class TaskRepositoryImpl @Inject constructor(
                     modifiedType = ModifiedType.DELETE
                 )
             )
-            Log.e("deleteTask error", result.message ?: "unknown error")
+            Log.e(
+                "deleteTask error",
+                result.message?.asString(appContext) ?: "unknown error"
+            )
         }
     }
 
@@ -71,7 +82,7 @@ class TaskRepositoryImpl @Inject constructor(
                     is Resource.Error -> {
                         Log.e(
                             "uploadCreateAndUpdateModifiedTasks create error",
-                            result.message ?: "Unknown Error"
+                            result.message?.asString(appContext) ?: "Unknown Error"
                         )
                     }
                     is Resource.Success -> {
@@ -91,7 +102,7 @@ class TaskRepositoryImpl @Inject constructor(
                     is Resource.Error -> {
                         Log.e(
                             "uploadCreateAndUpdateModifiedTasks update error",
-                            result.message ?: "Unknown Error"
+                            result.message?.asString(appContext) ?: "Unknown Error"
                         )
                     }
                     is Resource.Success -> {
