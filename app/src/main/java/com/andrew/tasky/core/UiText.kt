@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 
 sealed class UiText {
     data class DynamicString(val value: String) : UiText()
-    class StringRecourse(
+    class Resource(
         @StringRes val resId: Int,
         vararg val args: Any
     ) : UiText()
@@ -13,7 +13,7 @@ sealed class UiText {
     fun asString(context: Context): String {
         return when (this) {
             is DynamicString -> value
-            is StringRecourse -> context.getString(resId, *args)
+            is Resource -> context.getString(resId, *args)
         }
     }
 }

@@ -2,11 +2,11 @@ package com.andrew.tasky.auth.presentation.screens.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrew.tasky.auth.data.AuthResult
 import com.andrew.tasky.auth.domain.AuthRepository
 import com.andrew.tasky.auth.domain.EmailPatternValidator
 import com.andrew.tasky.auth.util.NameValidator
 import com.andrew.tasky.auth.util.PasswordValidator
+import com.andrew.tasky.core.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
@@ -20,7 +20,7 @@ class RegisterViewModel @Inject constructor(
     private val repository: AuthRepository,
     private val emailPatternValidator: EmailPatternValidator
 ) : ViewModel() {
-    private val resultChannel = Channel<AuthResult<Unit>>()
+    private val resultChannel = Channel<Resource<Unit>>()
     val authResults = resultChannel.receiveAsFlow()
 
     private val _isNameValid = MutableStateFlow(false)

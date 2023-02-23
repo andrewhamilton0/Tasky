@@ -1,6 +1,7 @@
 package com.andrew.tasky.agenda.data.agenda
 
 import com.andrew.tasky.agenda.data.*
+import retrofit2.Response
 import retrofit2.http.*
 
 interface AgendaApi {
@@ -11,13 +12,13 @@ interface AgendaApi {
         timezone: String,
         @Query("time")
         time: Long
-    ): AgendaResponse
+    ): Response<AgendaResponse>
 
     @POST("/syncAgenda")
     suspend fun syncAgendaItems(
         @Body request: SyncAgendaRequest
-    )
+    ): Response<Unit>
 
     @GET("/fullAgenda")
-    suspend fun getFullAgenda(): AgendaResponse
+    suspend fun getFullAgenda(): Response<AgendaResponse>
 }

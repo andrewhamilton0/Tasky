@@ -129,7 +129,7 @@ class EventDetailViewModel @Inject constructor(
                             )
                         } else {
                             attendeeToastMessageChannel.send(
-                                UiText.StringRecourse(
+                                UiText.Resource(
                                     resId = R.string.unknown_error
                                 )
                             )
@@ -142,21 +142,21 @@ class EventDetailViewModel @Inject constructor(
                                     _attendees.value += result.data.attendee
                                 } else {
                                     attendeeToastMessageChannel.send(
-                                        UiText.StringRecourse(
+                                        UiText.Resource(
                                             resId = R.string.attendee_already_added
                                         )
                                     )
                                 }
                             } else {
                                 attendeeToastMessageChannel.send(
-                                    UiText.StringRecourse(
+                                    UiText.Resource(
                                         resId = R.string.user_not_found
                                     )
                                 )
                             }
                         } else {
                             attendeeToastMessageChannel.send(
-                                UiText.StringRecourse(
+                                UiText.Resource(
                                     resId = R.string.unknown_error
                                 )
                             )
