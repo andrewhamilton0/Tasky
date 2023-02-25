@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.reminder
 
+import android.content.Context
 import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.util.ModifiedType
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 class ReminderRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
-    private val api: ReminderApi
+    private val api: ReminderApi,
+    private val appContext: Context
 ) : ReminderRepository {
 
     override suspend fun createReminder(reminder: AgendaItem.Reminder) {
@@ -68,7 +70,7 @@ class ReminderRepositoryImpl @Inject constructor(
                     is Resource.Error -> {
                         Log.e(
                             "uploadCreateAndUpdateModifiedReminders error",
-                            result.message ?: "Unknown Error"
+                            result.message?.asString(appContext) ?: "Unknown Error"
                         )
                     }
                     is Resource.Success -> {
@@ -88,7 +90,7 @@ class ReminderRepositoryImpl @Inject constructor(
                     is Resource.Error -> {
                         Log.e(
                             "uploadCreateAndUpdateModifiedReminders error",
-                            result.message ?: "Unknown Error"
+                            result.message?.asString(appContext) ?: "Unknown Error"
                         )
                     }
                     is Resource.Success -> {

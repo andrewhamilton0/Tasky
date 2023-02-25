@@ -24,7 +24,10 @@ class SyncModifiedAgendaItemsWorker @AssistedInject constructor(
                 Result.success()
             }
             is Resource.Success -> {
-                Log.e("Sync Agenda work request", result.message ?: "unknown error")
+                Log.e(
+                    "Sync Agenda work request",
+                    result.message?.asString(appContext) ?: "unknown error"
+                )
                 Result.failure()
             }
         }

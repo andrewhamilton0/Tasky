@@ -122,11 +122,7 @@ class EventDetailViewModel @Inject constructor(
                 when (result) {
                     is Resource.Error -> {
                         if (result.message != null) {
-                            attendeeToastMessageChannel.send(
-                                UiText.DynamicString(
-                                    value = result.message
-                                )
-                            )
+                            attendeeToastMessageChannel.send(result.message)
                         } else {
                             attendeeToastMessageChannel.send(
                                 UiText.Resource(
@@ -137,20 +133,13 @@ class EventDetailViewModel @Inject constructor(
                     }
                     is Resource.Success -> {
                         if (result.data != null) {
-                            if (result.data.doesUserExist) {
-                                if (!attendees.value.contains(result.data.attendee)) {
-                                    _attendees.value += result.data.attendee
-                                } else {
-                                    attendeeToastMessageChannel.send(
-                                        UiText.Resource(
-                                            resId = R.string.attendee_already_added
-                                        )
-                                    )
-                                }
+                            val attendee = result.data.copy(isGoing = true)
+                            if (!attendees.value.contains(attendee)) {
+                                _attendees.value += attendee
                             } else {
                                 attendeeToastMessageChannel.send(
                                     UiText.Resource(
-                                        resId = R.string.user_not_found
+                                        resId = R.string.attendee_already_added
                                     )
                                 )
                             }

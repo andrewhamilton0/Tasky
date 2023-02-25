@@ -43,7 +43,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         collectLatestLifecycleFlow(viewModel.loginResults) { results ->
             when (results) {
                 is Resource.Error -> {
-                    Toast.makeText(context, results.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        results.message?.asString(requireContext()),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
                 is Resource.Success -> {
                     navController.navigate(
@@ -55,7 +59,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         collectLatestLifecycleFlow(viewModel.authenticateResults) { results ->
             when (results) {
                 is Resource.Error -> {
-                    Log.e("LoginFragAuthResult", results.message ?: "Unknown error")
+                    Log.e(
+                        "LoginFragAuthResult",
+                        results.message?.asString(requireContext()) ?: "Unknown error"
+                    )
                 }
                 is Resource.Success -> {
                     navController.navigate(

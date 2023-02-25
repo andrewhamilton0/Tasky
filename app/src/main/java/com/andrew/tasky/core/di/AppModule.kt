@@ -132,7 +132,8 @@ object AppModule {
         taskRepository: TaskRepository,
         eventRepository: EventRepository,
         db: AgendaDatabase,
-        ioDispatcher: CoroutineDispatcher
+        ioDispatcher: CoroutineDispatcher,
+        app: Application
     ): AgendaRepository {
         return AgendaRepositoryImpl(
             agendaApi = agendaApi,
@@ -140,7 +141,8 @@ object AppModule {
             taskRepository = taskRepository,
             eventRepository = eventRepository,
             db = db,
-            ioDispatcher = ioDispatcher
+            ioDispatcher = ioDispatcher,
+            appContext = app
         )
     }
 
@@ -158,9 +160,10 @@ object AppModule {
     @Singleton
     fun provideReminderRepository(
         api: ReminderApi,
-        db: AgendaDatabase
+        db: AgendaDatabase,
+        app: Application
     ): ReminderRepository {
-        return ReminderRepositoryImpl(db = db, api = api)
+        return ReminderRepositoryImpl(db = db, api = api, appContext = app)
     }
 
     @Provides
@@ -173,9 +176,10 @@ object AppModule {
     @Singleton
     fun provideTaskRepository(
         api: TaskApi,
-        db: AgendaDatabase
+        db: AgendaDatabase,
+        app: Application
     ): TaskRepository {
-        return TaskRepositoryImpl(db = db, api = api)
+        return TaskRepositoryImpl(db = db, api = api, appContext = app)
     }
 
     @Provides
