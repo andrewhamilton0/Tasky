@@ -1,14 +1,12 @@
 package com.andrew.tasky.agenda.presentation.adapters
 
 import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.util.UiEventPhoto
 import com.andrew.tasky.databinding.ItemPhotoAdapterCardBinding
 import com.bumptech.glide.Glide
@@ -28,7 +26,9 @@ class PhotoItemAdapter(
         }
 
         override fun areContentsTheSame(oldItem: UiEventPhoto, newItem: UiEventPhoto): Boolean {
-            return if (oldItem is UiEventPhoto.Photo && newItem is UiEventPhoto.Photo) {
+            return if (oldItem is UiEventPhoto.LocalPhoto && newItem is UiEventPhoto.LocalPhoto) {
+                oldItem == newItem
+            } else if (oldItem is UiEventPhoto.RemotePhoto && newItem is UiEventPhoto.RemotePhoto) {
                 oldItem == newItem
             } else oldItem is UiEventPhoto.AddPhoto && newItem is UiEventPhoto.AddPhoto
         }
@@ -67,20 +67,16 @@ class PhotoItemAdapter(
             is PhotoItemViewHolder -> {
                 holder.binding.apply {
                     plusSign.isVisible = false
-                    val uiEventPhoto = currentList[position] as UiEventPhoto.Photo
-                    val photo = uiEventPhoto.eventPhoto
-                    when (photo) {
-                        is EventPhoto.Local -> {
-                            image.setImageURI(Uri.parse(photo.uri))
-                            holder.itemView.setOnClickListener {
-                                onPhotoClick(position)
-                            }
+                    val uiEventPhoto = currentList[position]
+                    if (uiEventPhoto is UiEventPhoto.LocalPhoto) {
+                        image.setImageBitmap(uiEventPhoto.bitmap)
+                        holder.itemView.setOnClickListener {
+                            onPhotoClick(position)
                         }
-                        is EventPhoto.Remote -> {
-                            Glide.with(context)
-                                .load(photo.photoUrl)
-                                .into(image)
-                        }
+                    } else if (uiEventPhoto is UiEventPhoto.RemotePhoto) {
+                        Glide.with(context)
+                            .load(uiEventPhoto.remoteEventPhoto.photoUrl)
+                            .into(image)
                     }
                 }
             }

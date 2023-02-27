@@ -1,10 +1,12 @@
 package com.andrew.tasky.agenda.presentation.screens.event_detail
 
-import android.content.SharedPreferences
 import android.net.Uri
 import androidx.lifecycle.*
 import com.andrew.tasky.R
+import com.andrew.tasky.agenda.data.event.photo.LocalPhotoDto
+import com.andrew.tasky.agenda.data.util.BitmapConverters
 import com.andrew.tasky.agenda.domain.EventRepository
+import com.andrew.tasky.agenda.domain.UriByteConverter
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
@@ -28,7 +30,7 @@ import kotlinx.coroutines.withContext
 class EventDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: EventRepository,
-    private val prefs: SharedPreferences
+    private val uriByteConverter: UriByteConverter
 ) : ViewModel() {
 
     private val _isInEditMode = MutableStateFlow(false)
@@ -88,11 +90,16 @@ class EventDetailViewModel @Inject constructor(
         _selectedReminderTime.value = selectedReminderTime
     }
 
-    private val _photo = MutableStateFlow(listOf<EventPhoto>())
-    val photos = _photo.asStateFlow()
+    private val _photo = MutableStateFlow(listOf<UiEventPhoto>())
+    private val photos = _photo.asStateFlow()
     fun addPhoto(uri: Uri) {
-        val photo = EventPhoto.Local(uri = uri.toString())
-        _photo.value += photo
+        viewModelScope.launch {
+            val byteArray = uriByteConverter.uriToByteArray(uri = uri)
+            val photo = UiEventPhoto.LocalPhoto(
+                bitmap = BitmapConverters.byteArrayToBitmap(byteArray)
+            )
+            _photo.value += photo
+        }
     }
     fun deletePhoto(indexToDelete: Int) {
         val updatedPhotos = photos.value.filterIndexed { currentIndex, _ ->
@@ -103,8 +110,8 @@ class EventDetailViewModel @Inject constructor(
 
     val uiEventPhotos = photos.combine(isCreator) { photos, isCreator ->
         photos.map { photo ->
-            UiEventPhoto.Photo(photo)
-        }.toMutableList<UiEventPhoto>()
+            photo
+        }.toMutableList()
             .apply {
                 if ((size in 1..9) && (isCreator)) {
                     add(UiEventPhoto.AddPhoto)
@@ -117,39 +124,37 @@ class EventDetailViewModel @Inject constructor(
 
     fun addAttendee(email: String) {
         viewModelScope.launch {
-            withContext(NonCancellable) {
-                val result = repository.getAttendee(email)
-                when (result) {
-                    is Resource.Error -> {
-                        if (result.message != null) {
-                            attendeeToastMessageChannel.send(result.message)
-                        } else {
-                            attendeeToastMessageChannel.send(
-                                UiText.Resource(
-                                    resId = R.string.unknown_error
-                                )
+            val result = repository.getAttendee(email)
+            when (result) {
+                is Resource.Error -> {
+                    if (result.message != null) {
+                        attendeeToastMessageChannel.send(result.message)
+                    } else {
+                        attendeeToastMessageChannel.send(
+                            UiText.Resource(
+                                resId = R.string.unknown_error
                             )
-                        }
+                        )
                     }
-                    is Resource.Success -> {
-                        if (result.data != null) {
-                            val attendee = result.data.copy(isGoing = true)
-                            if (!attendees.value.contains(attendee)) {
-                                _attendees.value += attendee
-                            } else {
-                                attendeeToastMessageChannel.send(
-                                    UiText.Resource(
-                                        resId = R.string.attendee_already_added
-                                    )
-                                )
-                            }
+                }
+                is Resource.Success -> {
+                    if (result.data != null) {
+                        val attendee = result.data.copy(isGoing = true)
+                        if (!attendees.value.contains(attendee)) {
+                            _attendees.value += attendee
                         } else {
                             attendeeToastMessageChannel.send(
                                 UiText.Resource(
-                                    resId = R.string.unknown_error
+                                    resId = R.string.attendee_already_added
                                 )
                             )
                         }
+                    } else {
+                        attendeeToastMessageChannel.send(
+                            UiText.Resource(
+                                resId = R.string.unknown_error
+                            )
+                        )
                     }
                 }
             }
@@ -197,38 +202,88 @@ class EventDetailViewModel @Inject constructor(
     }
 
     fun saveEvent() {
-        val event = AgendaItem.Event(
-            id = savedStateHandle.get<AgendaItem.Event>("event")?.id
-                ?: UUID.randomUUID().toString(),
-            isDone = isDone.value,
-            title = title.value,
-            description = description.value,
-            startDateAndTime = LocalDateTime.of(
-                selectedStartDate.value,
-                selectedStartTime.value
-            ),
-            endDateAndTime = LocalDateTime.of(
-                selectedEndDate.value,
-                selectedEndTime.value
-            ),
-            reminderTime = selectedReminderTime.value,
-            photos = photos.value,
-            attendees = attendees.value,
-            isCreator = savedStateHandle.get<AgendaItem.Event>("event")?.isCreator ?: true,
-            host = savedStateHandle.get<AgendaItem.Event>("event")?.host,
-            deletedPhotoKeys = emptyList(), // TODO setup deletedPhotosKeys
-            isGoing = savedStateHandle.get<AgendaItem.Event>("event")?.isGoing ?: true
-        )
+
         // viewModelScope gets cancelled as soon as the Fragment is popped from the backstack,
         // so if you pop it right after inserting an element, this coroutine will be cancelled
         // before it can finish inserting the element. With NonCancellable we make sure it's not
         // going to be cancelled.
         viewModelScope.launch {
             withContext(NonCancellable) {
+                var photosDeleted = 0
+                val targetSize = 1000000
+                val eventPhotos = uiEventPhotos.value
+                    .mapNotNull { eventPhoto ->
+                        when (eventPhoto) {
+                            is UiEventPhoto.LocalPhoto -> {
+                                if (eventPhoto.key == null) {
+                                    val compressedByteArray = eventPhoto.bitmap.let { bitmap ->
+                                        BitmapConverters.bitmapToCompressByteArray(
+                                            bitmap = bitmap,
+                                            targetSize = targetSize
+                                        )
+                                    }
+                                    val key = UUID.randomUUID().toString()
+                                    compressedByteArray?.let {
+                                        LocalPhotoDto(
+                                            key = key,
+                                            byteArray = it
+                                        )
+                                    }?.let { repository.saveLocalPhoto(it) }
+                                    if (compressedByteArray != null) {
+                                        EventPhoto.Local()
+                                    } else {
+                                        photosDeleted++
+                                        null
+                                    }
+                                } else {
+                                    EventPhoto.Local(key = eventPhoto.key)
+                                }
+                            }
+                            is UiEventPhoto.RemotePhoto -> {
+                                eventPhoto.remoteEventPhoto
+                            }
+                            else -> {
+                                null
+                            }
+                        }
+                    }
+                if (photosDeleted > 0) {
+                    photosNotAddedToastMessageChannel.send(
+                        UiText.Resource(
+                            resId = R.string.photos_not_added,
+                            args = arrayOf(photosDeleted)
+                        )
+                    )
+                }
+                val event = AgendaItem.Event(
+                    id = savedStateHandle.get<AgendaItem.Event>("event")?.id
+                        ?: UUID.randomUUID().toString(),
+                    isDone = isDone.value,
+                    title = title.value,
+                    description = description.value,
+                    startDateAndTime = LocalDateTime.of(
+                        selectedStartDate.value,
+                        selectedStartTime.value
+                    ),
+                    endDateAndTime = LocalDateTime.of(
+                        selectedEndDate.value,
+                        selectedEndTime.value
+                    ),
+                    reminderTime = selectedReminderTime.value,
+                    photos = eventPhotos,
+                    attendees = attendees.value,
+                    isCreator = savedStateHandle.get<AgendaItem.Event>("event")?.isCreator ?: true,
+                    host = savedStateHandle.get<AgendaItem.Event>("event")?.host,
+                    deletedPhotoKeys = emptyList(), // TODO setup deletedPhotosKeys
+                    isGoing = savedStateHandle.get<AgendaItem.Event>("event")?.isGoing ?: true
+                )
                 repository.upsertEvent(event)
             }
         }
     }
+
+    private val photosNotAddedToastMessageChannel = Channel<UiText>()
+    val photosNotAddedToastMessage = photosNotAddedToastMessageChannel.receiveAsFlow()
 
     fun leaveEvent() {
     }
@@ -254,11 +309,34 @@ class EventDetailViewModel @Inject constructor(
             setEndTime(item.endDateAndTime.toLocalTime())
             setEndDate(item.endDateAndTime.toLocalDate())
             setSelectedReminderTime(item.reminderTime)
-            _photo.update { item.photos }
+            _photo.update {
+                item.photos.filterIsInstance<EventPhoto.Remote>().map {
+                    UiEventPhoto.RemotePhoto(it)
+                }
+            }
             _attendees.update { item.attendees }
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)
+        }
+
+        val keysList = savedStateHandle.get<AgendaItem.Event>("event")?.photos?.map { it.key }
+        viewModelScope.launch {
+            if (keysList != null) {
+                val internalStoragePhotos = repository.getLocalPhotos(keysList)
+                internalStoragePhotos.forEach { internalStoragePhoto ->
+                    _photo.update { list ->
+                        list.toMutableList().plus(
+                            UiEventPhoto.LocalPhoto(
+                                key = internalStoragePhoto.key,
+                                bitmap = BitmapConverters.byteArrayToBitmap(
+                                    internalStoragePhoto.byteArray
+                                )
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 }

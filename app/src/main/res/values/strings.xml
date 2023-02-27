@@ -75,6 +75,7 @@
     <string name="attendee_already_added">Attendee already added</string>
     <string name="user_not_found">User not found</string>
     <string name="please_check_your_internet_connection">"Please check your network connection"</string>
+    <string name="photos_not_added">%1$d photos were not added because they were too large</string>
 
     <!--logout messages -->
     <string name="logout_successful">Logout successful</string>

@@ -14,10 +14,8 @@ import com.andrew.tasky.agenda.data.reminder.ReminderApi
 import com.andrew.tasky.agenda.data.reminder.ReminderRepositoryImpl
 import com.andrew.tasky.agenda.data.task.TaskApi
 import com.andrew.tasky.agenda.data.task.TaskRepositoryImpl
-import com.andrew.tasky.agenda.domain.AgendaRepository
-import com.andrew.tasky.agenda.domain.EventRepository
-import com.andrew.tasky.agenda.domain.ReminderRepository
-import com.andrew.tasky.agenda.domain.TaskRepository
+import com.andrew.tasky.agenda.data.util.UriByteConverterImpl
+import com.andrew.tasky.agenda.domain.*
 import com.andrew.tasky.auth.data.*
 import com.andrew.tasky.auth.domain.AuthRepository
 import com.andrew.tasky.auth.domain.EmailPatternValidator
@@ -51,6 +49,14 @@ object AppModule {
     @Singleton
     fun provideEmailValidator(): EmailPatternValidator {
         return EmailPatternValidatorImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUriByteConverter(
+        appContext: Application
+    ): UriByteConverter {
+        return UriByteConverterImpl(appContext = appContext)
     }
 
     @Provides
@@ -193,14 +199,12 @@ object AppModule {
     fun provideEventRepository(
         api: EventApi,
         db: AgendaDatabase,
-        app: Application,
-        ioDispatcher: CoroutineDispatcher
+        appContext: Application
     ): EventRepository {
         return EventRepositoryImpl(
             db = db,
             api = api,
-            appContext = app,
-            ioDispatcher = ioDispatcher
+            context = appContext
         )
     }
 

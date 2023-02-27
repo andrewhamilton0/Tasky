@@ -479,6 +479,9 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         collectLatestLifecycleFlow(viewModel.attendeeToastMessage) {
             Toast.makeText(context, it.asString(requireContext()), Toast.LENGTH_SHORT).show()
         }
+        collectLatestLifecycleFlow(viewModel.photosNotAddedToastMessage) {
+            Toast.makeText(context, it.asString(requireContext()), Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun addPhoto() {
@@ -491,11 +494,5 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 viewModel.deletePhoto(photoToDelete)
             }
         }
-        navController.navigate(
-            EventDetailFragmentDirections
-                .actionEventDetailFragmentToPhotoDetailFragment(
-                    viewModel.photos.value[index].toString(), index
-                )
-        )
     }
 }

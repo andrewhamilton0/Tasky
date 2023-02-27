@@ -15,17 +15,3 @@ fun EventPhoto.Remote.toRemotePhotoDto(): RemoteEventPhotoDto {
         url = photoUrl
     )
 }
-
-fun LocalEventPhotoDto.toEventPhoto(): EventPhoto.Local {
-    return EventPhoto.Local(
-        key = key,
-        uri = uri
-    )
-}
-
-fun EventPhoto.Local.toLocalEventPhotoDto(): LocalEventPhotoDto {
-    return LocalEventPhotoDto(
-        key = key,
-        uri = uri
-    )
-}
