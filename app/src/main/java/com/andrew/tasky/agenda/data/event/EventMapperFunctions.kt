@@ -2,7 +2,6 @@ package com.andrew.tasky.agenda.data.event
 
 import com.andrew.tasky.agenda.data.event.attendee.toAttendee
 import com.andrew.tasky.agenda.data.event.photo.toEventPhoto
-import com.andrew.tasky.agenda.data.event.photo.toLocalEventPhotoDto
 import com.andrew.tasky.agenda.data.event.photo.toRemotePhotoDto
 import com.andrew.tasky.agenda.data.util.ReminderTimeConversion
 import com.andrew.tasky.agenda.data.util.toLocalDateTime
@@ -62,7 +61,7 @@ fun AgendaItem.Event.toEventEntity(): EventEntity {
         ),
         isGoing = isGoing,
         remotePhotos = photos.filterIsInstance<EventPhoto.Remote>().map { it.toRemotePhotoDto() },
-        localPhotos = photos.filterIsInstance<EventPhoto.Local>().map { it.toLocalEventPhotoDto() },
+        localPhotosKeys = photos.filterIsInstance<EventPhoto.Local>().map { it.key },
         attendees = attendees
     )
 }
@@ -80,7 +79,7 @@ fun EventDto.toEventEntity(isDone: Boolean, isGoing: Boolean): EventEntity {
         isCreator = isUserEventCreator,
         attendees = attendees.map { it.toAttendee(hostId = host) },
         remotePhotos = photos,
-        localPhotos = emptyList(),
+        localPhotosKeys = emptyList(),
         isGoing = isGoing
     )
 }
@@ -100,7 +99,9 @@ fun EventEntity.toEvent(): AgendaItem.Event {
         host = host,
         isCreator = isCreator,
         isGoing = isGoing,
-        photos = localPhotos.map { it.toEventPhoto() } + remotePhotos.map { it.toEventPhoto() },
+        photos = localPhotosKeys.map {
+            EventPhoto.Local(key = it)
+        } + remotePhotos.map { it.toEventPhoto() },
         attendees = attendees
     )
 }

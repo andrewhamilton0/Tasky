@@ -12,7 +12,6 @@ import com.andrew.tasky.agenda.data.reminder.ReminderEntity
 import com.andrew.tasky.agenda.data.task.ModifiedTaskEntity
 import com.andrew.tasky.agenda.data.task.TaskDao
 import com.andrew.tasky.agenda.data.task.TaskEntity
-import com.andrew.tasky.agenda.data.util.Converters
 
 @Database(
     entities = [

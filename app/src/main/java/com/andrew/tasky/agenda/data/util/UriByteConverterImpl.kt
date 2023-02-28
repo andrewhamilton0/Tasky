@@ -2,15 +2,16 @@ package com.andrew.tasky.agenda.data.util
 
 import android.content.Context
 import android.net.Uri
-import kotlinx.coroutines.CoroutineDispatcher
+import com.andrew.tasky.agenda.domain.UriByteConverter
+import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class UriByteConverter(
+class UriByteConverterImpl @Inject constructor(
     private val appContext: Context,
-    private val ioDispatcher: CoroutineDispatcher
-) {
-    suspend fun uriToByteArray(uri: Uri): ByteArray {
-        return withContext(ioDispatcher) {
+) : UriByteConverter {
+    override suspend fun uriToByteArray(uri: Uri): ByteArray {
+        return withContext(Dispatchers.IO) {
             return@withContext appContext.contentResolver.openInputStream(uri).use {
                 it!!.readBytes()
             }
