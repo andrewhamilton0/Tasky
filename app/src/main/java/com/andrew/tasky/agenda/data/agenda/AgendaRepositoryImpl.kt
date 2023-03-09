@@ -59,9 +59,8 @@ class AgendaRepositoryImpl(
             startEpochMilli = startEpochMilli,
             endEpochMilli = endEpochMilli
         ).map {
-            it.map {
-                eventEntity ->
-                eventEntity.toEvent()
+            it.map { eventEntity ->
+                eventEntity.toEvent(appContext)
             }
         }
 
