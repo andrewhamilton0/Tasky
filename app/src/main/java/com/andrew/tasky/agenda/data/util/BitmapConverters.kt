@@ -3,25 +3,31 @@ package com.andrew.tasky.agenda.data.util
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object BitmapConverters {
-    fun bitmapToCompressByteArray(bitmap: Bitmap, targetSize: Int): ByteArray? {
-        val outputStream = ByteArrayOutputStream()
-        var quality = 100
-        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
-        var result = outputStream.toByteArray()
-        while (result.size > targetSize && quality > 0) {
+    suspend fun bitmapToCompressByteArray(bitmap: Bitmap, targetSize: Int): ByteArray? {
+        return withContext(Dispatchers.IO) {
+            val outputStream = ByteArrayOutputStream()
+            var quality = 100
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
-            result = outputStream.toByteArray()
-            quality -= 5
-            if (quality == 0) {
-                return null
+            var result = outputStream.toByteArray()
+            while (result.size > targetSize && quality > 0) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+                result = outputStream.toByteArray()
+                quality -= 5
+                if (quality == 0) {
+                    return@withContext null
+                }
             }
+            result
         }
-        return result
     }
 
-    fun byteArrayToBitmap(data: ByteArray): Bitmap {
-        return BitmapFactory.decodeByteArray(data, 0, data.size)
+    suspend fun byteArrayToBitmap(data: ByteArray): Bitmap {
+        return withContext(Dispatchers.IO) {
+            BitmapFactory.decodeByteArray(data, 0, data.size)
+        }
     }
 }

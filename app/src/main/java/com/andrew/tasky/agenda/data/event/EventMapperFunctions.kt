@@ -1,8 +1,10 @@
 package com.andrew.tasky.agenda.data.event
 
+import android.content.Context
 import com.andrew.tasky.agenda.data.event.attendee.toAttendee
 import com.andrew.tasky.agenda.data.event.photo.toEventPhoto
 import com.andrew.tasky.agenda.data.event.photo.toRemotePhotoDto
+import com.andrew.tasky.agenda.data.storage.ImageStorage
 import com.andrew.tasky.agenda.data.util.ReminderTimeConversion
 import com.andrew.tasky.agenda.data.util.toLocalDateTime
 import com.andrew.tasky.agenda.data.util.toZonedEpochMilli
@@ -84,7 +86,7 @@ fun EventDto.toEventEntity(isDone: Boolean, isGoing: Boolean): EventEntity {
     )
 }
 
-fun EventEntity.toEvent(): AgendaItem.Event {
+suspend fun EventEntity.toEvent(context: Context): AgendaItem.Event {
     return AgendaItem.Event(
         id = id,
         isDone = isDone,
@@ -100,7 +102,8 @@ fun EventEntity.toEvent(): AgendaItem.Event {
         isCreator = isCreator,
         isGoing = isGoing,
         photos = localPhotosKeys.map {
-            EventPhoto.Local(key = it)
+            val bitmap = ImageStorage(context).getBitmap(it)
+            EventPhoto.Local(key = it, bitmap = bitmap, savedInternally = true)
         } + remotePhotos.map { it.toEventPhoto() },
         attendees = attendees
     )
