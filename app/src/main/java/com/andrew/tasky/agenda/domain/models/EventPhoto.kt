@@ -18,7 +18,7 @@ sealed class EventPhoto(open val key: String) {
         override val key: String = UUID.randomUUID().toString(),
         val bitmap: Bitmap? = null,
         val byteArray: ByteArray? = null,
-        var savedInternally: Boolean = false
+        val savedInternally: Boolean = false
     ) : EventPhoto(key = key), Parcelable {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

@@ -140,9 +140,9 @@ class AgendaViewModel@Inject constructor(
         viewModelScope.launch {
             withContext(NonCancellable) {
                 when (agendaItem) {
-                    is AgendaItem.Event -> eventRepository.deleteEvent(agendaItem)
-                    is AgendaItem.Reminder -> reminderRepository.deleteReminder(agendaItem)
-                    is AgendaItem.Task -> taskRepository.deleteTask(agendaItem)
+                    is AgendaItem.Event -> eventRepository.deleteEvent(agendaItem.id)
+                    is AgendaItem.Reminder -> reminderRepository.deleteReminder(agendaItem.id)
+                    is AgendaItem.Task -> taskRepository.deleteTask(agendaItem.id)
                 }
             }
         }

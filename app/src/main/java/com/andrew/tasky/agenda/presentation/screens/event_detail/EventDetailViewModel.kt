@@ -89,21 +89,21 @@ class EventDetailViewModel @Inject constructor(
         _selectedReminderTime.value = selectedReminderTime
     }
 
-    private val _photo = MutableStateFlow(listOf<EventPhoto>())
-    private val photos = _photo.asStateFlow()
+    private val _photos = MutableStateFlow(listOf<EventPhoto>())
+    private val photos = _photos.asStateFlow()
     fun addPhoto(uri: Uri) {
         viewModelScope.launch {
             val byteArray = uriByteConverter.uriToByteArray(uri = uri)
             val bitmap = BitmapConverters.byteArrayToBitmap(byteArray)
             val photo = EventPhoto.Local(bitmap = bitmap)
-            _photo.value += photo
+            _photos.value += photo
         }
     }
     fun deletePhoto(indexToDelete: Int) {
         val updatedPhotos = photos.value.filterIndexed { currentIndex, _ ->
             currentIndex != indexToDelete
         }
-        _photo.value = updatedPhotos
+        _photos.value = updatedPhotos
     }
 
     val uiEventPhotos = photos.combine(isCreator) { photos, isCreator ->
@@ -203,21 +203,26 @@ class EventDetailViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(NonCancellable) {
                 val (_, photosDeleted) = repository.upsertEvent(getEvent())
-                if (photosDeleted > 0) {
+                if (photosDeleted == 1) {
                     photosNotAddedToastMessageChannel.send(
                         UiText.Resource(
-                            resId = R.string.photos_not_added,
-                            args = arrayOf(photosDeleted)
+                            resId = R.string.one_photo_not_added
                         )
+                    )
+                } else if (photosDeleted > 1) {
+                    UiText.Resource(
+                        resId = R.string.photos_not_added,
+                        args = arrayOf(photosDeleted)
                     )
                 }
             }
+            finishedSavingEventChannel.send(Unit)
         }
     }
 
     private fun getEvent(): AgendaItem.Event {
         return AgendaItem.Event(
-            id = savedStateHandle.get<AgendaItem.Event>("event")?.id
+            id = savedStateHandle.get<String>("eventId")
                 ?: UUID.randomUUID().toString(),
             isDone = isDone.value,
             title = title.value,
@@ -233,15 +238,18 @@ class EventDetailViewModel @Inject constructor(
             reminderTime = selectedReminderTime.value,
             photos = photos.value,
             attendees = attendees.value,
-            isCreator = savedStateHandle.get<AgendaItem.Event>("event")?.isCreator ?: true,
-            host = savedStateHandle.get<AgendaItem.Event>("event")?.host,
+            isCreator = isCreator.value,
+            host = null, // TODO setup host
             deletedPhotoKeys = emptyList(), // TODO setup deletedPhotosKeys
-            isGoing = savedStateHandle.get<AgendaItem.Event>("event")?.isGoing ?: true
+            isGoing = true // TODO setup isGoing
         )
     }
 
     private val photosNotAddedToastMessageChannel = Channel<UiText>()
     val photosNotAddedToastMessage = photosNotAddedToastMessageChannel.receiveAsFlow()
+
+    private val finishedSavingEventChannel = Channel<Unit>()
+    val finishedSavingEvent = finishedSavingEventChannel.receiveAsFlow()
 
     fun leaveEvent() {
     }
@@ -249,7 +257,7 @@ class EventDetailViewModel @Inject constructor(
     fun deleteEvent() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<AgendaItem.Event>("event")?.let {
+                savedStateHandle.get<String>("eventId")?.let {
                     repository.deleteEvent(it)
                 }
             }
@@ -257,18 +265,22 @@ class EventDetailViewModel @Inject constructor(
     }
 
     init {
-        savedStateHandle.get<AgendaItem.Event>("event")?.let { item ->
-            _isCreator.update { item.isCreator }
-            setIsDone(item.isDone)
-            setTitle(item.title)
-            setDescription(item.description)
-            setStartTime(item.startDateAndTime.toLocalTime())
-            setStartDate(item.startDateAndTime.toLocalDate())
-            setEndTime(item.endDateAndTime.toLocalTime())
-            setEndDate(item.endDateAndTime.toLocalDate())
-            setSelectedReminderTime(item.reminderTime)
-            _photo.update { item.photos }
-            _attendees.update { item.attendees }
+        savedStateHandle.get<String>("eventId")?.let { id ->
+            viewModelScope.launch {
+                repository.getEvent(id)?.let { event ->
+                    _isCreator.update { event.isCreator }
+                    setIsDone(event.isDone)
+                    setTitle(event.title)
+                    setDescription(event.description)
+                    setStartTime(event.startDateAndTime.toLocalTime())
+                    setStartDate(event.startDateAndTime.toLocalDate())
+                    setEndTime(event.endDateAndTime.toLocalTime())
+                    setEndDate(event.endDateAndTime.toLocalDate())
+                    setSelectedReminderTime(event.reminderTime)
+                    _photos.update { event.photos }
+                    _attendees.update { event.attendees }
+                }
+            }
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)

@@ -17,8 +17,8 @@ interface ReminderDao {
     @Query("SELECT * FROM ReminderEntity WHERE id==:id")
     suspend fun getReminderById(id: String): ReminderEntity?
 
-    @Delete
-    suspend fun deleteReminder(reminder: ReminderEntity)
+    @Query("DELETE FROM ReminderEntity WHERE id==:id")
+    suspend fun deleteReminder(id: String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertModifiedReminder(modifiedReminder: ModifiedReminderEntity): Long
