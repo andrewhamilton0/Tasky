@@ -67,7 +67,7 @@ class ReminderDetailViewModel @Inject constructor(
     fun saveAgendaItem() {
         val reminder = AgendaItem.Reminder(
             id = savedStateHandle
-                .get<AgendaItem.Reminder>("reminder")?.id ?: UUID.randomUUID().toString(),
+                .get<String>("reminderId") ?: UUID.randomUUID().toString(),
             isDone = isDone.value,
             title = title.value,
             description = description.value,
@@ -79,7 +79,7 @@ class ReminderDetailViewModel @Inject constructor(
         )
         viewModelScope.launch {
             withContext(NonCancellable) {
-                if (savedStateHandle.get<AgendaItem.Reminder>("reminder")?.id == null) {
+                if (savedStateHandle.get<String>("reminderId") == null) {
                     repository.createReminder(reminder)
                 } else {
                     repository.updateReminder(reminder)
@@ -91,7 +91,7 @@ class ReminderDetailViewModel @Inject constructor(
     fun deleteAgendaItem() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<AgendaItem.Reminder>("reminder")?.let {
+                savedStateHandle.get<String>("reminderId")?.let {
                     repository.deleteReminder(it)
                 }
             }
@@ -99,13 +99,17 @@ class ReminderDetailViewModel @Inject constructor(
     }
 
     init {
-        savedStateHandle.get<AgendaItem.Reminder>("reminder")?.let { item ->
-            setIsDone(item.isDone)
-            setTitle(item.title)
-            setDescription(item.description)
-            setStartTime(item.startDateAndTime.toLocalTime())
-            setStartDate(item.startDateAndTime.toLocalDate())
-            setSelectedReminderTime(item.reminderTime)
+        savedStateHandle.get<String>("reminderId")?.let { reminderId ->
+            viewModelScope.launch {
+                repository.getReminder(reminderId)?.let { reminder ->
+                    setIsDone(reminder.isDone)
+                    setTitle(reminder.title)
+                    setDescription(reminder.description)
+                    setStartTime(reminder.startDateAndTime.toLocalTime())
+                    setStartDate(reminder.startDateAndTime.toLocalDate())
+                    setSelectedReminderTime(reminder.reminderTime)
+                }
+            }
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)

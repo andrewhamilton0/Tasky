@@ -28,6 +28,9 @@ class EventRepositoryImpl @Inject constructor(
     private val context: Context
 ) : EventRepository {
 
+    private val imageStorage = ImageStorage(context)
+    private val bitmapConverter = BitmapConverters
+
     override suspend fun upsertEvent(event: AgendaItem.Event): UpsertEventResult {
 
         val (compressedEvent, photosDeleted) = compressEvent(event)
@@ -66,10 +69,9 @@ class EventRepositoryImpl @Inject constructor(
                         )
                     )
                     compressedEvent.photos.filterIsInstance<LocalPhoto>().forEach {
-                        saveLocalPhotoInternally(it)
-                        it.savedInternally = true
+                        saveLocalPhotoInternally(it.copy(savedInternally = true))
                     }
-                    UpsertEventResult(photosTooBig = photosDeleted, resource = Resource.Error())
+                    UpsertEventResult(deletedPhotos = photosDeleted, resource = Resource.Error())
                 }
                 is Resource.Success -> {
                     result.data?.let {
@@ -80,7 +82,7 @@ class EventRepositoryImpl @Inject constructor(
                             )
                         )
                     }
-                    UpsertEventResult(photosTooBig = photosDeleted, resource = Resource.Success())
+                    UpsertEventResult(deletedPhotos = photosDeleted, resource = Resource.Success())
                 }
             }
         } else {
@@ -113,10 +115,9 @@ class EventRepositoryImpl @Inject constructor(
                     compressedEvent.photos.filterIsInstance<LocalPhoto>().filter {
                         !it.savedInternally
                     }.forEach {
-                        saveLocalPhotoInternally(it)
-                        it.savedInternally = true
+                        saveLocalPhotoInternally(it.copy(savedInternally = true))
                     }
-                    UpsertEventResult(photosTooBig = photosDeleted, resource = Resource.Error())
+                    UpsertEventResult(deletedPhotos = photosDeleted, resource = Resource.Error())
                 }
                 is Resource.Success -> {
                     result.data?.let {
@@ -130,25 +131,29 @@ class EventRepositoryImpl @Inject constructor(
                     compressedEvent.photos.filterIsInstance<LocalPhoto>().filter {
                         it.savedInternally
                     }.forEach {
-                        ImageStorage(context).deleteImage(it.key)
+                        imageStorage.deleteImage(it.key)
                     }
-                    UpsertEventResult(photosTooBig = photosDeleted, resource = Resource.Success())
+                    UpsertEventResult(deletedPhotos = photosDeleted, resource = Resource.Success())
                 }
             }
         }
     }
 
-    override suspend fun deleteEvent(event: AgendaItem.Event) {
-        db.getEventDao().deleteEvent(event.toEventEntity())
-        val result = getResourceResult { api.deleteEvent(event.id) }
+    override suspend fun deleteEvent(eventId: String) {
+        db.getEventDao().deleteEvent(eventId)
+        val result = getResourceResult { api.deleteEvent(eventId) }
         if (result is Resource.Error) {
             db.getEventDao().upsertModifiedEvent(
                 ModifiedEventEntity(
-                    id = event.id,
+                    id = eventId,
                     modifiedType = ModifiedType.DELETE
                 )
             )
         }
+    }
+
+    override suspend fun getEvent(eventId: String): AgendaItem.Event? {
+        return db.getEventDao().getEventById(eventId)?.toEvent(context)
     }
 
     override suspend fun getAttendee(email: String): Resource<Attendee> {
@@ -193,29 +198,25 @@ class EventRepositoryImpl @Inject constructor(
         var photosDeleted = 0
         val compressedEvent = event.copy(
             photos = event.photos.mapNotNull { eventPhoto ->
-                when (eventPhoto) {
-                    is LocalPhoto -> {
-                        when (eventPhoto.savedInternally) {
-                            true -> {
-                                val byteArray = ImageStorage(context).getByteArray(eventPhoto.key)
-                                eventPhoto.copy(byteArray = byteArray)
-                            }
-                            false -> {
-                                val byteArray = eventPhoto.bitmap?.let { bitmap ->
-                                    BitmapConverters.bitmapToCompressByteArray(
-                                        bitmap, 1000000
-                                    )
-                                }
-                                if (byteArray != null) {
-                                    eventPhoto.copy(byteArray = byteArray)
-                                } else {
-                                    photosDeleted++
-                                    null
-                                }
-                            }
+                if (eventPhoto is LocalPhoto) {
+                    if (eventPhoto.savedInternally) {
+                        val byteArray = imageStorage.getByteArray(eventPhoto.key)
+                        eventPhoto.copy(byteArray = byteArray)
+                    } else {
+                        val byteArray = eventPhoto.bitmap?.let { bitmap ->
+                            bitmapConverter.bitmapToCompressByteArray(
+                                bitmap, MAX_PHOTO_SIZE_IN_BYTES
+                            )
+                        }
+                        if (byteArray != null) {
+                            eventPhoto.copy(byteArray = byteArray)
+                        } else {
+                            photosDeleted++
+                            null
                         }
                     }
-                    is EventPhoto.Remote -> eventPhoto
+                } else {
+                    eventPhoto
                 }
             }
         )
@@ -229,5 +230,9 @@ class EventRepositoryImpl @Inject constructor(
                 byteArray = it
             )
         }
+    }
+
+    companion object {
+        const val MAX_PHOTO_SIZE_IN_BYTES = 1000000
     }
 }

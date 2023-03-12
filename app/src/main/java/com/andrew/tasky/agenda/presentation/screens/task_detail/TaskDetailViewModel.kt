@@ -67,7 +67,7 @@ class TaskDetailViewModel @Inject constructor(
     fun saveAgendaItem() {
         val task = AgendaItem.Task(
             id = savedStateHandle
-                .get<AgendaItem.Task>("task")?.id ?: UUID.randomUUID().toString(),
+                .get<String>("taskId") ?: UUID.randomUUID().toString(),
             isDone = isDone.value,
             title = title.value,
             description = description.value,
@@ -79,7 +79,7 @@ class TaskDetailViewModel @Inject constructor(
         )
         viewModelScope.launch {
             withContext(NonCancellable) {
-                if (savedStateHandle.get<AgendaItem.Task>("task")?.id == null) {
+                if (savedStateHandle.get<String>("taskId") == null) {
                     repository.createTask(task)
                 } else {
                     repository.updateTask(task)
@@ -91,7 +91,7 @@ class TaskDetailViewModel @Inject constructor(
     fun deleteAgendaItem() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<AgendaItem.Task>("task")?.let {
+                savedStateHandle.get<String>("taskId")?.let {
                     repository.deleteTask(it)
                 }
             }
@@ -99,13 +99,17 @@ class TaskDetailViewModel @Inject constructor(
     }
 
     init {
-        savedStateHandle.get<AgendaItem.Task>("task")?.let { item ->
-            setIsDone(item.isDone)
-            setTitle(item.title)
-            setDescription(item.description)
-            setStartTime(item.startDateAndTime.toLocalTime())
-            setStartDate(item.startDateAndTime.toLocalDate())
-            setSelectedReminderTime(item.reminderTime)
+        savedStateHandle.get<String>("taskId")?.let { taskId ->
+            viewModelScope.launch {
+                repository.getTask(taskId)?.let { task ->
+                    setIsDone(task.isDone)
+                    setTitle(task.title)
+                    setDescription(task.description)
+                    setStartTime(task.startDateAndTime.toLocalTime())
+                    setStartDate(task.startDateAndTime.toLocalDate())
+                    setSelectedReminderTime(task.reminderTime)
+                }
+            }
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)

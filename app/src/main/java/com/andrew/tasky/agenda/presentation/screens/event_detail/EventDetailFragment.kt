@@ -63,8 +63,8 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 viewModel.setEditMode(true)
             }
             header.saveButton.setOnClickListener {
+                progressBar.isVisible = true
                 viewModel.saveEvent()
-                navController.popBackStack()
             }
 
             agendaItemTypeTVAndIconLayout.agendaItemIcon.setImageResource(R.drawable.ic_event_box)
@@ -280,6 +280,11 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 attendeesLayout.goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
                     requireContext()
                 )
+
+                collectLatestLifecycleFlow(viewModel.finishedSavingEvent) {
+                    navController.popBackStack()
+                }
+
                 collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
                     goingAttendeeAdapter.submitList(goingAttendees)
                 }

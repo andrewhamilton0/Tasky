@@ -50,13 +50,17 @@ class TaskRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteTask(task: AgendaItem.Task) {
-        db.getTaskDao().deleteTask(task.toTaskEntity())
-        val result = getResourceResult { api.deleteTask(task.id) }
+    override suspend fun getTask(taskId: String): AgendaItem.Task? {
+        return db.getTaskDao().getTaskById(taskId)?.toTask()
+    }
+
+    override suspend fun deleteTask(taskId: String) {
+        db.getTaskDao().deleteTask(taskId)
+        val result = getResourceResult { api.deleteTask(taskId) }
         if (result is Resource.Error) {
             db.getTaskDao().upsertModifiedTask(
                 ModifiedTaskEntity(
-                    id = task.id,
+                    id = taskId,
                     modifiedType = ModifiedType.DELETE
                 )
             )

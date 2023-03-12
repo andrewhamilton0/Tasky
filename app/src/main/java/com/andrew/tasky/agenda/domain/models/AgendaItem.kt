@@ -6,11 +6,11 @@ import java.time.LocalDateTime
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
-sealed class AgendaItem(open val startDateAndTime: LocalDateTime) {
+sealed class AgendaItem(open val startDateAndTime: LocalDateTime, open val id: String) {
 
     @Parcelize
     data class Event(
-        val id: String,
+        override val id: String,
         val isDone: Boolean,
         val title: String,
         val description: String,
@@ -23,25 +23,25 @@ sealed class AgendaItem(open val startDateAndTime: LocalDateTime) {
         val host: String?,
         val deletedPhotoKeys: List<String> = emptyList(),
         val isGoing: Boolean
-    ) : AgendaItem(startDateAndTime = startDateAndTime), Parcelable
+    ) : AgendaItem(startDateAndTime = startDateAndTime, id = id), Parcelable
 
     @Parcelize
     data class Task(
-        val id: String,
+        override val id: String,
         val isDone: Boolean = false,
         val title: String,
         val description: String,
         override val startDateAndTime: LocalDateTime,
         val reminderTime: ReminderTime
-    ) : AgendaItem(startDateAndTime = startDateAndTime), Parcelable
+    ) : AgendaItem(startDateAndTime = startDateAndTime, id = id), Parcelable
 
     @Parcelize
     data class Reminder(
-        val id: String,
+        override val id: String,
         val isDone: Boolean = false,
         val title: String,
         val description: String,
         override val startDateAndTime: LocalDateTime,
         val reminderTime: ReminderTime
-    ) : AgendaItem(startDateAndTime = startDateAndTime), Parcelable
+    ) : AgendaItem(startDateAndTime = startDateAndTime, id = id), Parcelable
 }

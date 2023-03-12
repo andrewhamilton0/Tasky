@@ -22,7 +22,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 
 class AgendaRepositoryImpl(
@@ -59,8 +61,12 @@ class AgendaRepositoryImpl(
             startEpochMilli = startEpochMilli,
             endEpochMilli = endEpochMilli
         ).map {
-            it.map { eventEntity ->
-                eventEntity.toEvent(appContext)
+            supervisorScope {
+                it.map { eventEntity ->
+                    async {
+                        eventEntity.toEvent(appContext)
+                    }
+                }.map { it.await() }
             }
         }
 
@@ -101,7 +107,7 @@ class AgendaRepositoryImpl(
                         it.id == localReminder.id
                     } == true
                     if (!containsLocalId) {
-                        db.getReminderDao().deleteReminder(localReminder)
+                        db.getReminderDao().deleteReminder(localReminder.id)
                     }
                 }
                 results.data?.reminders?.forEach { reminderDto ->
@@ -120,7 +126,7 @@ class AgendaRepositoryImpl(
                         it.id == localTask.id
                     } == true
                     if (!containsLocalId) {
-                        db.getTaskDao().deleteTask(localTask)
+                        db.getTaskDao().deleteTask(localTask.id)
                     }
                 }
                 results.data?.tasks?.forEach { taskDto ->
@@ -131,11 +137,11 @@ class AgendaRepositoryImpl(
                     endEpochMilli = endEpochMilli
                 ).first()
                 localEvents.forEach { localEvent ->
-                    val containsLocalId = results.data?.reminders?.any {
+                    val containsLocalId = results.data?.events?.any {
                         it.id == localEvent.id
                     } == true
                     if (!containsLocalId) {
-                        db.getEventDao().deleteEvent(localEvent)
+                        db.getEventDao().deleteEvent(localEvent.id)
                     }
                 }
                 results.data?.events?.forEach { eventDto ->
@@ -144,9 +150,7 @@ class AgendaRepositoryImpl(
                         isDone = localEvent?.isDone ?: false,
                         isGoing = localEvent?.isGoing ?: true
                     )
-                    if (localEvent != remoteEvent) {
-                        db.getEventDao().upsertEvent(remoteEvent)
-                    }
+                    db.getEventDao().upsertEvent(remoteEvent)
                 }
             }
         }

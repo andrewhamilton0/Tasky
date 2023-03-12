@@ -42,13 +42,17 @@ class ReminderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteReminder(reminder: AgendaItem.Reminder) {
-        db.getReminderDao().deleteReminder(reminder.toReminderEntity())
-        val result = getResourceResult { api.deleteReminder(reminder.id) }
+    override suspend fun getReminder(reminderId: String): AgendaItem.Reminder? {
+        return db.getReminderDao().getReminderById(reminderId)?.toReminder()
+    }
+
+    override suspend fun deleteReminder(reminderId: String) {
+        db.getReminderDao().deleteReminder(reminderId)
+        val result = getResourceResult { api.deleteReminder(reminderId) }
         if (result is Resource.Error) {
             db.getReminderDao().upsertModifiedReminder(
                 ModifiedReminderEntity(
-                    id = reminder.id,
+                    id = reminderId,
                     modifiedType = ModifiedType.DELETE
                 )
             )

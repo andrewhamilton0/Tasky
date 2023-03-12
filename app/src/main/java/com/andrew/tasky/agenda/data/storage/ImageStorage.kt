@@ -3,7 +3,6 @@ package com.andrew.tasky.agenda.data.storage
 import android.content.Context
 import android.graphics.Bitmap
 import com.andrew.tasky.agenda.data.util.BitmapConverters
-import com.andrew.tasky.agenda.domain.models.EventPhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okio.IOException
@@ -40,24 +39,11 @@ class ImageStorage(private val context: Context) {
         }
     }
 
-    suspend fun loadImages(): List<EventPhoto.Local> {
-        return withContext(Dispatchers.IO) {
-            val files = context.filesDir.listFiles()
-            files?.filter { it.canRead() && it.isFile && it.name.endsWith(".jpg") }?.map {
-                EventPhoto.Local(
-                    key = it.name.removeSuffix(".jpg"),
-                    bitmap = BitmapConverters.byteArrayToBitmap(it.readBytes()),
-                    savedInternally = true
-                )
-            } ?: emptyList()
-        }
-    }
-
-    suspend fun deleteImage(photoKey: String): Boolean? {
+    suspend fun deleteImage(photoKey: String): Boolean {
         return withContext(Dispatchers.IO) {
             val filename = photoKey.plus(".jpg")
             val files = context.filesDir.listFiles()
-            files?.find { it.name == filename }?.delete()
+            files?.find { it.name == filename }?.delete() ?: true
         }
     }
 }
