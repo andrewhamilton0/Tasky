@@ -9,12 +9,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.andrew.tasky.R
+import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.agenda.presentation.adapters.PhotoItemAdapter
 import com.andrew.tasky.agenda.util.*
@@ -29,7 +29,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
     private val currentDate = LocalDateTime.now()
         .format(DateTimeFormatter.ofPattern("dd MMMM yyyy")).uppercase()
 
-    private val viewModel: EventDetailViewModel by viewModels()
+    private val viewModel: EventDetailViewModel by hiltNavGraphViewModels(R.id.event_nav)
     private lateinit var navController: NavController
     private lateinit var binding: FragmentEventDetailBinding
     private val addPhotoSearchForResult = registerForActivityResult(
@@ -63,7 +63,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 viewModel.setEditMode(true)
             }
             header.saveButton.setOnClickListener {
-                progressBar.isVisible = true
                 viewModel.saveEvent()
             }
 
@@ -112,7 +111,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
             photoAdapter = PhotoItemAdapter(
                 context = requireContext(),
-                onPhotoClick = { index -> openPhoto(index) },
+                onPhotoClick = { photo -> openPhoto(photo) },
                 onAddPhotoClick = { addPhoto() }
             )
             addPhotoLayout.photosRecyclerView.adapter = photoAdapter
@@ -481,6 +480,9 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 }
             }
         }
+        collectLatestLifecycleFlow(viewModel.isSavingEvent) { isSaving ->
+            binding.progressBar.isVisible = isSaving
+        }
         collectLatestLifecycleFlow(viewModel.attendeeToastMessage) {
             Toast.makeText(context, it.asString(requireContext()), Toast.LENGTH_SHORT).show()
         }
@@ -492,12 +494,10 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
     private fun addPhoto() {
         addPhotoSearchForResult.launch("image/*")
     }
-    private fun openPhoto(index: Int) {
-        setFragmentResultListener("REQUEST_KEY") { resultKey, bundle ->
-            if (resultKey == "REQUEST_KEY") {
-                val photoToDelete = bundle.getInt("DELETE_PHOTO_INDEX")
-                viewModel.deletePhoto(photoToDelete)
-            }
-        }
+    private fun openPhoto(photo: EventPhoto) {
+        viewModel.setPhotoOpened(photo)
+        navController.navigate(
+            EventDetailFragmentDirections.actionEventDetailFragmentToPhotoDetailFragment()
+        )
     }
 }

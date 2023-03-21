@@ -41,8 +41,16 @@
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_agendaFragment_to_eventDetailFragment"
-            app:destination="@id/eventDetailFragment" />
+            android:id="@+id/action_agendaFragment_to_event_nav"
+            app:destination="@id/event_nav">
+            <argument
+                android:name="eventId"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="isInEditMode"
+                app:argType="boolean" />
+            </action>
         <action
             android:id="@+id/action_agendaFragment_to_reminderDetailFragment"
             app:destination="@id/reminderDetailFragment" />
@@ -50,23 +58,7 @@
             android:id="@+id/action_agendaFragment_to_taskDetailFragment"
             app:destination="@id/taskDetailFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/eventDetailFragment"
-        android:name="com.andrew.tasky.agenda.presentation.screens.event_detail.EventDetailFragment"
-        android:label="EventDetailFragment" >
-        <argument
-            android:name="eventId"
-            app:argType="string"
-            app:nullable="true"
-            />
-        <argument
-            android:name="isInEditMode"
-            app:argType="boolean"
-            />
-        <action
-            android:id="@+id/action_eventDetailFragment_to_photoDetailFragment"
-            app:destination="@id/photoDetailFragment" />
-    </fragment>
+    <include app:graph="@navigation/event_nav"/>
     <fragment
         android:id="@+id/reminderDetailFragment"
         android:name="com.andrew.tasky.agenda.presentation.screens.reminder_detail.ReminderDetailFragment"
@@ -102,20 +94,6 @@
         android:name="com.andrew.tasky.agenda.presentation.screens.edit.EditFragment"
         android:label="fragment_edit"
         tools:layout="@layout/fragment_edit">
-    </fragment>
-    <fragment
-        android:id="@+id/photoDetailFragment"
-        android:name="com.andrew.tasky.agenda.presentation.screens.photo_detail.PhotoDetailFragment"
-        android:label="fragment_photo_detail"
-        tools:layout="@layout/fragment_photo_detail">
-        <argument
-            android:name="photoUriString"
-            app:argType="string">
-        </argument>
-        <argument
-            android:name="photoIndex"
-            app:argType="integer">
-        </argument>
     </fragment>
     <action android:id="@+id/action_global_editFragment" app:destination="@id/editFragment"/>
     <action

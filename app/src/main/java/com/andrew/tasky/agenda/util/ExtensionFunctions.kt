@@ -3,6 +3,7 @@ package com.andrew.tasky.agenda.util
 import android.os.Bundle
 import android.view.View
 import android.widget.PopupMenu
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
@@ -29,6 +30,19 @@ fun <T> Fragment.collectLatestLifecycleFlow(
 ) {
     viewLifecycleOwner.lifecycleScope.launch {
         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            flow.collectLatest {
+                onCollect(it)
+            }
+        }
+    }
+}
+
+fun <T> AppCompatActivity.collectLatestLifecycleFlow(
+    flow: Flow<T>,
+    onCollect: suspend (T) -> Unit
+) {
+    lifecycleScope.launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             flow.collectLatest {
                 onCollect(it)
             }

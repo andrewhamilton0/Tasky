@@ -15,6 +15,10 @@ import com.andrew.tasky.auth.util.getResourceResult
 import com.andrew.tasky.core.Resource
 import com.andrew.tasky.core.UiText
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MultipartBody
@@ -25,7 +29,7 @@ typealias LocalPhoto = EventPhoto.Local
 class EventRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
     private val api: EventApi,
-    private val context: Context
+    private val context: Context,
 ) : EventRepository {
 
     private val imageStorage = ImageStorage(context)
@@ -49,15 +53,17 @@ class EventRepositoryImpl @Inject constructor(
                             name = "create_event_request",
                             value = Json.encodeToString(compressedEvent.toCreateEventRequest())
                         ),
-                    photoData = compressedEvent.photos.filterIsInstance<LocalPhoto>().mapIndexed {
-                        index, eventPhoto ->
-                        MultipartBody.Part
-                            .createFormData(
-                                name = "photo$index",
-                                filename = eventPhoto.key,
-                                body = eventPhoto.byteArray!!.toRequestBody()
-                            )
-                    }
+                    photoData = compressedEvent.photos.filterIsInstance<LocalPhoto>()
+                        .mapIndexedNotNull {
+                            index, eventPhoto ->
+                            MultipartBody.Part
+                                .createFormData(
+                                    name = "photo$index",
+                                    filename = eventPhoto.key,
+                                    body = eventPhoto.byteArray?.toRequestBody()
+                                        ?: return@mapIndexedNotNull null
+                                )
+                        }
                 )
             }
             return when (result) {
@@ -195,44 +201,56 @@ class EventRepositoryImpl @Inject constructor(
 
     private data class CompressEventResult(val event: AgendaItem.Event, val photosDeleted: Int)
     private suspend fun compressEvent(event: AgendaItem.Event): CompressEventResult {
-        var photosDeleted = 0
-        val compressedEvent = event.copy(
-            photos = event.photos.mapNotNull { eventPhoto ->
-                if (eventPhoto is LocalPhoto) {
-                    if (eventPhoto.savedInternally) {
-                        val byteArray = imageStorage.getByteArray(eventPhoto.key)
-                        eventPhoto.copy(byteArray = byteArray)
-                    } else {
-                        val byteArray = eventPhoto.bitmap?.let { bitmap ->
-                            bitmapConverter.bitmapToCompressByteArray(
-                                bitmap, MAX_PHOTO_SIZE_IN_BYTES
-                            )
-                        }
-                        if (byteArray != null) {
-                            eventPhoto.copy(byteArray = byteArray)
-                        } else {
-                            photosDeleted++
-                            null
-                        }
-                    }
-                } else {
-                    eventPhoto
+        return withContext(Dispatchers.Default) {
+            var photosDeleted = 0
+            val compressedEvent = event.copy(
+                photos = supervisorScope {
+                    event.photos
+                        .chunked(MAX_PARALLEL_IMAGE_COMPRESS_COUNT)
+                        .map { eventPhotoChunk ->
+                            eventPhotoChunk.map { eventPhoto ->
+                                async {
+                                    if (eventPhoto is LocalPhoto) {
+                                        if (eventPhoto.savedInternally) {
+                                            val byteArray =
+                                                imageStorage.getByteArray(eventPhoto.key)
+                                            eventPhoto.copy(byteArray = byteArray)
+                                        } else {
+                                            val byteArray = eventPhoto.bitmap?.let { bitmap ->
+                                                bitmapConverter.bitmapToCompressByteArray(
+                                                    bitmap, MAX_PHOTO_SIZE_IN_BYTES
+                                                )
+                                            }
+                                            if (byteArray != null) {
+                                                eventPhoto.copy(byteArray = byteArray)
+                                            } else {
+                                                photosDeleted++
+                                                null
+                                            }
+                                        }
+                                    } else {
+                                        eventPhoto
+                                    }
+                                }
+                            }.mapNotNull { it.await() }
+                        }.flatten()
                 }
-            }
-        )
-        return CompressEventResult(event = compressedEvent, photosDeleted = photosDeleted)
+            )
+            CompressEventResult(event = compressedEvent, photosDeleted = photosDeleted)
+        }
     }
 
     private suspend fun saveLocalPhotoInternally(photo: LocalPhoto) {
         photo.byteArray?.let {
             ImageStorage(context = context).saveImage(
-                filename = photo.key,
+                photoKey = photo.key,
                 byteArray = it
             )
         }
     }
 
     companion object {
-        const val MAX_PHOTO_SIZE_IN_BYTES = 1000000
+        const val MAX_PHOTO_SIZE_IN_BYTES = 1_000_000
+        private const val MAX_PARALLEL_IMAGE_COMPRESS_COUNT = 3
     }
 }

@@ -8,10 +8,10 @@ import kotlinx.coroutines.withContext
 import okio.IOException
 
 class ImageStorage(private val context: Context) {
-    suspend fun saveImage(filename: String, byteArray: ByteArray): Boolean {
+    suspend fun saveImage(photoKey: String, byteArray: ByteArray): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                context.openFileOutput("$filename.jpg", Context.MODE_PRIVATE).use { stream ->
+                context.openFileOutput("$photoKey.jpg", Context.MODE_PRIVATE).use { stream ->
                     stream.write(byteArray)
                 }
                 true

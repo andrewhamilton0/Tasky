@@ -14,7 +14,7 @@ import com.bumptech.glide.Glide
 
 class PhotoItemAdapter(
     val context: Context,
-    private val onPhotoClick: (Int) -> Unit,
+    private val onPhotoClick: (EventPhoto) -> Unit,
     private val onAddPhotoClick: () -> Unit,
 ) : ListAdapter<UiEventPhoto, RecyclerView.ViewHolder>(Companion) {
 
@@ -72,13 +72,16 @@ class PhotoItemAdapter(
                         is EventPhoto.Local -> {
                             image.setImageBitmap(photo.bitmap)
                             holder.itemView.setOnClickListener {
-                                onPhotoClick(position)
+                                onPhotoClick(photo)
                             }
                         }
                         is EventPhoto.Remote -> {
                             Glide.with(context)
                                 .load(photo.photoUrl)
                                 .into(image)
+                            holder.itemView.setOnClickListener {
+                                onPhotoClick(photo)
+                            }
                         }
                     }
                 }

@@ -87,6 +87,7 @@ fun EventDto.toEventEntity(isDone: Boolean, isGoing: Boolean): EventEntity {
 }
 
 suspend fun EventEntity.toEvent(context: Context): AgendaItem.Event {
+    val imageStorage = ImageStorage(context)
     return AgendaItem.Event(
         id = id,
         isDone = isDone,
@@ -101,9 +102,9 @@ suspend fun EventEntity.toEvent(context: Context): AgendaItem.Event {
         host = host,
         isCreator = isCreator,
         isGoing = isGoing,
-        photos = localPhotosKeys.map {
-            val bitmap = ImageStorage(context).getBitmap(it)
-            EventPhoto.Local(key = it, bitmap = bitmap, savedInternally = true)
+        photos = localPhotosKeys.map { key ->
+            val bitmap = imageStorage.getBitmap(key)
+            EventPhoto.Local(key = key, bitmap = bitmap, savedInternally = true)
         } + remotePhotos.map { it.toEventPhoto() },
         attendees = attendees
     )

@@ -1,19 +1,18 @@
 package com.andrew.tasky.core
 
-import android.content.SharedPreferences
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.andrew.tasky.R
-import com.andrew.tasky.core.data.PrefsKeys
+import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
-    @Inject lateinit var prefs: SharedPreferences
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +23,7 @@ class MainActivity : AppCompatActivity() {
             as NavHostFragment
         navController = navHostFragment.navController
 
-        if (prefs.contains(PrefsKeys.JWT)) {
+        collectLatestLifecycleFlow(viewModel.userIsInitiallyLoggedIn) {
             navController.navigate(R.id.action_global_agendaFragment)
         }
     }
