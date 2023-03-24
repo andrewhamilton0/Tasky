@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 
 object BitmapConverters {
     suspend fun bitmapToCompressByteArray(bitmap: Bitmap, targetSize: Int): ByteArray? {
-        return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.Default) {
             val outputStream = ByteArrayOutputStream()
             var quality = 100
             bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)

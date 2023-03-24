@@ -42,7 +42,6 @@ class AgendaViewModel@Inject constructor(
 
     private val _dateSelected = MutableStateFlow(LocalDate.now())
     private val dateSelected = _dateSelected.asStateFlow()
-
     fun setDateSelected(dateUserSelected: LocalDate) {
         _dateSelected.value = dateUserSelected
     }

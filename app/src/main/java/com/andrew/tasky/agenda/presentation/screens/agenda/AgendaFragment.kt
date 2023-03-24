@@ -99,7 +99,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                         R.id.event -> {
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToEventDetailFragment(
+                                    .actionAgendaFragmentToEventNav(
                                         null,
                                         true
                                     )
@@ -206,7 +206,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
             is AgendaItem.Event ->
                 navController.navigate(
                     AgendaFragmentDirections
-                        .actionAgendaFragmentToEventDetailFragment(
+                        .actionAgendaFragmentToEventNav(
                             agendaItem.id,
                             isInEditMode
                         )

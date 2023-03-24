@@ -17,7 +17,7 @@ suspend fun <T> getResourceResult(apiToBeCalled: suspend () -> Response<T>): Res
         try {
             val response = apiToBeCalled()
             if (response.isSuccessful) {
-                Resource.Success(data = response.body()!!)
+                Resource.Success(data = response.body())
             } else {
                 val errorResponse: ErrorMessageDto? = convertErrorBody(response.errorBody())
                 Resource.Error(

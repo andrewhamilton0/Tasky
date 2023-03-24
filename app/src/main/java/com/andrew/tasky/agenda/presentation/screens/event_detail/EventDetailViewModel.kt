@@ -90,7 +90,7 @@ class EventDetailViewModel @Inject constructor(
     }
 
     private val _photos = MutableStateFlow(listOf<EventPhoto>())
-    private val photos = _photos.asStateFlow()
+    val photos = _photos.asStateFlow()
     fun addPhoto(uri: Uri) {
         viewModelScope.launch {
             val byteArray = uriByteConverter.uriToByteArray(uri = uri)
@@ -99,11 +99,8 @@ class EventDetailViewModel @Inject constructor(
             _photos.value += photo
         }
     }
-    fun deletePhoto(indexToDelete: Int) {
-        val updatedPhotos = photos.value.filterIndexed { currentIndex, _ ->
-            currentIndex != indexToDelete
-        }
-        _photos.value = updatedPhotos
+    fun deletePhoto(photo: EventPhoto) {
+        _photos.value -= photo
     }
 
     val uiEventPhotos = photos.combine(isCreator) { photos, isCreator ->
@@ -155,6 +152,7 @@ class EventDetailViewModel @Inject constructor(
                         )
                     }
                 }
+                else -> Unit // Todo look into this
             }
         }
     }
@@ -193,6 +191,12 @@ class EventDetailViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
+    private val _photoOpened = MutableStateFlow<EventPhoto?>(null)
+    val photoOpened = _photoOpened.asStateFlow()
+    fun setPhotoOpened(eventPhoto: EventPhoto) {
+        _photoOpened.value = eventPhoto
+    }
+
     enum class AttendeeFilterTypes {
         ALL,
         GOING,
@@ -202,6 +206,7 @@ class EventDetailViewModel @Inject constructor(
     fun saveEvent() {
         viewModelScope.launch {
             withContext(NonCancellable) {
+                _isSavingEvent.update { true }
                 val (_, photosDeleted) = repository.upsertEvent(getEvent())
                 if (photosDeleted == 1) {
                     photosNotAddedToastMessageChannel.send(
@@ -210,9 +215,11 @@ class EventDetailViewModel @Inject constructor(
                         )
                     )
                 } else if (photosDeleted > 1) {
-                    UiText.Resource(
-                        resId = R.string.photos_not_added,
-                        args = arrayOf(photosDeleted)
+                    photosNotAddedToastMessageChannel.send(
+                        UiText.Resource(
+                            resId = R.string.photos_not_added,
+                            args = arrayOf(photosDeleted)
+                        )
                     )
                 }
             }
@@ -244,6 +251,9 @@ class EventDetailViewModel @Inject constructor(
             isGoing = true // TODO setup isGoing
         )
     }
+
+    private val _isSavingEvent = MutableStateFlow(false)
+    val isSavingEvent = _isSavingEvent.asStateFlow()
 
     private val photosNotAddedToastMessageChannel = Channel<UiText>()
     val photosNotAddedToastMessage = photosNotAddedToastMessageChannel.receiveAsFlow()
