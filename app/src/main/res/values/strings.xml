@@ -47,7 +47,7 @@
     <!--Delete confirmation options on delete confirmation dialog -->
     <string name="task_delete_confirmation">Are you sure you want to delete this task?</string>
     <string name="event_delete_confirmation">Are you sure you want to delete this event?</string>
-    <string name="reminder_delete_confirmation">Are you sure you want to delete this reminder?</string>
+    <string name="are_you_sure_you_want_to_delete_this_string">Are you sure you want to delete this %1$s?</string>
 
     <!--Agenda item options popup menu on agenda screen -->
     <string name="open">Open</string>

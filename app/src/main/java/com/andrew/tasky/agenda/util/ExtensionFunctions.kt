@@ -101,7 +101,7 @@ fun Fragment.navigateToEditFragment(
 }
 
 fun Fragment.showDeleteConfirmationDialog(
-    agendaItemType: AgendaItemType,
+    deleteItemName: String,
     onResultDeleteAgendaItem: () -> Unit
 ) {
     val deleteConfirmationDialog = DeleteConfirmationDialog()
@@ -120,9 +120,9 @@ fun Fragment.showDeleteConfirmationDialog(
     }
 
     val bundle = Bundle()
-    bundle.putString("AGENDA_ITEM_TYPE", agendaItemType.name)
+    bundle.putString("DELETE_ITEM_NAME", deleteItemName)
     supportFragmentManager.setFragmentResult(
-        "DELETE_CONFIRMATION_AGENDA_TYPE_REQUEST_KEY", bundle
+        "DELETE_CONFIRMATION_REQUEST_KEY", bundle
     )
 
     deleteConfirmationDialog.show(supportFragmentManager, "DeleteConfirmationDialog")

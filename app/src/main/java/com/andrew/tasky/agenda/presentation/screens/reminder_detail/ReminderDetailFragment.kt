@@ -24,7 +24,6 @@ class ReminderDetailFragment : Fragment(R.layout.fragment_reminder_detail) {
     private val viewModel: ReminderDetailViewModel by viewModels()
     private lateinit var navController: NavController
     private lateinit var binding: FragmentReminderDetailBinding
-    private val agendaItemType = AgendaItemType.REMINDER
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -113,9 +112,13 @@ class ReminderDetailFragment : Fragment(R.layout.fragment_reminder_detail) {
                     viewModel::setSelectedReminderTime
                 )
             }
+            deleteBtn.deleteAgendaItemButton.text = getString(
+                R.string.delete_blank,
+                getString(R.string.reminder)
+            ).uppercase()
             deleteBtn.deleteAgendaItemButton.setOnClickListener {
                 showDeleteConfirmationDialog(
-                    agendaItemType,
+                    getString(R.string.reminder).lowercase(),
                     onResultDeleteAgendaItem = {
                         viewModel.deleteAgendaItem()
                         navController.popBackStack()

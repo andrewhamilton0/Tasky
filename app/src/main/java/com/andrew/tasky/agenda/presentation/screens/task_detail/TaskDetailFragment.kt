@@ -24,7 +24,6 @@ class TaskDetailFragment : Fragment(R.layout.fragment_task_detail) {
     private val viewModel: TaskDetailViewModel by viewModels()
     private lateinit var navController: NavController
     private lateinit var binding: FragmentTaskDetailBinding
-    private val agendaItemType = AgendaItemType.TASK
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -113,9 +112,13 @@ class TaskDetailFragment : Fragment(R.layout.fragment_task_detail) {
                     onResult = viewModel::setSelectedReminderTime
                 )
             }
+            deleteBtn.deleteAgendaItemButton.text = getString(
+                R.string.delete_blank,
+                getString(R.string.task)
+            ).uppercase()
             deleteBtn.deleteAgendaItemButton.setOnClickListener {
                 showDeleteConfirmationDialog(
-                    agendaItemType,
+                    getString(R.string.task).lowercase(),
                     onResultDeleteAgendaItem = {
                         viewModel.deleteAgendaItem()
                         navController.popBackStack()
