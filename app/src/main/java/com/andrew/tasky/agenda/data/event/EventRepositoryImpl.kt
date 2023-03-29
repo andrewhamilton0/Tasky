@@ -14,6 +14,10 @@ import com.andrew.tasky.auth.util.getResourceResult
 import com.andrew.tasky.core.Resource
 import com.andrew.tasky.core.UiText
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MultipartBody
@@ -154,7 +158,7 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getEvent(eventId: String): AgendaItem.Event? {
-        return db.getEventDao().getEventById(eventId)?.toEvent(context)
+        return db.getEventDao().getEventById(eventId)?.toEvent(this)
     }
 
     override suspend fun getAttendee(email: String): Resource<Attendee> {
@@ -182,7 +186,7 @@ class EventRepositoryImpl @Inject constructor(
         val createAndUpdateModifiedEvents = db.getEventDao().getModifiedEvents().filter {
             it.modifiedType == ModifiedType.CREATE || it.modifiedType == ModifiedType.UPDATE
         }.map {
-            db.getEventDao().getEventById(it.id)?.toEvent(context)
+            db.getEventDao().getEventById(it.id)?.toEvent(this)
         }
         createAndUpdateModifiedEvents.forEach { event ->
             event?.let {
@@ -191,6 +195,19 @@ class EventRepositoryImpl @Inject constructor(
                     db.getEventDao().deleteModifiedEventById(event.id)
                 }
             }
+        }
+    }
+
+    override suspend fun getLocalPhotos(localPhotoKeys: List<String>): List<EventPhoto.Local> {
+        return withContext(Dispatchers.IO) {
+            supervisorScope {
+                async {
+                    localPhotoKeys.map { key ->
+                        val bitmap = imageStorage.getBitmap(key)
+                        EventPhoto.Local(key = key, bitmap = bitmap, savedInternally = true)
+                    }
+                }
+            }.await()
         }
     }
 

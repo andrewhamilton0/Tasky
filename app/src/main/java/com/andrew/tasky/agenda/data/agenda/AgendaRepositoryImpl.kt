@@ -64,7 +64,7 @@ class AgendaRepositoryImpl(
             supervisorScope {
                 it.map { eventEntity ->
                     async {
-                        eventEntity.toEvent(appContext)
+                        eventEntity.toEvent(eventRepository)
                     }
                 }.map { it.await() }
             }
