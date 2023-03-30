@@ -4,7 +4,6 @@ import android.content.Context
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.storage.ImageStorage
-import com.andrew.tasky.agenda.data.util.BitmapConverters
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -33,11 +32,11 @@ class EventRepositoryImpl @Inject constructor(
 ) : EventRepository {
 
     private val imageStorage = ImageStorage(context)
-    private val bitmapConverter = BitmapConverters
+    private val eventCompressor = EventCompressor(context)
 
     override suspend fun upsertEvent(event: AgendaItem.Event): UpsertEventResult {
 
-        val (compressedEvent, photosDeleted) = compressEvent(event)
+        val (compressedEvent, photosDeleted) = eventCompressor.compressEvent(event)
 
         val isEventInDb = db.getEventDao().getEventById(compressedEvent.id) == null
         val isModifiedCreateEvent = db.getEventDao().getModifiedEventById(compressedEvent.id)
@@ -159,7 +158,7 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getEvent(eventId: String): AgendaItem.Event? {
-        return db.getEventDao().getEventById(eventId)?.toEvent(context)
+        return db.getEventDao().getEventById(eventId)?.toEvent(this)
     }
 
     override suspend fun getAttendee(email: String): Resource<Attendee> {
@@ -187,7 +186,7 @@ class EventRepositoryImpl @Inject constructor(
         val createAndUpdateModifiedEvents = db.getEventDao().getModifiedEvents().filter {
             it.modifiedType == ModifiedType.CREATE || it.modifiedType == ModifiedType.UPDATE
         }.map {
-            db.getEventDao().getEventById(it.id)?.toEvent(context)
+            db.getEventDao().getEventById(it.id)?.toEvent(this)
         }
         createAndUpdateModifiedEvents.forEach { event ->
             event?.let {
@@ -199,44 +198,16 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
 
-    private data class CompressEventResult(val event: AgendaItem.Event, val photosDeleted: Int)
-    private suspend fun compressEvent(event: AgendaItem.Event): CompressEventResult {
-        return withContext(Dispatchers.Default) {
-            var photosDeleted = 0
-            val compressedEvent = event.copy(
-                photos = supervisorScope {
-                    event.photos
-                        .chunked(MAX_PARALLEL_IMAGE_COMPRESS_COUNT)
-                        .map { eventPhotoChunk ->
-                            eventPhotoChunk.map { eventPhoto ->
-                                async {
-                                    if (eventPhoto is LocalPhoto) {
-                                        if (eventPhoto.savedInternally) {
-                                            val byteArray =
-                                                imageStorage.getByteArray(eventPhoto.key)
-                                            eventPhoto.copy(byteArray = byteArray)
-                                        } else {
-                                            val byteArray = eventPhoto.bitmap?.let { bitmap ->
-                                                bitmapConverter.bitmapToCompressByteArray(
-                                                    bitmap, MAX_PHOTO_SIZE_IN_BYTES
-                                                )
-                                            }
-                                            if (byteArray != null) {
-                                                eventPhoto.copy(byteArray = byteArray)
-                                            } else {
-                                                photosDeleted++
-                                                null
-                                            }
-                                        }
-                                    } else {
-                                        eventPhoto
-                                    }
-                                }
-                            }.mapNotNull { it.await() }
-                        }.flatten()
+    override suspend fun getLocalPhotos(localPhotoKeys: List<String>): List<EventPhoto.Local> {
+        return withContext(Dispatchers.IO) {
+            supervisorScope {
+                async {
+                    localPhotoKeys.map { key ->
+                        val bitmap = imageStorage.getBitmap(key)
+                        EventPhoto.Local(key = key, bitmap = bitmap, savedInternally = true)
+                    }
                 }
-            )
-            CompressEventResult(event = compressedEvent, photosDeleted = photosDeleted)
+            }.await()
         }
     }
 
@@ -247,10 +218,5 @@ class EventRepositoryImpl @Inject constructor(
                 byteArray = it
             )
         }
-    }
-
-    companion object {
-        const val MAX_PHOTO_SIZE_IN_BYTES = 1_000_000
-        private const val MAX_PARALLEL_IMAGE_COMPRESS_COUNT = 3
     }
 }

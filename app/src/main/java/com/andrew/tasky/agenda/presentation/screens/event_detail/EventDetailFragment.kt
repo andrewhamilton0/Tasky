@@ -40,7 +40,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
         }
     )
-    private val agendaItemType = AgendaItemType.EVENT
     private lateinit var photoAdapter: PhotoItemAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -308,7 +307,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                     ).uppercase()
                     deleteBtn.deleteAgendaItemButton.setOnClickListener {
                         showDeleteConfirmationDialog(
-                            agendaItemType,
+                            getString(R.string.event).lowercase(),
                             onResultDeleteAgendaItem = {
                                 viewModel.deleteEvent()
                                 navController.popBackStack()

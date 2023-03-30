@@ -207,18 +207,18 @@ class EventDetailViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(NonCancellable) {
                 _isSavingEvent.update { true }
-                val (_, photosDeleted) = repository.upsertEvent(getEvent())
-                if (photosDeleted == 1) {
+                val (_, deletedPhotoCount) = repository.upsertEvent(getEvent())
+                if (deletedPhotoCount == 1) {
                     photosNotAddedToastMessageChannel.send(
                         UiText.Resource(
                             resId = R.string.one_photo_not_added
                         )
                     )
-                } else if (photosDeleted > 1) {
+                } else if (deletedPhotoCount > 1) {
                     photosNotAddedToastMessageChannel.send(
                         UiText.Resource(
                             resId = R.string.photos_not_added,
-                            args = arrayOf(photosDeleted)
+                            args = arrayOf(deletedPhotoCount)
                         )
                     )
                 }
