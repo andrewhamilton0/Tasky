@@ -14,6 +14,7 @@
     <string name="task">Task</string>
     <string name="event">Event</string>
     <string name="reminder">Reminder</string>
+    <string name="agenda">Agenda</string>
     <string name="edit_task_text">EDIT TASK</string>
     <string name="edit_event_text">EDIT EVENT</string>
     <string name="edit_reminder_text">EDIT REMINDER</string>
@@ -80,5 +81,8 @@
 
     <!--logout messages -->
     <string name="logout_successful">Logout successful</string>
+
+    <!--notification messages -->
+    <string name="used_for_string_notification">Used for %1$s notifications</string>
 
 </resources>

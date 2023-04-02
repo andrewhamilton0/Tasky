@@ -1,7 +1,6 @@
 package com.andrew.tasky.auth.presentation.screens.login
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -48,21 +47,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         results.message?.asString(requireContext()),
                         Toast.LENGTH_LONG
                     ).show()
-                }
-                is Resource.Success -> {
-                    navController.navigate(
-                        LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
-                    )
-                }
-            }
-        }
-        collectLatestLifecycleFlow(viewModel.authenticateResults) { results ->
-            when (results) {
-                is Resource.Error -> {
-                    Log.e(
-                        "LoginFragAuthResult",
-                        results.message?.asString(requireContext()) ?: "Unknown error"
-                    )
                 }
                 is Resource.Success -> {
                     navController.navigate(

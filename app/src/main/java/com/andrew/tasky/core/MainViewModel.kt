@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val prefs: SharedPreferences
+    private val prefs: SharedPreferences
 ) : ViewModel() {
 
     private val userIsInitiallyLoggedInChannel = Channel<Unit>()

@@ -26,8 +26,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -38,12 +36,6 @@ import retrofit2.create
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-    @Provides
-    @Singleton
-    fun provideIoDispatcher(): CoroutineDispatcher {
-        return Dispatchers.IO
-    }
 
     @Provides
     @Singleton
@@ -138,7 +130,6 @@ object AppModule {
         taskRepository: TaskRepository,
         eventRepository: EventRepository,
         db: AgendaDatabase,
-        ioDispatcher: CoroutineDispatcher,
         app: Application
     ): AgendaRepository {
         return AgendaRepositoryImpl(
@@ -147,7 +138,6 @@ object AppModule {
             taskRepository = taskRepository,
             eventRepository = eventRepository,
             db = db,
-            ioDispatcher = ioDispatcher,
             appContext = app
         )
     }

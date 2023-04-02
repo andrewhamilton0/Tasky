@@ -27,18 +27,4 @@ class LoginViewModel @Inject constructor(
             loginResultChannel.send(result)
         }
     }
-
-    private val authenticateResultChannel = Channel<Resource<Unit>>()
-    val authenticateResults = authenticateResultChannel.receiveAsFlow()
-
-    private fun authenticate() {
-        viewModelScope.launch {
-            val results = repository.authenticate()
-            authenticateResultChannel.send(results)
-        }
-    }
-
-    init {
-        authenticate()
-    }
 }
