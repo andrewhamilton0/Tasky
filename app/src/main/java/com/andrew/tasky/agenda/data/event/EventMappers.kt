@@ -101,7 +101,7 @@ suspend fun EventEntity.toEvent(eventRepository: EventRepository): AgendaItem.Ev
         host = host,
         isCreator = isCreator,
         isGoing = isGoing,
-        photos = localPhotos + remotePhotos.map { it.toEventPhoto() },
+        photos = remotePhotos.map { it.toEventPhoto() } + localPhotos,
         attendees = attendees
     )
 }
