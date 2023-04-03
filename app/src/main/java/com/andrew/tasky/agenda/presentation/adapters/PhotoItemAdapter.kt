@@ -70,7 +70,9 @@ class PhotoItemAdapter(
                     val photo = uiEventPhoto.eventPhoto
                     when (photo) {
                         is EventPhoto.Local -> {
-                            image.setImageBitmap(photo.bitmap)
+                            Glide.with(context)
+                                .load(photo.bitmap)
+                                .into(image)
                             holder.itemView.setOnClickListener {
                                 onPhotoClick(photo)
                             }

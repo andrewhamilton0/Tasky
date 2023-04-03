@@ -21,11 +21,8 @@ import com.andrew.tasky.core.Resource
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.supervisorScope
-import kotlinx.coroutines.withContext
 
 class AgendaRepositoryImpl(
     private val agendaApi: AgendaApi,
@@ -33,7 +30,6 @@ class AgendaRepositoryImpl(
     private val taskRepository: TaskRepository,
     private val eventRepository: EventRepository,
     private val db: AgendaDatabase,
-    private val ioDispatcher: CoroutineDispatcher,
     private val appContext: Context
 ) : AgendaRepository {
 
@@ -212,7 +208,7 @@ class AgendaRepositoryImpl(
     }
 
     override suspend fun deleteAllAgendaTables() {
-        withContext(ioDispatcher) {
+        withContext(Dispatchers.IO) {
             db.clearAllTables()
         }
     }

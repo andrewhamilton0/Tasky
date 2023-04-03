@@ -14,7 +14,7 @@ import dagger.assisted.AssistedInject
 class SyncModifiedAgendaItemsWorker @AssistedInject constructor(
     @Assisted val appContext: Context,
     @Assisted val workerParams: WorkerParameters,
-    val agendaRepository: AgendaRepository
+    private val agendaRepository: AgendaRepository
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
