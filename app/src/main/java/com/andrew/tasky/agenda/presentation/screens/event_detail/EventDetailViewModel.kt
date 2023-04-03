@@ -95,7 +95,7 @@ class EventDetailViewModel @Inject constructor(
         viewModelScope.launch {
             val byteArray = uriByteConverter.uriToByteArray(uri = uri)
             val bitmap = BitmapConverters.byteArrayToBitmap(byteArray)
-            val photo = EventPhoto.Local(bitmap = bitmap, byteArray = byteArray)
+            val photo = EventPhoto.Local(bitmap = bitmap)
             _photos.value += photo
         }
     }
