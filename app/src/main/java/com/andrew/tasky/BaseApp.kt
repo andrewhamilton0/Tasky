@@ -3,7 +3,7 @@ package com.andrew.tasky
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.andrew.tasky.agenda.presentation.notifications.AgendaNotificationChannels
+import com.andrew.tasky.agenda.data.agenda.notifications.AgendaNotificationChannels
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 

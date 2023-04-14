@@ -1,9 +1,12 @@
 package com.andrew.tasky.agenda.data.reminder
 
-import com.andrew.tasky.agenda.data.util.ReminderTimeConversion
-import com.andrew.tasky.agenda.data.util.toLocalDateTime
-import com.andrew.tasky.agenda.data.util.toZonedEpochMilli
+import com.andrew.tasky.R
+import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
+import com.andrew.tasky.agenda.domain.models.AgendaNotificationInfo
+import com.andrew.tasky.agenda.domain.toLocalDateTime
+import com.andrew.tasky.agenda.domain.toZonedEpochMilli
+import com.andrew.tasky.agenda.data.agenda.notifications.AgendaNotificationService.Companion.REMINDER_CHANNEL_ID
 
 fun ReminderDto.toReminderEntity(isDone: Boolean): ReminderEntity {
     return ReminderEntity(
@@ -22,7 +25,7 @@ fun AgendaItem.Reminder.toReminderDto(): ReminderDto {
         title = title,
         description = description,
         time = startDateAndTime.toZonedEpochMilli(),
-        remindAt = ReminderTimeConversion.toEpochMilli(
+        remindAt = ReminderTimeConversion.toZonedEpochMilli(
             startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
         )
@@ -36,7 +39,7 @@ fun AgendaItem.Reminder.toReminderEntity(): ReminderEntity {
         title = title,
         description = description,
         time = startDateAndTime.toZonedEpochMilli(),
-        remindAt = ReminderTimeConversion.toEpochMilli(
+        remindAt = ReminderTimeConversion.toZonedEpochMilli(
             startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
         )
@@ -64,5 +67,19 @@ fun ReminderEntity.toReminderDto(): ReminderDto {
         description = description,
         time = time,
         remindAt = remindAt
+    )
+}
+
+fun AgendaItem.Reminder.toNotificationInfo(): AgendaNotificationInfo {
+    return AgendaNotificationInfo(
+        title = title,
+        description = description,
+        id = id,
+        notificationChannel = REMINDER_CHANNEL_ID,
+        navDestinationId = R.id.reminderDetailFragment,
+        notificationZonedMilliTime = ReminderTimeConversion.toZonedEpochMilli(
+            startDateAndTime,
+            reminderTime
+        )
     )
 }
