@@ -11,8 +11,8 @@ import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.domain.models.UpsertEventResult
 import com.andrew.tasky.auth.util.getResourceResult
-import com.andrew.tasky.core.Resource
 import com.andrew.tasky.core.UiText
+import com.andrew.tasky.core.data.Resource
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -22,6 +22,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.toImmutableList
 
 typealias LocalPhoto = EventPhoto.Local
 typealias Event = AgendaItem.Event
@@ -36,7 +37,27 @@ class EventRepositoryImpl @Inject constructor(
     private val eventPhotoCompressor = EventPhotoCompressor()
 
     override suspend fun upsertEvent(event: Event): UpsertEventResult {
-        val (newEvent, deletedPhotoCount) = compressAndDeletePhotosFromEvent(event)
+        val (compressedPhotos, deletedPhotoCount) = compressAndDeletePhotos(
+            event.photos.filterIsInstance<LocalPhoto>().filter {
+                !it.savedInternally
+            }
+        )
+        val eventWithCompressedPhotos = event.copy(
+            photos = event.photos.filterNot { photo ->
+                photo is LocalPhoto && !photo.savedInternally
+            }.toMutableList().apply {
+                compressedPhotos.forEach { compressedPhoto ->
+                    this.add(compressedPhoto)
+                }
+            }.toImmutableList()
+        )
+        val newEvent = eventWithCompressedPhotos.copy(
+            photos = eventWithCompressedPhotos.photos.map { photo ->
+                if (photo is LocalPhoto && photo.savedInternally) {
+                    photo.copy(byteArray = imageStorage.getByteArray(photo.key))
+                } else photo
+            }
+        )
 
         val isCreateEvent = isEventToBeCreated(newEvent.id)
         if (isCreateEvent) {
@@ -74,23 +95,16 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
 
-    data class CompressionResult(val event: Event, val deletedPhotoCount: Int)
-    private suspend fun compressAndDeletePhotosFromEvent(
-        event: Event
+    data class CompressionResult(val photos: List<LocalPhoto>, val deletedPhotoCount: Int)
+    private suspend fun compressAndDeletePhotos(
+        photos: List<LocalPhoto>
     ): CompressionResult {
-        val eventPhotosWithByteArrays = photosWithSavedByteArrays(event.photos)
-        val (compressedPhotos, deletedPhotoCount, deletedPhotos) = eventPhotoCompressor
+        val (compressedPhotos, deletedPhotoCount) = eventPhotoCompressor
             .compressPhotos(
-                photos = eventPhotosWithByteArrays,
+                photos = photos,
                 compressionSize = MAX_PHOTO_SIZE_IN_BYTES
             )
-        val newEvent = event.copy(photos = compressedPhotos)
-        val internalPhotosToDelete = deletedPhotos.filter { it.savedInternally }
-        if (internalPhotosToDelete.isNotEmpty()) {
-            deleteInternalPhotos(internalPhotosToDelete)
-            db.getEventDao().upsertEvent(event.toEventEntity())
-        }
-        return CompressionResult(event = newEvent, deletedPhotoCount = deletedPhotoCount)
+        return CompressionResult(photos = compressedPhotos, deletedPhotoCount = deletedPhotoCount)
     }
 
     private suspend fun deleteInternalPhotos(deletedPhotos: List<EventPhoto.Local>) {
@@ -167,7 +181,7 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     private suspend fun updateRemoteEvent(event: Event): Resource<EventDto> {
-        val result = getResourceResult {
+        return getResourceResult {
             api.updateEvent(
                 eventData = MultipartBody.Part
                     .createFormData(
@@ -186,11 +200,10 @@ class EventRepositoryImpl @Inject constructor(
                     }
             )
         }
-        return result
     }
 
     private suspend fun createRemoteEvent(newEvent: Event): Resource<EventDto> {
-        val result = getResourceResult {
+        return getResourceResult {
             api.createEvent(
                 eventData = MultipartBody.Part
                     .createFormData(
@@ -209,7 +222,6 @@ class EventRepositoryImpl @Inject constructor(
                     }
             )
         }
-        return result
     }
 
     private suspend fun photosWithSavedByteArrays(photos: List<EventPhoto>): List<EventPhoto> {
@@ -287,13 +299,13 @@ class EventRepositoryImpl @Inject constructor(
     override suspend fun getLocalPhotos(localPhotoKeys: List<String>): List<EventPhoto.Local> {
         return withContext(Dispatchers.IO) {
             supervisorScope {
-                async {
-                    localPhotoKeys.map { key ->
+                localPhotoKeys.map { key ->
+                    async {
                         val bitmap = imageStorage.getBitmap(key)
                         EventPhoto.Local(key = key, bitmap = bitmap, savedInternally = true)
                     }
-                }
-            }.await()
+                }.map { it.await() }
+            }
         }
     }
 

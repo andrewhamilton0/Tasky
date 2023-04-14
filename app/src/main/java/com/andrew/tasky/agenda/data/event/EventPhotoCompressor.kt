@@ -6,56 +6,42 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
-import okhttp3.internal.toImmutableList
 
 class EventPhotoCompressor {
 
-    private val bitmapConverter = BitmapConverters
-
     data class CompressPhotosResult(
-        val photos: List<EventPhoto>,
+        val photos: List<EventPhoto.Local>,
         val deletedPhotosCount: Int,
-        val deletedPhoto: List<EventPhoto.Local>
     )
 
     suspend fun compressPhotos(
-        photos: List<EventPhoto>,
+        photos: List<EventPhoto.Local>,
         compressionSize: Int
     ): CompressPhotosResult {
         return withContext(Dispatchers.Default) {
             var deletedPhotosCount = 0
-            val deletedPhotos = emptyList<EventPhoto.Local>().toMutableList()
             supervisorScope {
-                photos
+                val compressedPhotos = photos
                     .chunked(MAX_PARALLEL_IMAGE_COMPRESS_COUNT)
                     .map { eventPhotoChunk ->
                         eventPhotoChunk.map { eventPhoto ->
                             async {
-                                if (eventPhoto is LocalPhoto) {
-                                    val byteArray = eventPhoto.bitmap?.let { bitmap ->
-                                        bitmapConverter.bitmapToCompressByteArray(
-                                            bitmap, compressionSize
-                                        )
-                                    }
-                                    if (byteArray != null) {
-                                        eventPhoto.copy(byteArray = byteArray)
-                                    } else {
-                                        deletedPhotosCount++
-                                        deletedPhotos.add(eventPhoto)
-                                        null
-                                    }
+                                val byteArray = eventPhoto.bitmap?.let { bitmap ->
+                                    BitmapConverters.bitmapToCompressByteArray(
+                                        bitmap, compressionSize
+                                    )
+                                }
+                                if (byteArray != null) {
+                                    eventPhoto.copy(byteArray = byteArray)
                                 } else {
-                                    eventPhoto
+                                    deletedPhotosCount++
+                                    null
                                 }
                             }
                         }.mapNotNull { it.await() }
                     }.flatten()
+                CompressPhotosResult(compressedPhotos, deletedPhotosCount)
             }
-            CompressPhotosResult(
-                photos = photos,
-                deletedPhotosCount = deletedPhotosCount,
-                deletedPhoto = deletedPhotos.toImmutableList()
-            )
         }
     }
     companion object {
