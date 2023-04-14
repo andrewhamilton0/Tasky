@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.presentation.notifications
+package com.andrew.tasky.agenda.data.agenda.notifications
 
 import android.app.NotificationChannel
 import android.app.NotificationChannelGroup

@@ -1,9 +1,12 @@
 package com.andrew.tasky.agenda.data.task
 
-import com.andrew.tasky.agenda.data.util.ReminderTimeConversion
-import com.andrew.tasky.agenda.data.util.toLocalDateTime
-import com.andrew.tasky.agenda.data.util.toZonedEpochMilli
+import com.andrew.tasky.R
+import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
+import com.andrew.tasky.agenda.domain.models.AgendaNotificationInfo
+import com.andrew.tasky.agenda.domain.toLocalDateTime
+import com.andrew.tasky.agenda.domain.toZonedEpochMilli
+import com.andrew.tasky.agenda.data.agenda.notifications.AgendaNotificationService
 
 fun TaskDto.toTaskEntity(): TaskEntity {
     return TaskEntity(
@@ -22,7 +25,7 @@ fun AgendaItem.Task.toTaskDto(): TaskDto {
         title = title,
         description = description,
         time = startDateAndTime.toZonedEpochMilli(),
-        remindAt = ReminderTimeConversion.toEpochMilli(
+        remindAt = ReminderTimeConversion.toZonedEpochMilli(
             startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
         ),
@@ -37,7 +40,7 @@ fun AgendaItem.Task.toTaskEntity(): TaskEntity {
         title = title,
         description = description,
         time = startDateAndTime.toZonedEpochMilli(),
-        remindAt = ReminderTimeConversion.toEpochMilli(
+        remindAt = ReminderTimeConversion.toZonedEpochMilli(
             startLocalDateTime = startDateAndTime,
             reminderTime = reminderTime
         )
@@ -66,5 +69,19 @@ fun TaskEntity.toTaskDto(): TaskDto {
         time = time,
         remindAt = remindAt,
         isDone = isDone
+    )
+}
+
+fun AgendaItem.Task.toNotificationInfo(): AgendaNotificationInfo {
+    return AgendaNotificationInfo(
+        title = title,
+        description = description,
+        id = id,
+        notificationChannel = AgendaNotificationService.TASK_CHANNEL_ID,
+        navDestinationId = R.id.taskDetailFragment,
+        notificationZonedMilliTime = ReminderTimeConversion.toZonedEpochMilli(
+            startDateAndTime,
+            reminderTime
+        )
     )
 }

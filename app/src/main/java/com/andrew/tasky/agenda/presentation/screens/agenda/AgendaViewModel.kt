@@ -7,7 +7,8 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.andrew.tasky.agenda.data.agenda.SyncModifiedAgendaItemsWorker
+import com.andrew.tasky.agenda.data.agenda.workManagers.AgendaNotificationScheduleWorker
+import com.andrew.tasky.agenda.data.agenda.workManagers.SyncModifiedAgendaItemsWorker
 import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderRepository
@@ -17,8 +18,8 @@ import com.andrew.tasky.agenda.domain.models.CalendarDateItem
 import com.andrew.tasky.agenda.util.DateType
 import com.andrew.tasky.agenda.util.UiAgendaItem
 import com.andrew.tasky.auth.domain.AuthRepository
-import com.andrew.tasky.core.StringToInitials
 import com.andrew.tasky.core.data.PrefsKeys
+import com.andrew.tasky.core.domain.StringToInitials
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.*
 import java.util.concurrent.TimeUnit
@@ -55,7 +56,7 @@ class AgendaViewModel@Inject constructor(
         }
     }
     private val agendaItems = dateSelected.flatMapLatest { date ->
-        agendaRepository.getAgendaItems(date)
+        agendaRepository.getAgendaItemsOfDateFlow(date)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private fun indexOfTimeNeedle(
@@ -163,8 +164,15 @@ class AgendaViewModel@Inject constructor(
                     .build()
             ).build()
 
+    private val agendaNotificationWorkRequest =
+        PeriodicWorkRequestBuilder<AgendaNotificationScheduleWorker>(15, TimeUnit.MINUTES)
+            .build()
+
     init {
-        workManager.enqueue(syncModifiedAgendaItemsWorkRequest)
+        workManager.apply {
+            enqueue(syncModifiedAgendaItemsWorkRequest)
+            enqueue(agendaNotificationWorkRequest)
+        }
         viewModelScope.launch {
             dateSelected.collectLatest { agendaRepository.updateAgendaItemCache(it) }
         }
