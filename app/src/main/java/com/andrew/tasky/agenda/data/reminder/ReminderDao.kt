@@ -9,7 +9,7 @@ interface ReminderDao {
     suspend fun upsertReminder(reminder: ReminderEntity): Long
 
     @Query("SELECT * FROM ReminderEntity WHERE time BETWEEN :startEpochMilli AND :endEpochMilli")
-    fun getRemindersOfDate(
+    fun getRemindersBetweenTimes(
         startEpochMilli: Long,
         endEpochMilli: Long
     ): Flow<List<ReminderEntity>>

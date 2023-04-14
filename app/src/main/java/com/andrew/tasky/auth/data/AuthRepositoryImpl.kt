@@ -5,9 +5,9 @@ import androidx.work.*
 import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.auth.domain.AuthRepository
 import com.andrew.tasky.auth.util.getResourceResult
-import com.andrew.tasky.core.Resource
-import com.andrew.tasky.core.WorkerParamKeys
 import com.andrew.tasky.core.data.PrefsKeys
+import com.andrew.tasky.core.data.Resource
+import com.andrew.tasky.core.util.WorkerParamKeys
 
 class AuthRepositoryImpl(
     private val api: AuthApi,

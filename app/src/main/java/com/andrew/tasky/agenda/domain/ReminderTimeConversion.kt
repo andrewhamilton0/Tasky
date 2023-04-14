@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.data.util
+package com.andrew.tasky.agenda.domain
 
 import android.util.Log
 import com.andrew.tasky.agenda.util.ReminderTime
@@ -35,7 +35,7 @@ object ReminderTimeConversion {
         }
     }
 
-    fun toEpochMilli(startLocalDateTime: LocalDateTime, reminderTime: ReminderTime): Long {
+    fun toZonedEpochMilli(startLocalDateTime: LocalDateTime, reminderTime: ReminderTime): Long {
         return when (reminderTime) {
             ReminderTime.TEN_MINUTES_BEFORE ->
                 startLocalDateTime.minusMinutes(10).toZonedEpochMilli()
