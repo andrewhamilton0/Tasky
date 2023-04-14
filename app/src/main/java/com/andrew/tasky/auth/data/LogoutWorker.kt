@@ -6,8 +6,8 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.andrew.tasky.auth.util.getResourceResult
-import com.andrew.tasky.core.Resource
-import com.andrew.tasky.core.WorkerParamKeys
+import com.andrew.tasky.core.data.Resource
+import com.andrew.tasky.core.util.WorkerParamKeys
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -27,9 +27,6 @@ class LogoutWorker @AssistedInject constructor(
                     "Logout work request",
                     result.message?.asString(appContext) ?: "unknown error"
                 )
-                // Should I have this set to failure or retry, will it retry forever if set to retry
-                // and never succeeds? Could this be an issue? I do have a policy that checks
-                // network connection before trying
                 Result.retry()
             }
             is Resource.Success -> Result.success()

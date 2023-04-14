@@ -9,7 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
-import com.andrew.tasky.core.Resource
+import com.andrew.tasky.core.data.Resource
 import com.andrew.tasky.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 
