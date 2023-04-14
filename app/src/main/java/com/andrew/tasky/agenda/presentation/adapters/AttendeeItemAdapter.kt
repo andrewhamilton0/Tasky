@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.andrew.tasky.agenda.domain.models.Attendee
-import com.andrew.tasky.core.StringToInitials
+import com.andrew.tasky.core.domain.StringToInitials
 import com.andrew.tasky.databinding.ItemAttendeeBinding
 
 class AttendeeItemAdapter(

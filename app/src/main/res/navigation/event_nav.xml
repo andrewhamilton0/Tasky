@@ -12,7 +12,7 @@
         android:label="EventDetailFragment"
         tools:layout="@layout/fragment_event_detail">
         <argument
-            android:name="eventId"
+            android:name="id"
             app:argType="string"
             app:nullable="true" />
         <argument
