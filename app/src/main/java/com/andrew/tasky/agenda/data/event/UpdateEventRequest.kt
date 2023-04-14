@@ -1,5 +1,8 @@
 package com.andrew.tasky.agenda.data.event
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class UpdateEventRequest(
     val id: String,
     val title: String,

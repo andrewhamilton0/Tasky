@@ -1,6 +1,6 @@
 package com.andrew.tasky.domain
 
-import com.andrew.tasky.core.StringToInitials
+import com.andrew.tasky.core.domain.StringToInitials
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 

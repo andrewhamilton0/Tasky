@@ -1,4 +1,6 @@
-package com.andrew.tasky.core
+package com.andrew.tasky.core.data
+
+import com.andrew.tasky.core.UiText
 
 sealed class Resource<T>(
     val data: T? = null,

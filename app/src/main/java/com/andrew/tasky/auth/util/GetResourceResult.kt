@@ -1,9 +1,9 @@
 package com.andrew.tasky.auth.util
 
 import com.andrew.tasky.R
-import com.andrew.tasky.core.ErrorMessageDto
-import com.andrew.tasky.core.Resource
 import com.andrew.tasky.core.UiText
+import com.andrew.tasky.core.data.ErrorMessageDto
+import com.andrew.tasky.core.data.Resource
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

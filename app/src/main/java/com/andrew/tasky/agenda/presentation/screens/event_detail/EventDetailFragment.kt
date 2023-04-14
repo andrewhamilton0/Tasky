@@ -69,10 +69,12 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             agendaItemTypeTVAndIconLayout.agendaItemTypeTextView.text = getString(R.string.event)
 
             addTitleAndDoneButtonLayout.taskDoneCircle.setOnClickListener {
+                viewModel.setEditMode(true)
                 viewModel.setIsDone(!viewModel.isDone.value)
             }
 
             addTitleAndDoneButtonLayout.titleTextView.setOnClickListener {
+                viewModel.setEditMode(true)
                 navigateToEditFragment(
                     editType = EditType.TITLE,
                     originalText = viewModel.title.value,
@@ -80,6 +82,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 )
             }
             addTitleAndDoneButtonLayout.editTitleButton.setOnClickListener {
+                viewModel.setEditMode(true)
                 navigateToEditFragment(
                     editType = EditType.TITLE,
                     originalText = viewModel.title.value,
@@ -88,6 +91,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
 
             addDescriptionLayout.editDescriptionButton.setOnClickListener {
+                viewModel.setEditMode(true)
                 navigateToEditFragment(
                     editType = EditType.DESCRIPTION,
                     originalText = viewModel.description.value,
@@ -95,6 +99,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 )
             }
             addDescriptionLayout.descriptionTextView.setOnClickListener {
+                viewModel.setEditMode(true)
                 navigateToEditFragment(
                     editType = EditType.DESCRIPTION,
                     originalText = viewModel.description.value,
@@ -121,40 +126,50 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             startTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.from)
 
             startTimeAndDateLayout.timeTextView.setOnClickListener {
+                viewModel.setEditMode(true)
                 showTimePickerDialog(viewModel::setStartTime)
             }
             startTimeAndDateLayout.timeButton.setOnClickListener {
+                viewModel.setEditMode(true)
                 showTimePickerDialog(viewModel::setStartTime)
             }
             startTimeAndDateLayout.dateTextView.setOnClickListener {
+                viewModel.setEditMode(true)
                 showDatePickerDialog(viewModel::setStartDate)
             }
             startTimeAndDateLayout.dateButton.setOnClickListener {
+                viewModel.setEditMode(true)
                 showDatePickerDialog(viewModel::setStartDate)
             }
 
             endTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.to)
 
             endTimeAndDateLayout.timeTextView.setOnClickListener {
+                viewModel.setEditMode(true)
                 showTimePickerDialog(viewModel::setEndTime)
             }
             endTimeAndDateLayout.timeButton.setOnClickListener {
+                viewModel.setEditMode(true)
                 showTimePickerDialog(viewModel::setEndTime)
             }
             endTimeAndDateLayout.dateTextView.setOnClickListener {
+                viewModel.setEditMode(true)
                 showDatePickerDialog(viewModel::setEndDate)
             }
             endTimeAndDateLayout.dateButton.setOnClickListener {
+                viewModel.setEditMode(true)
                 showDatePickerDialog(viewModel::setEndDate)
             }
 
             reminderLayout.reminderTextView.setOnClickListener {
+                viewModel.setEditMode(true)
                 showReminderOptionsPopupMenu(
                     it,
                     viewModel::setSelectedReminderTime
                 )
             }
             reminderLayout.reminderButton.setOnClickListener {
+                viewModel.setEditMode(true)
                 showReminderOptionsPopupMenu(
                     it,
                     viewModel::setSelectedReminderTime
@@ -162,6 +177,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
 
             attendeesLayout.addAttendeeButton.setOnClickListener {
+                viewModel.setEditMode(true)
                 showAttendeeDialog(onEmailResult = viewModel::addAttendee)
             }
             attendeesLayout.allButton.setOnClickListener {
@@ -279,10 +295,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                     requireContext()
                 )
 
-                collectLatestLifecycleFlow(viewModel.finishedSavingEvent) {
-                    navController.popBackStack()
-                }
-
                 collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
                     goingAttendeeAdapter.submitList(goingAttendees)
                 }
@@ -315,11 +327,26 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                         )
                     }
                 } else {
-                    deleteBtn.deleteAgendaItemButton.text = getString(R.string.leave_event)
-                    deleteBtn.deleteAgendaItemButton.setOnClickListener {
-                        viewModel.leaveEvent()
+                    collectLatestLifecycleFlow(viewModel.isAttendeeGoing) { isGoing ->
+                        if (isGoing) {
+                            deleteBtn.deleteAgendaItemButton.text = getString(R.string.leave_event)
+                            deleteBtn.deleteAgendaItemButton.setOnClickListener {
+                                viewModel.setEditMode(true)
+                                viewModel.leaveEvent()
+                            }
+                        } else {
+                            deleteBtn.deleteAgendaItemButton.text = getString(R.string.join_event)
+                            deleteBtn.deleteAgendaItemButton.setOnClickListener {
+                                viewModel.setEditMode(true)
+                                viewModel.joinEvent()
+                            }
+                        }
                     }
                 }
+            }
+
+            collectLatestLifecycleFlow(viewModel.finishedSavingEvent) {
+                navController.popBackStack()
             }
 
             collectLatestLifecycleFlow(viewModel.uiEventPhotos) { photoList ->

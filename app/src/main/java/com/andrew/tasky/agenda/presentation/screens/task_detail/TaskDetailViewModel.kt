@@ -99,7 +99,7 @@ class TaskDetailViewModel @Inject constructor(
     }
 
     init {
-        savedStateHandle.get<String>("taskId")?.let { taskId ->
+        savedStateHandle.get<String>("id")?.let { taskId ->
             viewModelScope.launch {
                 repository.getTask(taskId)?.let { task ->
                     setIsDone(task.isDone)

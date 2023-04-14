@@ -4,7 +4,7 @@ import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.domain.models.UpsertEventResult
-import com.andrew.tasky.core.Resource
+import com.andrew.tasky.core.data.Resource
 
 interface EventRepository {
     suspend fun upsertEvent(event: AgendaItem.Event): UpsertEventResult

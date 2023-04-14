@@ -44,7 +44,7 @@
             android:id="@+id/action_agendaFragment_to_event_nav"
             app:destination="@id/event_nav">
             <argument
-                android:name="eventId"
+                android:name="id"
                 app:argType="string"
                 app:nullable="true" />
             <argument
@@ -65,7 +65,7 @@
         android:label="fragment_reminder_detail"
         tools:layout="@layout/fragment_reminder_detail" >
         <argument
-            android:name="reminderId"
+            android:name="id"
             app:argType="string"
             app:nullable="true"
             />
@@ -80,7 +80,7 @@
         android:label="fragment_task_detail"
         tools:layout="@layout/fragment_task_detail" >
         <argument
-            android:name="taskId"
+            android:name="id"
             app:argType="string"
             app:nullable="true"
             />

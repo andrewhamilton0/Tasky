@@ -9,7 +9,7 @@ interface TaskDao {
     suspend fun upsertTask(task: TaskEntity): Long
 
     @Query("SELECT * FROM TaskEntity WHERE time BETWEEN :startEpochMilli AND :endEpochMilli")
-    fun getTasksOfDate(
+    fun getTasksBetweenTimes(
         startEpochMilli: Long,
         endEpochMilli: Long
     ): Flow<List<TaskEntity>>

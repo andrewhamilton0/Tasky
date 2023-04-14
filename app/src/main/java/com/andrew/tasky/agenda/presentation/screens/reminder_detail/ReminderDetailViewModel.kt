@@ -99,7 +99,7 @@ class ReminderDetailViewModel @Inject constructor(
     }
 
     init {
-        savedStateHandle.get<String>("reminderId")?.let { reminderId ->
+        savedStateHandle.get<String>("id")?.let { reminderId ->
             viewModelScope.launch {
                 repository.getReminder(reminderId)?.let { reminder ->
                     setIsDone(reminder.isDone)

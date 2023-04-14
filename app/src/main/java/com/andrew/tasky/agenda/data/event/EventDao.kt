@@ -13,7 +13,7 @@ interface EventDao {
         "SELECT * FROM EventEntity WHERE startDateAndTime BETWEEN " +
             ":startEpochMilli AND :endEpochMilli"
     )
-    fun getEventsOfDate(
+    fun getEventsBetweenTimes(
         startEpochMilli: Long,
         endEpochMilli: Long
     ): Flow<List<EventEntity>>

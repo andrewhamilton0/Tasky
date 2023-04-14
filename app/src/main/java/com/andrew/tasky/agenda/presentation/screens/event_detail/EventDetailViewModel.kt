@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.presentation.screens.event_detail
 
+import android.content.SharedPreferences
 import android.net.Uri
 import androidx.lifecycle.*
 import com.andrew.tasky.R
@@ -11,8 +12,9 @@ import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.util.ReminderTime
 import com.andrew.tasky.agenda.util.UiEventPhoto
-import com.andrew.tasky.core.Resource
 import com.andrew.tasky.core.UiText
+import com.andrew.tasky.core.data.PrefsKeys
+import com.andrew.tasky.core.data.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,8 +31,12 @@ import kotlinx.coroutines.withContext
 class EventDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: EventRepository,
-    private val uriByteConverter: UriByteConverter
+    private val uriByteConverter: UriByteConverter,
+    private val prefs: SharedPreferences
 ) : ViewModel() {
+
+    private var hostId: String? = null
+    private val deletedPhotoKeys = mutableListOf<String>()
 
     private val _isInEditMode = MutableStateFlow(false)
     val isInEditMode = _isInEditMode.asStateFlow()
@@ -100,6 +106,7 @@ class EventDetailViewModel @Inject constructor(
         }
     }
     fun deletePhoto(photo: EventPhoto) {
+        deletedPhotoKeys.add(photo.key)
         _photos.value -= photo
     }
 
@@ -152,7 +159,6 @@ class EventDetailViewModel @Inject constructor(
                         )
                     }
                 }
-                else -> Unit // Todo look into this
             }
         }
     }
@@ -246,9 +252,9 @@ class EventDetailViewModel @Inject constructor(
             photos = photos.value,
             attendees = attendees.value,
             isCreator = isCreator.value,
-            host = null, // TODO setup host
-            deletedPhotoKeys = emptyList(), // TODO setup deletedPhotosKeys
-            isGoing = true // TODO setup isGoing
+            host = hostId,
+            deletedPhotoKeys = deletedPhotoKeys,
+            isGoing = isAttendeeGoing.value
         )
     }
 
@@ -261,7 +267,25 @@ class EventDetailViewModel @Inject constructor(
     private val finishedSavingEventChannel = Channel<Unit>()
     val finishedSavingEvent = finishedSavingEventChannel.receiveAsFlow()
 
+    private val _isAttendeeGoing = MutableStateFlow(true)
+    val isAttendeeGoing = _isAttendeeGoing.asStateFlow()
+
     fun leaveEvent() {
+        _isAttendeeGoing.value = false
+        _attendees.value = attendees.value.map { attendee ->
+            if (attendee.userId == prefs.getString(PrefsKeys.USER_ID, "")) {
+                attendee.copy(isGoing = false)
+            } else attendee
+        }
+    }
+
+    fun joinEvent() {
+        _isAttendeeGoing.value = true
+        _attendees.value = attendees.value.map { attendee ->
+            if (attendee.userId == prefs.getString(PrefsKeys.USER_ID, "")) {
+                attendee.copy(isGoing = true)
+            } else attendee
+        }
     }
 
     fun deleteEvent() {
@@ -275,7 +299,7 @@ class EventDetailViewModel @Inject constructor(
     }
 
     init {
-        savedStateHandle.get<String>("eventId")?.let { id ->
+        savedStateHandle.get<String>("id")?.let { id ->
             viewModelScope.launch {
                 repository.getEvent(id)?.let { event ->
                     _isCreator.update { event.isCreator }
@@ -289,6 +313,8 @@ class EventDetailViewModel @Inject constructor(
                     setSelectedReminderTime(event.reminderTime)
                     _photos.update { event.photos }
                     _attendees.update { event.attendees }
+                    _isAttendeeGoing.update { event.isGoing }
+                    hostId = event.host
                 }
             }
         }

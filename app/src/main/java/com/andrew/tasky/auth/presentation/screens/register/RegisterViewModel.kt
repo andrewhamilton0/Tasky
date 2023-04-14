@@ -6,7 +6,7 @@ import com.andrew.tasky.auth.domain.AuthRepository
 import com.andrew.tasky.auth.domain.EmailPatternValidator
 import com.andrew.tasky.auth.util.NameValidator
 import com.andrew.tasky.auth.util.PasswordValidator
-import com.andrew.tasky.core.Resource
+import com.andrew.tasky.core.data.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel

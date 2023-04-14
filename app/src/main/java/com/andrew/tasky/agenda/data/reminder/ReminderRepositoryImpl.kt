@@ -7,7 +7,7 @@ import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.util.getResourceResult
-import com.andrew.tasky.core.Resource
+import com.andrew.tasky.core.data.Resource
 import javax.inject.Inject
 
 class ReminderRepositoryImpl @Inject constructor(
