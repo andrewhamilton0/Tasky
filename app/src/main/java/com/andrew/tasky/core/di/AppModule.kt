@@ -7,6 +7,7 @@ import androidx.room.Room
 import androidx.work.WorkManager
 import com.andrew.tasky.agenda.data.agenda.AgendaApi
 import com.andrew.tasky.agenda.data.agenda.AgendaRepositoryImpl
+import com.andrew.tasky.agenda.data.agenda.notifications.AgendaNotificationSchedulerImpl
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.event.EventApi
 import com.andrew.tasky.agenda.data.event.EventRepositoryImpl
@@ -41,6 +42,14 @@ object AppModule {
     @Singleton
     fun provideEmailValidator(): EmailPatternValidator {
         return EmailPatternValidatorImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAgendaNotificationScheduler(
+        context: Application
+    ): AgendaNotificationScheduler {
+        return AgendaNotificationSchedulerImpl(context = context)
     }
 
     @Provides
