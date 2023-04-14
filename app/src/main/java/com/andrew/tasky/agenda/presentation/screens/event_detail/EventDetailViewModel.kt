@@ -36,7 +36,7 @@ class EventDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var hostId: String? = null
-    private val deletedPhotoKeys = mutableListOf<String>()
+    private val deletedPhotos = mutableListOf<EventPhoto>()
 
     private val _isInEditMode = MutableStateFlow(false)
     val isInEditMode = _isInEditMode.asStateFlow()
@@ -106,7 +106,7 @@ class EventDetailViewModel @Inject constructor(
         }
     }
     fun deletePhoto(photo: EventPhoto) {
-        deletedPhotoKeys.add(photo.key)
+        deletedPhotos.add(photo)
         _photos.value -= photo
     }
 
@@ -235,7 +235,7 @@ class EventDetailViewModel @Inject constructor(
 
     private fun getEvent(): AgendaItem.Event {
         return AgendaItem.Event(
-            id = savedStateHandle.get<String>("eventId")
+            id = savedStateHandle.get<String>("id")
                 ?: UUID.randomUUID().toString(),
             isDone = isDone.value,
             title = title.value,
@@ -253,7 +253,7 @@ class EventDetailViewModel @Inject constructor(
             attendees = attendees.value,
             isCreator = isCreator.value,
             host = hostId,
-            deletedPhotoKeys = deletedPhotoKeys,
+            deletedPhotos = deletedPhotos,
             isGoing = isAttendeeGoing.value
         )
     }
@@ -291,7 +291,7 @@ class EventDetailViewModel @Inject constructor(
     fun deleteEvent() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<String>("eventId")?.let {
+                savedStateHandle.get<String>("id")?.let {
                     repository.deleteEvent(it)
                 }
             }
@@ -315,6 +315,7 @@ class EventDetailViewModel @Inject constructor(
                     _attendees.update { event.attendees }
                     _isAttendeeGoing.update { event.isGoing }
                     hostId = event.host
+                    deletedPhotos.addAll(event.deletedPhotos)
                 }
             }
         }

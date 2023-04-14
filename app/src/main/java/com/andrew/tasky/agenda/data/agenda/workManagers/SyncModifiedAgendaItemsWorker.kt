@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.data.agenda
+package com.andrew.tasky.agenda.data.agenda.workManagers
 
 import android.content.Context
 import android.util.Log
@@ -6,7 +6,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.andrew.tasky.agenda.domain.AgendaRepository
-import com.andrew.tasky.core.Resource
+import com.andrew.tasky.core.data.Resource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -21,14 +21,14 @@ class SyncModifiedAgendaItemsWorker @AssistedInject constructor(
         val result = agendaRepository.syncModifiedAgendaItems()
         return when (result) {
             is Resource.Error -> {
-                Result.success()
-            }
-            is Resource.Success -> {
                 Log.e(
                     "Sync Agenda work request",
                     result.message?.asString(appContext) ?: "unknown error"
                 )
                 Result.failure()
+            }
+            is Resource.Success -> {
+                Result.success()
             }
         }
     }

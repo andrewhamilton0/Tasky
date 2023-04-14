@@ -1,20 +1,21 @@
-package com.andrew.tasky.agenda.data.util
+package com.andrew.tasky.agenda.domain
 
+import android.icu.util.TimeZone
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
 
 fun LocalDateTime.toZonedEpochMilli(): Long {
     return ZonedDateTime.of(
         this,
-        TimeZone.getDefault().toZoneId()
+        ZoneId.of(TimeZone.getDefault().id)
     ).toInstant().toEpochMilli()
 }
 
 fun Long.toLocalDateTime(): LocalDateTime {
     return ZonedDateTime.ofInstant(
         Instant.ofEpochMilli(this),
-        TimeZone.getDefault().toZoneId()
+        ZoneId.of(TimeZone.getDefault().id)
     ).toLocalDateTime()
 }

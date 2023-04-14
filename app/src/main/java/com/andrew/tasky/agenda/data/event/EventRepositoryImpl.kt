@@ -1,6 +1,7 @@
 package com.andrew.tasky.agenda.data.event
 
 import android.content.Context
+import android.util.Log
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.storage.ImageStorage
@@ -52,11 +53,7 @@ class EventRepositoryImpl @Inject constructor(
             }.toImmutableList()
         )
         val newEvent = eventWithCompressedPhotos.copy(
-            photos = eventWithCompressedPhotos.photos.map { photo ->
-                if (photo is LocalPhoto && photo.savedInternally) {
-                    photo.copy(byteArray = imageStorage.getByteArray(photo.key))
-                } else photo
-            }
+            photos = getPhotosSavedByteArrays(eventWithCompressedPhotos.photos)
         )
 
         val isCreateEvent = isEventToBeCreated(newEvent.id)
@@ -77,6 +74,7 @@ class EventRepositoryImpl @Inject constructor(
                 }
             }
         } else {
+            deleteInternalPhotos(newEvent.deletedPhotos.filterIsInstance<LocalPhoto>())
             val result = updateRemoteEvent(newEvent)
             return when (result) {
                 is Resource.Error -> {
@@ -134,10 +132,10 @@ class EventRepositoryImpl @Inject constructor(
 
     private suspend fun updateRemoteEventSuccess(
         result: Resource<EventDto>,
-        event: Event
+        localEvent: Event
     ) {
-        upsertApiResultToDb(result, event)
-        event.photos.filterIsInstance<LocalPhoto>().filter {
+        upsertApiResultToDb(result, localEvent)
+        localEvent.photos.filterIsInstance<LocalPhoto>().filter {
             it.savedInternally
         }.forEach {
             imageStorage.deleteImage(it.key)
@@ -153,13 +151,13 @@ class EventRepositoryImpl @Inject constructor(
 
     private suspend fun upsertApiResultToDb(
         result: Resource<EventDto>,
-        event: Event
+        localEvent: Event
     ) {
         result.data?.let {
             db.getEventDao().upsertEvent(
                 it.toEventEntity(
-                    isDone = event.isDone,
-                    isGoing = event.isGoing
+                    isDone = localEvent.isDone,
+                    isGoing = localEvent.isGoing
                 )
             )
         }
@@ -181,6 +179,7 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     private suspend fun updateRemoteEvent(event: Event): Resource<EventDto> {
+        Log.d("DELETED PHOTOS req", event.toUpdateEventRequest().deletedPhotoKeys.toString())
         return getResourceResult {
             api.updateEvent(
                 eventData = MultipartBody.Part
@@ -224,7 +223,7 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun photosWithSavedByteArrays(photos: List<EventPhoto>): List<EventPhoto> {
+    private suspend fun getPhotosSavedByteArrays(photos: List<EventPhoto>): List<EventPhoto> {
         val eventPhotosWithByteArrays = photos.map { photo ->
             if (photo is LocalPhoto && photo.savedInternally) {
                 photo.copy(byteArray = imageStorage.getByteArray(photo.key))

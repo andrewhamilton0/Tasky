@@ -21,7 +21,7 @@ sealed class AgendaItem(open val startDateAndTime: LocalDateTime, open val id: S
         val isCreator: Boolean,
         val attendees: @RawValue List<Attendee>,
         val host: String?,
-        val deletedPhotoKeys: List<String> = emptyList(),
+        val deletedPhotos: @RawValue List<EventPhoto> = emptyList(),
         val isGoing: Boolean
     ) : AgendaItem(startDateAndTime = startDateAndTime, id = id), Parcelable
 

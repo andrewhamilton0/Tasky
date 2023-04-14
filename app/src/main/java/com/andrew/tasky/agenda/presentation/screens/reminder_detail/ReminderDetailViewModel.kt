@@ -67,7 +67,7 @@ class ReminderDetailViewModel @Inject constructor(
     fun saveAgendaItem() {
         val reminder = AgendaItem.Reminder(
             id = savedStateHandle
-                .get<String>("reminderId") ?: UUID.randomUUID().toString(),
+                .get<String>("id") ?: UUID.randomUUID().toString(),
             isDone = isDone.value,
             title = title.value,
             description = description.value,
@@ -79,7 +79,7 @@ class ReminderDetailViewModel @Inject constructor(
         )
         viewModelScope.launch {
             withContext(NonCancellable) {
-                if (savedStateHandle.get<String>("reminderId") == null) {
+                if (savedStateHandle.get<String>("id") == null) {
                     repository.createReminder(reminder)
                 } else {
                     repository.updateReminder(reminder)
@@ -91,7 +91,7 @@ class ReminderDetailViewModel @Inject constructor(
     fun deleteAgendaItem() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<String>("reminderId")?.let {
+                savedStateHandle.get<String>("id")?.let {
                     repository.deleteReminder(it)
                 }
             }

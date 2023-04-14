@@ -11,13 +11,10 @@ import com.andrew.tasky.agenda.data.reminder.toReminderEntity
 import com.andrew.tasky.agenda.data.task.toTask
 import com.andrew.tasky.agenda.data.task.toTaskEntity
 import com.andrew.tasky.agenda.data.util.*
-import com.andrew.tasky.agenda.domain.AgendaRepository
-import com.andrew.tasky.agenda.domain.EventRepository
-import com.andrew.tasky.agenda.domain.ReminderRepository
-import com.andrew.tasky.agenda.domain.TaskRepository
+import com.andrew.tasky.agenda.domain.*
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.util.getResourceResult
-import com.andrew.tasky.core.Resource
+import com.andrew.tasky.core.data.Resource
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -33,11 +30,11 @@ class AgendaRepositoryImpl(
     private val appContext: Context
 ) : AgendaRepository {
 
-    override suspend fun getAgendaItems(localDate: LocalDate): Flow<List<AgendaItem>> {
+    override suspend fun getAgendaItemsOfDateFlow(localDate: LocalDate): Flow<List<AgendaItem>> {
         val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
         val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
 
-        val reminders = db.getReminderDao().getRemindersOfDate(
+        val reminders = db.getReminderDao().getRemindersBetweenTimes(
             startEpochMilli = startEpochMilli,
             endEpochMilli = endEpochMilli
         ).map {
@@ -45,7 +42,7 @@ class AgendaRepositoryImpl(
                 reminderEntity.toReminder()
             }
         }
-        val tasks = db.getTaskDao().getTasksOfDate(
+        val tasks = db.getTaskDao().getTasksBetweenTimes(
             startEpochMilli = startEpochMilli,
             endEpochMilli = endEpochMilli
         ).map {
@@ -53,7 +50,7 @@ class AgendaRepositoryImpl(
                 taskEntity.toTask()
             }
         }
-        val events = db.getEventDao().getEventsOfDate(
+        val events = db.getEventDao().getEventsBetweenTimes(
             startEpochMilli = startEpochMilli,
             endEpochMilli = endEpochMilli
         ).map {
@@ -75,6 +72,46 @@ class AgendaRepositoryImpl(
         }
     }
 
+    override suspend fun getOneTimeAgendaItemsBetweenTimes(
+        startEpochMilli: Long,
+        endEpochMilli: Long
+    ): List<AgendaItem> {
+        val reminders = db.getReminderDao().getRemindersBetweenTimes(
+            startEpochMilli = startEpochMilli,
+            endEpochMilli = endEpochMilli
+        ).map {
+            it.map { reminderEntity ->
+                reminderEntity.toReminder()
+            }
+        }.first()
+
+        val tasks = db.getTaskDao().getTasksBetweenTimes(
+            startEpochMilli = startEpochMilli,
+            endEpochMilli = endEpochMilli
+        ).map {
+            it.map { taskEntity ->
+                taskEntity.toTask()
+            }
+        }.first()
+
+        val events = db.getEventDao().getEventsBetweenTimes(
+            startEpochMilli = startEpochMilli,
+            endEpochMilli = endEpochMilli
+        ).map {
+            supervisorScope {
+                it.map { eventEntity ->
+                    async {
+                        eventEntity.toEvent(eventRepository)
+                    }
+                }.map { it.await() }
+            }
+        }.first()
+
+        val agendaItems = events + reminders + tasks
+
+        return agendaItems.sortedBy { it.startDateAndTime }
+    }
+
     override suspend fun updateAgendaItemCache(localDate: LocalDate) {
         val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
         val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
@@ -94,7 +131,7 @@ class AgendaRepositoryImpl(
                 )
             }
             is Resource.Success -> {
-                val localReminders = db.getReminderDao().getRemindersOfDate(
+                val localReminders = db.getReminderDao().getRemindersBetweenTimes(
                     startEpochMilli = startEpochMilli,
                     endEpochMilli = endEpochMilli
                 ).first()
@@ -113,7 +150,7 @@ class AgendaRepositoryImpl(
                     )
                     db.getReminderDao().upsertReminder(remoteReminder)
                 }
-                val localTasks = db.getTaskDao().getTasksOfDate(
+                val localTasks = db.getTaskDao().getTasksBetweenTimes(
                     startEpochMilli = startEpochMilli,
                     endEpochMilli = endEpochMilli
                 ).first()
@@ -128,7 +165,7 @@ class AgendaRepositoryImpl(
                 results.data?.tasks?.forEach { taskDto ->
                     db.getTaskDao().upsertTask(taskDto.toTaskEntity())
                 }
-                val localEvents = db.getEventDao().getEventsOfDate(
+                val localEvents = db.getEventDao().getEventsBetweenTimes(
                     startEpochMilli = startEpochMilli,
                     endEpochMilli = endEpochMilli
                 ).first()
