@@ -1,6 +1,7 @@
 package com.andrew.tasky.agenda.data.event
 
 import com.andrew.tasky.R
+import com.andrew.tasky.agenda.data.agenda.notifications.AgendaNotificationService
 import com.andrew.tasky.agenda.data.event.attendee.toAttendee
 import com.andrew.tasky.agenda.data.event.photo.toEventPhoto
 import com.andrew.tasky.agenda.data.event.photo.toRemotePhotoDto
@@ -11,7 +12,6 @@ import com.andrew.tasky.agenda.domain.models.AgendaNotificationInfo
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.domain.toLocalDateTime
 import com.andrew.tasky.agenda.domain.toZonedEpochMilli
-import com.andrew.tasky.agenda.data.agenda.notifications.AgendaNotificationService
 
 fun AgendaItem.Event.toCreateEventRequest(): CreateEventRequest {
     return CreateEventRequest(
@@ -44,7 +44,7 @@ fun AgendaItem.Event.toUpdateEventRequest(): UpdateEventRequest {
         attendeeIds = attendees.map {
             it.userId
         },
-        deletedPhotoKeys = deletedPhotoKeys,
+        deletedPhotoKeys = deletedPhotos.filterIsInstance<EventPhoto.Remote>().map { it.key },
         isGoing = isGoing
     )
 }
@@ -66,7 +66,10 @@ fun AgendaItem.Event.toEventEntity(): EventEntity {
         isGoing = isGoing,
         remotePhotos = photos.filterIsInstance<EventPhoto.Remote>().map { it.toRemotePhotoDto() },
         localPhotosKeys = photos.filterIsInstance<EventPhoto.Local>().map { it.key },
-        attendees = attendees
+        attendees = attendees,
+        remoteDeletedPhotos = deletedPhotos.filterIsInstance<EventPhoto.Remote>().map {
+            it.toRemotePhotoDto()
+        }
     )
 }
 
@@ -105,7 +108,8 @@ suspend fun EventEntity.toEvent(eventRepository: EventRepository): AgendaItem.Ev
         isCreator = isCreator,
         isGoing = isGoing,
         photos = remotePhotos.map { it.toEventPhoto() } + localPhotos,
-        attendees = attendees
+        attendees = attendees,
+        deletedPhotos = remoteDeletedPhotos.map { it.toEventPhoto() }
     )
 }
 

@@ -19,6 +19,6 @@ data class EventEntity(
     val isCreator: Boolean,
     val attendees: List<Attendee>,
     val host: String?,
-    val deletedPhotoKeys: List<String> = emptyList(),
+    val remoteDeletedPhotos: List<RemoteEventPhotoDto> = emptyList(),
     val isGoing: Boolean
 )

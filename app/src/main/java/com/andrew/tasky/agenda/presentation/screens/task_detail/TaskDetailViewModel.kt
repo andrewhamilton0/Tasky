@@ -67,7 +67,7 @@ class TaskDetailViewModel @Inject constructor(
     fun saveAgendaItem() {
         val task = AgendaItem.Task(
             id = savedStateHandle
-                .get<String>("taskId") ?: UUID.randomUUID().toString(),
+                .get<String>("id") ?: UUID.randomUUID().toString(),
             isDone = isDone.value,
             title = title.value,
             description = description.value,
@@ -79,7 +79,7 @@ class TaskDetailViewModel @Inject constructor(
         )
         viewModelScope.launch {
             withContext(NonCancellable) {
-                if (savedStateHandle.get<String>("taskId") == null) {
+                if (savedStateHandle.get<String>("id") == null) {
                     repository.createTask(task)
                 } else {
                     repository.updateTask(task)
@@ -91,7 +91,7 @@ class TaskDetailViewModel @Inject constructor(
     fun deleteAgendaItem() {
         viewModelScope.launch {
             withContext(NonCancellable) {
-                savedStateHandle.get<String>("taskId")?.let {
+                savedStateHandle.get<String>("id")?.let {
                     repository.deleteTask(it)
                 }
             }
