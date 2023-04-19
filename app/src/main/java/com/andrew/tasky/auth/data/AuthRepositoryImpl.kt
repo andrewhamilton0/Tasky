@@ -1,17 +1,16 @@
 package com.andrew.tasky.auth.data
 
-import android.content.SharedPreferences
 import androidx.work.*
 import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.auth.domain.AuthRepository
 import com.andrew.tasky.auth.util.getResourceResult
-import com.andrew.tasky.core.data.PrefsKeys
 import com.andrew.tasky.core.data.Resource
+import com.andrew.tasky.core.domain.SharedPrefs
 import com.andrew.tasky.core.util.WorkerParamKeys
 
 class AuthRepositoryImpl(
     private val api: AuthApi,
-    private val prefs: SharedPreferences,
+    private val prefs: SharedPrefs,
     private val agendaRepository: AgendaRepository,
     private val workManager: WorkManager
 ) : AuthRepository {
@@ -54,28 +53,22 @@ class AuthRepositoryImpl(
                 Resource.Error(result.message)
             }
             is Resource.Success -> {
-                prefs.edit()
-                    .putString(PrefsKeys.JWT, result.data?.token)
-                    .putString(PrefsKeys.USER_ID, result.data?.userId)
-                    .putString(PrefsKeys.FULL_NAME, result.data?.fullName)
-                    .apply()
+                result.data?.token?.let { prefs.putJwt(it) }
+                result.data?.userId?.let { prefs.putUserId(it) }
+                result.data?.fullName?.let { prefs.putFullName(it) }
                 Resource.Success()
             }
         }
     }
 
     override suspend fun authenticate(): Resource<Unit> {
-        val token = prefs.getString(
-            PrefsKeys.JWT, null
-        ) ?: return Resource.Error()
+        val token = prefs.getJwt() ?: return Resource.Error()
 
         return getResourceResult { api.authenticate("Bearer $token") }
     }
 
     override suspend fun logout() {
-        val token = prefs.getString(
-            PrefsKeys.JWT, null
-        )
+        val token = prefs.getJwt()
         val data = Data.Builder().putString(
             WorkerParamKeys.TOKEN,
             token
@@ -89,7 +82,7 @@ class AuthRepositoryImpl(
                     .build()
             ).build()
         workManager.enqueue(logoutWorker)
-        prefs.edit().clear().apply()
+        prefs.clearPrefs()
         agendaRepository.deleteAllAgendaTables()
     }
 }

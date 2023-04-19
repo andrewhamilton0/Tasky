@@ -1,9 +1,8 @@
 package com.andrew.tasky.core.presentation.main
 
-import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrew.tasky.core.data.PrefsKeys
+import com.andrew.tasky.core.domain.SharedPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +11,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val prefs: SharedPreferences
+    private val sharedPrefs: SharedPrefs
 ) : ViewModel() {
 
     private val _isUserLoggedIn = MutableStateFlow(false)
@@ -23,7 +22,7 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _isUserLoggedIn.value = prefs.contains(PrefsKeys.JWT)
+            _isUserLoggedIn.value = sharedPrefs.containsJwt()
             _isLoading.value = false
         }
     }

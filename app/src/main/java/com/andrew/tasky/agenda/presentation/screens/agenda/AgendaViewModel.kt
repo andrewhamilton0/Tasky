@@ -1,24 +1,19 @@
 package com.andrew.tasky.agenda.presentation.screens.agenda
 
-import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.andrew.tasky.agenda.data.agenda.workManagers.AgendaNotificationScheduleWorker
 import com.andrew.tasky.agenda.data.agenda.workManagers.SyncModifiedAgendaItemsWorker
-import com.andrew.tasky.agenda.domain.AgendaRepository
-import com.andrew.tasky.agenda.domain.EventRepository
-import com.andrew.tasky.agenda.domain.ReminderRepository
-import com.andrew.tasky.agenda.domain.TaskRepository
+import com.andrew.tasky.agenda.domain.*
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.CalendarDateItem
 import com.andrew.tasky.agenda.util.DateType
 import com.andrew.tasky.agenda.util.UiAgendaItem
 import com.andrew.tasky.auth.domain.AuthRepository
-import com.andrew.tasky.core.data.PrefsKeys
+import com.andrew.tasky.core.domain.SharedPrefs
 import com.andrew.tasky.core.domain.StringToInitials
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.*
@@ -35,10 +30,10 @@ class AgendaViewModel@Inject constructor(
     private val eventRepository: EventRepository,
     private val authRepository: AuthRepository,
     workManager: WorkManager,
-    prefs: SharedPreferences
+    prefs: SharedPrefs
 ) : ViewModel() {
 
-    private val fullName = prefs.getString(PrefsKeys.FULL_NAME, "") ?: ""
+    private val fullName = prefs.getFullName()
     val nameInitials = StringToInitials.convertStringToInitials(fullName)
 
     private val _dateSelected = MutableStateFlow(LocalDate.now())
@@ -164,14 +159,9 @@ class AgendaViewModel@Inject constructor(
                     .build()
             ).build()
 
-    private val agendaNotificationWorkRequest =
-        PeriodicWorkRequestBuilder<AgendaNotificationScheduleWorker>(15, TimeUnit.MINUTES)
-            .build()
-
     init {
         workManager.apply {
             enqueue(syncModifiedAgendaItemsWorkRequest)
-            enqueue(agendaNotificationWorkRequest)
         }
         viewModelScope.launch {
             dateSelected.collectLatest { agendaRepository.updateAgendaItemCache(it) }

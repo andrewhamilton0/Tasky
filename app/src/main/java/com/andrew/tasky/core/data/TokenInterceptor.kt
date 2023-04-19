@@ -1,15 +1,15 @@
 package com.andrew.tasky.core.data
 
-import android.content.SharedPreferences
+import com.andrew.tasky.core.domain.SharedPrefs
 import okhttp3.Interceptor
 import okhttp3.Response
 
 class TokenInterceptor(
-    private val prefs: SharedPreferences
+    private val prefs: SharedPrefs
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
 
-        val token = prefs.getString(PrefsKeys.JWT, null)
+        val token = prefs.getJwt()
 
         val request = chain.request()
             .newBuilder()
