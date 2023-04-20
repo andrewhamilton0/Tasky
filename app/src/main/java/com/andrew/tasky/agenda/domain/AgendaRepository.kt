@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AgendaRepository {
     suspend fun getAgendaItemsOfDateFlow(localDate: LocalDate): Flow<List<AgendaItem>>
+    suspend fun getAgendaItemById(id: String): AgendaItem?
     suspend fun updateAgendaItemCache(localDate: LocalDate)
     suspend fun syncModifiedAgendaItems(): Resource<Unit>
     suspend fun deleteAllAgendaTables()

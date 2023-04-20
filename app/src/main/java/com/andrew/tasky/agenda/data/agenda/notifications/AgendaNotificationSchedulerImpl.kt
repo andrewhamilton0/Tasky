@@ -5,7 +5,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.andrew.tasky.agenda.domain.AgendaNotificationScheduler
-import com.andrew.tasky.agenda.domain.models.AgendaNotificationInfo
 
 class AgendaNotificationSchedulerImpl(
     private val context: Context
@@ -13,29 +12,29 @@ class AgendaNotificationSchedulerImpl(
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
-    override fun schedule(agendaNotificationInfo: AgendaNotificationInfo) {
+    override fun schedule(agendaId: String, time: Long) {
 
         val intent = Intent(context, AgendaBroadcastReceiver::class.java)
-            .putExtra(AGENDA_NOTIF_SCHED_INTENT, agendaNotificationInfo)
+            .putExtra(AGENDA_NOTIF_SCHED_INTENT, agendaId)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            agendaNotificationInfo.id.hashCode(),
+            agendaId.hashCode(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            agendaNotificationInfo.notificationZonedMilliTime,
+            time,
             pendingIntent
         )
     }
 
-    override fun cancel(agendaNotificationInfo: AgendaNotificationInfo) {
+    override fun cancel(agendaId: String) {
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,
-                agendaNotificationInfo.id.hashCode(),
+                agendaId.hashCode(),
                 Intent(context, AgendaNotificationService::class.java),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

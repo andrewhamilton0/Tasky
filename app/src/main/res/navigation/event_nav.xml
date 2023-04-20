@@ -17,7 +17,8 @@
             app:nullable="true" />
         <argument
             android:name="isInEditMode"
-            app:argType="boolean" />
+            app:argType="boolean"
+            android:defaultValue="false"/>
         <action
             android:id="@+id/action_eventDetailFragment_to_photoDetailFragment"
             app:destination="@id/photoDetailFragment" />

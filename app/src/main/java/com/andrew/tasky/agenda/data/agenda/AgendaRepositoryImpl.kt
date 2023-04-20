@@ -72,6 +72,16 @@ class AgendaRepositoryImpl(
         }
     }
 
+    override suspend fun getAgendaItemById(id: String): AgendaItem? {
+        val event = eventRepository.getEvent(id)
+        val task = taskRepository.getTask(id)
+        val reminder = reminderRepository.getReminder(id)
+
+        val agendaItems = listOf(event, task, reminder)
+        agendaItems.forEach { if (it != null) return it }
+        return null
+    }
+
     override suspend fun updateAgendaItemCache(localDate: LocalDate) {
         val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
         val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()

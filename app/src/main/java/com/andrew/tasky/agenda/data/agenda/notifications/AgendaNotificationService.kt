@@ -18,7 +18,6 @@ class AgendaNotificationService(
     fun showNotification(info: AgendaNotificationInfo) {
         val navArs = Bundle().apply {
             putString("id", info.id)
-            putBoolean("isInEditMode", false)
         }
 
         val navIntent = NavDeepLinkBuilder(context)
