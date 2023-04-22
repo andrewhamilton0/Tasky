@@ -17,6 +17,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_Tasky)
+        setContentView(R.layout.activity_main)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.mainActivityFragment)
+            as NavHostFragment
+        navController = navHostFragment.navController
+
         installSplashScreen().apply {
             setKeepOnScreenCondition {
                 if (viewModel.isUserLoggedIn.value) {
@@ -25,10 +30,5 @@ class MainActivity : AppCompatActivity() {
                 viewModel.isLoading.value
             }
         }
-        setContentView(R.layout.activity_main)
-
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.mainActivityFragment)
-            as NavHostFragment
-        navController = navHostFragment.navController
     }
 }
