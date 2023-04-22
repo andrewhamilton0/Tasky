@@ -1,7 +1,10 @@
 package com.andrew.tasky.agenda.data.reminder
 
+import com.andrew.tasky.R
+import com.andrew.tasky.agenda.data.agenda.notifications.AgendaNotificationService.Companion.REMINDER_CHANNEL_ID
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
+import com.andrew.tasky.agenda.domain.models.AgendaNotificationInfo
 import com.andrew.tasky.agenda.domain.toLocalDateTime
 import com.andrew.tasky.agenda.domain.toZonedEpochMilli
 
@@ -64,5 +67,19 @@ fun ReminderEntity.toReminderDto(): ReminderDto {
         description = description,
         time = time,
         remindAt = remindAt
+    )
+}
+
+fun AgendaItem.Reminder.toNotificationInfo(): AgendaNotificationInfo {
+    return AgendaNotificationInfo(
+        title = title,
+        description = description,
+        id = id,
+        notificationChannel = REMINDER_CHANNEL_ID,
+        navDestinationId = R.id.reminderDetailFragment,
+        notificationZonedMilliTime = ReminderTimeConversion.toZonedEpochMilli(
+            startDateAndTime,
+            reminderTime
+        )
     )
 }

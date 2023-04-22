@@ -2,12 +2,12 @@ package com.andrew.tasky.core.domain
 
 interface SharedPrefs {
 
-    fun matchesSavedUserId(userId: String): Boolean
+    fun matchesUserId(s: String): Boolean
     fun getFullName(): String
     fun getJwt(): String?
     fun containsJwt(): Boolean
-    fun putJwt(jwt: String)
-    fun putUserId(userId: String)
-    fun putFullName(name: String)
+    fun putJwt(s: String)
+    fun putUserId(s: String)
+    fun putFullName(s: String)
     fun clearPrefs()
 }

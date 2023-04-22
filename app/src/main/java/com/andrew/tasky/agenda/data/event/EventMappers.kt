@@ -1,11 +1,14 @@
 package com.andrew.tasky.agenda.data.event
 
+import com.andrew.tasky.R
+import com.andrew.tasky.agenda.data.agenda.notifications.AgendaNotificationService
 import com.andrew.tasky.agenda.data.event.attendee.toAttendee
 import com.andrew.tasky.agenda.data.event.photo.toEventPhoto
 import com.andrew.tasky.agenda.data.event.photo.toRemotePhotoDto
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
+import com.andrew.tasky.agenda.domain.models.AgendaNotificationInfo
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.domain.toLocalDateTime
 import com.andrew.tasky.agenda.domain.toZonedEpochMilli
@@ -107,5 +110,19 @@ suspend fun EventEntity.toEvent(eventRepository: EventRepository): AgendaItem.Ev
         photos = remotePhotos.map { it.toEventPhoto() } + localPhotos,
         attendees = attendees,
         deletedPhotos = remoteDeletedPhotos.map { it.toEventPhoto() }
+    )
+}
+
+fun AgendaItem.Event.toNotificationInfo(): AgendaNotificationInfo {
+    return AgendaNotificationInfo(
+        title = title,
+        description = description,
+        id = id,
+        notificationChannel = AgendaNotificationService.EVENT_CHANNEL_ID,
+        navDestinationId = R.id.event_nav,
+        notificationZonedMilliTime = ReminderTimeConversion.toZonedEpochMilli(
+            startDateAndTime,
+            reminderTime
+        )
     )
 }

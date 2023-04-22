@@ -121,7 +121,9 @@ class ReminderRepositoryImpl @Inject constructor(
         )
     }
 
-    private fun cancelScheduledNotification(reminderId: String) {
-        scheduler.cancel(reminderId)
+    private suspend fun cancelScheduledNotification(reminderId: String) {
+        db.getReminderDao().getReminderById(reminderId)?.toReminder()?.let {
+            scheduler.cancel(reminderId)
+        }
     }
 }
