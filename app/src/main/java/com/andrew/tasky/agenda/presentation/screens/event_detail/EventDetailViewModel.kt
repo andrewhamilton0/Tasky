@@ -272,7 +272,7 @@ class EventDetailViewModel @Inject constructor(
     fun leaveEvent() {
         _isAttendeeGoing.value = false
         _attendees.value = attendees.value.map { attendee ->
-            if (prefs.matchesSavedUserId(attendee.userId)) {
+            if (prefs.matchesUserId(attendee.userId)) {
                 attendee.copy(isGoing = false)
             } else attendee
         }
@@ -281,7 +281,7 @@ class EventDetailViewModel @Inject constructor(
     fun joinEvent() {
         _isAttendeeGoing.value = true
         _attendees.value = attendees.value.map { attendee ->
-            if (prefs.matchesSavedUserId(attendee.userId)) {
+            if (prefs.matchesUserId(attendee.userId)) {
                 attendee.copy(isGoing = true)
             } else attendee
         }

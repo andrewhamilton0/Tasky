@@ -46,12 +46,10 @@
             <argument
                 android:name="id"
                 app:argType="string"
-                app:nullable="true"
-                android:defaultValue="@null"/>
+                app:nullable="true" />
             <argument
                 android:name="isInEditMode"
-                app:argType="boolean"
-                android:defaultValue="false"/>
+                app:argType="boolean" />
             </action>
         <action
             android:id="@+id/action_agendaFragment_to_reminderDetailFragment"
@@ -70,7 +68,6 @@
             android:name="id"
             app:argType="string"
             app:nullable="true"
-            android:defaultValue="@null"
             />
         <argument
             android:name="isInEditMode"
@@ -87,7 +84,6 @@
             android:name="id"
             app:argType="string"
             app:nullable="true"
-            android:defaultValue="@null"
             />
         <argument
             android:name="isInEditMode"

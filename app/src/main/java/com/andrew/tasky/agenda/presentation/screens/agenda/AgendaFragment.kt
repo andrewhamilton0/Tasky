@@ -99,24 +99,30 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                         R.id.event -> {
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToEventNav()
-                                    .setIsInEditMode(true)
+                                    .actionAgendaFragmentToEventNav(
+                                        null,
+                                        true
+                                    )
                             )
                             true
                         }
                         R.id.reminder -> {
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToReminderDetailFragment()
-                                    .setIsInEditMode(true)
+                                    .actionAgendaFragmentToReminderDetailFragment(
+                                        null,
+                                        true
+                                    )
                             )
                             true
                         }
                         R.id.task -> {
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToTaskDetailFragment()
-                                    .setIsInEditMode(true)
+                                    .actionAgendaFragmentToTaskDetailFragment(
+                                        null,
+                                        true
+                                    )
                             )
                             true
                         }
@@ -192,22 +198,25 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         when (agendaItem) {
             is AgendaItem.Task -> navController.navigate(
                 AgendaFragmentDirections
-                    .actionAgendaFragmentToTaskDetailFragment()
-                    .setId(agendaItem.id)
-                    .setIsInEditMode(isInEditMode)
+                    .actionAgendaFragmentToTaskDetailFragment(
+                        agendaItem.id,
+                        isInEditMode
+                    )
             )
             is AgendaItem.Event ->
                 navController.navigate(
                     AgendaFragmentDirections
-                        .actionAgendaFragmentToEventNav()
-                        .setId(agendaItem.id)
-                        .setIsInEditMode(isInEditMode)
+                        .actionAgendaFragmentToEventNav(
+                            agendaItem.id,
+                            isInEditMode
+                        )
                 )
             is AgendaItem.Reminder -> navController.navigate(
                 AgendaFragmentDirections
-                    .actionAgendaFragmentToReminderDetailFragment()
-                    .setId(agendaItem.id)
-                    .setIsInEditMode(isInEditMode)
+                    .actionAgendaFragmentToReminderDetailFragment(
+                        agendaItem.id,
+                        isInEditMode
+                    )
             )
         }
     }
