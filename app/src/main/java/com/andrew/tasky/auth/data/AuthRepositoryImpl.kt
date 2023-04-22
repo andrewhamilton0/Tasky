@@ -5,6 +5,7 @@ import com.andrew.tasky.agenda.domain.AgendaRepository
 import com.andrew.tasky.auth.domain.AuthRepository
 import com.andrew.tasky.auth.util.getResourceResult
 import com.andrew.tasky.core.data.Resource
+import com.andrew.tasky.core.data.util.ApiErrorType
 import com.andrew.tasky.core.domain.SharedPrefs
 import com.andrew.tasky.core.util.WorkerParamKeys
 
@@ -84,5 +85,15 @@ class AuthRepositoryImpl(
         workManager.enqueue(logoutWorker)
         prefs.clearPrefs()
         agendaRepository.deleteAllAgendaTables()
+    }
+
+    override suspend fun isAuthorizedToLogin(): Boolean {
+        val result = authenticate()
+        when (result) {
+            is Resource.Error -> {
+                return result.errorType is ApiErrorType.IOException && prefs.containsJwt()
+            }
+            is Resource.Success -> return true
+        }
     }
 }
