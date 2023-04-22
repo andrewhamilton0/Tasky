@@ -296,7 +296,6 @@ class EventRepositoryImpl @Inject constructor(
                 }
             }
         }
-
     }
 
     override suspend fun getLocalPhotos(localPhotoKeys: List<String>): List<EventPhoto.Local> {
@@ -322,10 +321,8 @@ class EventRepositoryImpl @Inject constructor(
         )
     }
 
-    private suspend fun cancelScheduledNotification(eventId: String) {
-        db.getEventDao().getEventById(eventId)?.toEvent(this)?.let {
-            scheduler.cancel(eventId)
-        }
+    private fun cancelScheduledNotification(eventId: String) {
+        scheduler.cancel(eventId)
     }
 
     private suspend fun saveLocalPhotoInternally(photo: LocalPhoto) {

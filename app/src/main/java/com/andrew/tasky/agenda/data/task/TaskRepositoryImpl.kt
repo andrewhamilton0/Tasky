@@ -133,9 +133,7 @@ class TaskRepositoryImpl @Inject constructor(
         )
     }
 
-    private suspend fun cancelScheduledNotification(taskId: String) {
-        db.getTaskDao().getTaskById(taskId)?.toTask()?.let {
-            scheduler.cancel(taskId)
-        }
+    private fun cancelScheduledNotification(taskId: String) {
+        scheduler.cancel(taskId)
     }
 }
