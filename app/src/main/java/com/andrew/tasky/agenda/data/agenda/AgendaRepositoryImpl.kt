@@ -72,44 +72,14 @@ class AgendaRepositoryImpl(
         }
     }
 
-    override suspend fun getOneTimeAgendaItemsBetweenTimes(
-        startEpochMilli: Long,
-        endEpochMilli: Long
-    ): List<AgendaItem> {
-        val reminders = db.getReminderDao().getRemindersBetweenTimes(
-            startEpochMilli = startEpochMilli,
-            endEpochMilli = endEpochMilli
-        ).map {
-            it.map { reminderEntity ->
-                reminderEntity.toReminder()
-            }
-        }.first()
+    override suspend fun getAgendaItemById(id: String): AgendaItem? {
+        val event = eventRepository.getEvent(id)
+        val task = taskRepository.getTask(id)
+        val reminder = reminderRepository.getReminder(id)
 
-        val tasks = db.getTaskDao().getTasksBetweenTimes(
-            startEpochMilli = startEpochMilli,
-            endEpochMilli = endEpochMilli
-        ).map {
-            it.map { taskEntity ->
-                taskEntity.toTask()
-            }
-        }.first()
-
-        val events = db.getEventDao().getEventsBetweenTimes(
-            startEpochMilli = startEpochMilli,
-            endEpochMilli = endEpochMilli
-        ).map {
-            supervisorScope {
-                it.map { eventEntity ->
-                    async {
-                        eventEntity.toEvent(eventRepository)
-                    }
-                }.map { it.await() }
-            }
-        }.first()
-
-        val agendaItems = events + reminders + tasks
-
-        return agendaItems.sortedBy { it.startDateAndTime }
+        val agendaItems = listOf(event, task, reminder)
+        agendaItems.forEach { if (it != null) return it }
+        return null
     }
 
     override suspend fun updateAgendaItemCache(localDate: LocalDate) {

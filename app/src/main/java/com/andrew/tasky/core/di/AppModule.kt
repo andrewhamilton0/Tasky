@@ -2,7 +2,6 @@ package com.andrew.tasky.core.di
 
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
 import androidx.room.Room
 import androidx.work.WorkManager
 import com.andrew.tasky.agenda.data.agenda.AgendaApi
@@ -21,7 +20,9 @@ import com.andrew.tasky.auth.data.*
 import com.andrew.tasky.auth.domain.AuthRepository
 import com.andrew.tasky.auth.domain.EmailPatternValidator
 import com.andrew.tasky.core.data.ApiKeyInterceptor
+import com.andrew.tasky.core.data.SharedPrefsImpl
 import com.andrew.tasky.core.data.TokenInterceptor
+import com.andrew.tasky.core.domain.SharedPrefs
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -71,7 +72,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAgendaItemRetrofitBuilder(prefs: SharedPreferences, taskyClient: Builder): Retrofit {
+    fun provideAgendaItemRetrofitBuilder(prefs: SharedPrefs, taskyClient: Builder): Retrofit {
         val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         return taskyClient.client(
             OkHttpClient.Builder()
@@ -105,23 +106,23 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSharedPref(app: Application): SharedPreferences {
-        return app.getSharedPreferences("prefs", MODE_PRIVATE)
+    fun provideSharedPref(app: Application): SharedPrefs {
+        return SharedPrefsImpl(app.getSharedPreferences("prefs", MODE_PRIVATE))
     }
 
     @Provides
     @Singleton
     fun provideAuthRepository(
         api: AuthApi,
-        prefs: SharedPreferences,
+        prefs: SharedPrefs,
         agendaRepository: AgendaRepository,
         workManager: WorkManager
     ): AuthRepository {
         return AuthRepositoryImpl(
             api = api,
-            prefs = prefs,
             agendaRepository = agendaRepository,
-            workManager = workManager
+            workManager = workManager,
+            prefs = prefs
         )
     }
 
@@ -166,9 +167,10 @@ object AppModule {
     fun provideReminderRepository(
         api: ReminderApi,
         db: AgendaDatabase,
-        app: Application
+        app: Application,
+        scheduler: AgendaNotificationScheduler
     ): ReminderRepository {
-        return ReminderRepositoryImpl(db = db, api = api, appContext = app)
+        return ReminderRepositoryImpl(db = db, api = api, appContext = app, scheduler = scheduler)
     }
 
     @Provides
@@ -182,9 +184,10 @@ object AppModule {
     fun provideTaskRepository(
         api: TaskApi,
         db: AgendaDatabase,
-        app: Application
+        app: Application,
+        scheduler: AgendaNotificationScheduler
     ): TaskRepository {
-        return TaskRepositoryImpl(db = db, api = api, appContext = app)
+        return TaskRepositoryImpl(db = db, api = api, appContext = app, scheduler = scheduler)
     }
 
     @Provides
@@ -198,12 +201,14 @@ object AppModule {
     fun provideEventRepository(
         api: EventApi,
         db: AgendaDatabase,
-        appContext: Application
+        appContext: Application,
+        scheduler: AgendaNotificationScheduler
     ): EventRepository {
         return EventRepositoryImpl(
             db = db,
             api = api,
-            context = appContext
+            context = appContext,
+            scheduler = scheduler
         )
     }
 

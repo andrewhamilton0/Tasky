@@ -4,7 +4,9 @@ import android.content.Context
 import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.util.ModifiedType
+import com.andrew.tasky.agenda.domain.AgendaNotificationScheduler
 import com.andrew.tasky.agenda.domain.ReminderRepository
+import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.util.getResourceResult
 import com.andrew.tasky.core.data.Resource
@@ -13,10 +15,12 @@ import javax.inject.Inject
 class ReminderRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
     private val api: ReminderApi,
-    private val appContext: Context
+    private val appContext: Context,
+    private val scheduler: AgendaNotificationScheduler
 ) : ReminderRepository {
 
     override suspend fun createReminder(reminder: AgendaItem.Reminder) {
+        scheduleNotification(reminder)
         db.getReminderDao().upsertReminder(reminder.toReminderEntity())
         val result = getResourceResult { api.createReminder(reminder.toReminderDto()) }
         if (result is Resource.Error) {
@@ -30,6 +34,7 @@ class ReminderRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateReminder(reminder: AgendaItem.Reminder) {
+        scheduleNotification(reminder)
         db.getReminderDao().upsertReminder(reminder.toReminderEntity())
         val result = getResourceResult { api.updateReminder(reminder.toReminderDto()) }
         if (result is Resource.Error) {
@@ -47,6 +52,7 @@ class ReminderRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteReminder(reminderId: String) {
+        cancelScheduledNotification(reminderId)
         db.getReminderDao().deleteReminder(reminderId)
         val result = getResourceResult { api.deleteReminder(reminderId) }
         if (result is Resource.Error) {
@@ -102,6 +108,22 @@ class ReminderRepositoryImpl @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun scheduleNotification(reminder: AgendaItem.Reminder) {
+        scheduler.schedule(
+            agendaId = reminder.id,
+            time = ReminderTimeConversion.toZonedEpochMilli(
+                startLocalDateTime = reminder.startDateAndTime,
+                reminderTime = reminder.reminderTime
+            )
+        )
+    }
+
+    private suspend fun cancelScheduledNotification(reminderId: String) {
+        db.getReminderDao().getReminderById(reminderId)?.toReminder()?.let {
+            scheduler.cancel(reminderId)
         }
     }
 }

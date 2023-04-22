@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.util.ModifiedType
+import com.andrew.tasky.agenda.domain.AgendaNotificationScheduler
+import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.TaskRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.util.getResourceResult
@@ -13,10 +15,12 @@ import javax.inject.Inject
 class TaskRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
     private val api: TaskApi,
-    private val appContext: Context
+    private val appContext: Context,
+    private val scheduler: AgendaNotificationScheduler
 ) : TaskRepository {
 
     override suspend fun createTask(task: AgendaItem.Task) {
+        scheduleNotification(task)
         db.getTaskDao().upsertTask(task.toTaskEntity())
         val result = getResourceResult { api.createTask(task.toTaskDto()) }
         if (result is Resource.Error) {
@@ -34,6 +38,7 @@ class TaskRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateTask(task: AgendaItem.Task) {
+        scheduleNotification(task)
         db.getTaskDao().upsertTask(task.toTaskEntity())
         val result = getResourceResult { api.updateTask(task.toTaskDto()) }
         if (result is Resource.Error) {
@@ -55,6 +60,7 @@ class TaskRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteTask(taskId: String) {
+        cancelScheduledNotification(taskId)
         db.getTaskDao().deleteTask(taskId)
         val result = getResourceResult { api.deleteTask(taskId) }
         if (result is Resource.Error) {
@@ -114,6 +120,22 @@ class TaskRepositoryImpl @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun scheduleNotification(task: AgendaItem.Task) {
+        scheduler.schedule(
+            agendaId = task.id,
+            time = ReminderTimeConversion.toZonedEpochMilli(
+                startLocalDateTime = task.startDateAndTime,
+                reminderTime = task.reminderTime
+            )
+        )
+    }
+
+    private suspend fun cancelScheduledNotification(taskId: String) {
+        db.getTaskDao().getTaskById(taskId)?.toTask()?.let {
+            scheduler.cancel(taskId)
         }
     }
 }

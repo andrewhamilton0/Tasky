@@ -1,12 +1,13 @@
 package com.andrew.tasky.agenda.data.event
 
 import android.content.Context
-import android.util.Log
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.storage.ImageStorage
 import com.andrew.tasky.agenda.data.util.ModifiedType
+import com.andrew.tasky.agenda.domain.AgendaNotificationScheduler
 import com.andrew.tasky.agenda.domain.EventRepository
+import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.andrew.tasky.agenda.domain.models.EventPhoto
@@ -23,7 +24,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.internal.toImmutableList
 
 typealias LocalPhoto = EventPhoto.Local
 typealias Event = AgendaItem.Event
@@ -32,17 +32,18 @@ class EventRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
     private val api: EventApi,
     private val context: Context,
+    private val scheduler: AgendaNotificationScheduler
 ) : EventRepository {
 
     private val imageStorage = ImageStorage(context)
     private val eventPhotoCompressor = EventPhotoCompressor()
 
     override suspend fun upsertEvent(event: Event): UpsertEventResult {
-        val (compressedPhotos, deletedPhotoCount) = compressAndDeletePhotos(
-            event.photos.filterIsInstance<LocalPhoto>().filter {
-                !it.savedInternally
-            }
-        )
+        val unsavedLocalPhotos = event.photos.filterIsInstance<LocalPhoto>().filter {
+            !it.savedInternally
+        }
+        val (compressedPhotos, deletedPhotoCount) = compressAndDeletePhotos(unsavedLocalPhotos)
+
         val eventWithCompressedPhotos = event.copy(
             photos = event.photos.filterNot { photo ->
                 photo is LocalPhoto && !photo.savedInternally
@@ -50,11 +51,13 @@ class EventRepositoryImpl @Inject constructor(
                 compressedPhotos.forEach { compressedPhoto ->
                     this.add(compressedPhoto)
                 }
-            }.toImmutableList()
+            }.toList()
         )
         val newEvent = eventWithCompressedPhotos.copy(
             photos = getPhotosSavedByteArrays(eventWithCompressedPhotos.photos)
         )
+
+        scheduleNotification(newEvent)
 
         val isCreateEvent = isEventToBeCreated(newEvent.id)
         if (isCreateEvent) {
@@ -179,7 +182,6 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     private suspend fun updateRemoteEvent(event: Event): Resource<EventDto> {
-        Log.d("DELETED PHOTOS req", event.toUpdateEventRequest().deletedPhotoKeys.toString())
         return getResourceResult {
             api.updateEvent(
                 eventData = MultipartBody.Part
@@ -240,6 +242,7 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteEvent(eventId: String) {
+        cancelScheduledNotification(eventId)
         db.getEventDao().deleteEvent(eventId)
         val result = getResourceResult { api.deleteEvent(eventId) }
         if (result is Resource.Error) {
@@ -305,6 +308,22 @@ class EventRepositoryImpl @Inject constructor(
                     }
                 }.map { it.await() }
             }
+        }
+    }
+
+    private fun scheduleNotification(event: Event) {
+        scheduler.schedule(
+            agendaId = event.id,
+            time = ReminderTimeConversion.toZonedEpochMilli(
+                startLocalDateTime = event.startDateAndTime,
+                reminderTime = event.reminderTime
+            )
+        )
+    }
+
+    private suspend fun cancelScheduledNotification(eventId: String) {
+        db.getEventDao().getEventById(eventId)?.toEvent(this)?.let {
+            scheduler.cancel(eventId)
         }
     }
 

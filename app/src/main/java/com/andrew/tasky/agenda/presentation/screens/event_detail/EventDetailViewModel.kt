@@ -1,6 +1,5 @@
 package com.andrew.tasky.agenda.presentation.screens.event_detail
 
-import android.content.SharedPreferences
 import android.net.Uri
 import androidx.lifecycle.*
 import com.andrew.tasky.R
@@ -13,8 +12,8 @@ import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.util.ReminderTime
 import com.andrew.tasky.agenda.util.UiEventPhoto
 import com.andrew.tasky.core.UiText
-import com.andrew.tasky.core.data.PrefsKeys
 import com.andrew.tasky.core.data.Resource
+import com.andrew.tasky.core.domain.SharedPrefs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -32,7 +31,7 @@ class EventDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: EventRepository,
     private val uriByteConverter: UriByteConverter,
-    private val prefs: SharedPreferences
+    private val prefs: SharedPrefs
 ) : ViewModel() {
 
     private var hostId: String? = null
@@ -273,7 +272,7 @@ class EventDetailViewModel @Inject constructor(
     fun leaveEvent() {
         _isAttendeeGoing.value = false
         _attendees.value = attendees.value.map { attendee ->
-            if (attendee.userId == prefs.getString(PrefsKeys.USER_ID, "")) {
+            if (prefs.matchesUserId(attendee.userId)) {
                 attendee.copy(isGoing = false)
             } else attendee
         }
@@ -282,7 +281,7 @@ class EventDetailViewModel @Inject constructor(
     fun joinEvent() {
         _isAttendeeGoing.value = true
         _attendees.value = attendees.value.map { attendee ->
-            if (attendee.userId == prefs.getString(PrefsKeys.USER_ID, "")) {
+            if (prefs.matchesUserId(attendee.userId)) {
                 attendee.copy(isGoing = true)
             } else attendee
         }
