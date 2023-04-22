@@ -296,6 +296,7 @@ class EventRepositoryImpl @Inject constructor(
                 }
             }
         }
+
     }
 
     override suspend fun getLocalPhotos(localPhotoKeys: List<String>): List<EventPhoto.Local> {
