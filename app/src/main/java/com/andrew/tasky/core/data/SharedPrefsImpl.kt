@@ -7,8 +7,8 @@ class SharedPrefsImpl(
     private val sharedPrefs: SharedPreferences
 ) : SharedPrefs {
 
-    override fun matchesUserId(s: String): Boolean {
-        return s == sharedPrefs.getString(PrefsKeys.USER_ID, "")
+    override fun matchesSavedUserId(userId: String): Boolean {
+        return userId == sharedPrefs.getString(PrefsKeys.USER_ID, "")
     }
 
     override fun getFullName(): String {
@@ -23,16 +23,16 @@ class SharedPrefsImpl(
         return sharedPrefs.contains(PrefsKeys.JWT)
     }
 
-    override fun putJwt(s: String) {
-        sharedPrefs.edit().putString(PrefsKeys.JWT, s).apply()
+    override fun putJwt(jwt: String) {
+        sharedPrefs.edit().putString(PrefsKeys.JWT, jwt).apply()
     }
 
-    override fun putUserId(s: String) {
-        sharedPrefs.edit().putString(PrefsKeys.USER_ID, s).apply()
+    override fun putUserId(userId: String) {
+        sharedPrefs.edit().putString(PrefsKeys.USER_ID, userId).apply()
     }
 
-    override fun putFullName(s: String) {
-        sharedPrefs.edit().putString(PrefsKeys.FULL_NAME, s).apply()
+    override fun putFullName(name: String) {
+        sharedPrefs.edit().putString(PrefsKeys.FULL_NAME, name).apply()
     }
 
     override fun clearPrefs() {
