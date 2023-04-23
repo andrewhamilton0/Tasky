@@ -7,45 +7,23 @@ import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.AgendaNotificationInfo
 
 fun AgendaItem.toNotificationInfo(): AgendaNotificationInfo {
-    return when (this) {
-        is AgendaItem.Event -> {
-            AgendaNotificationInfo(
-                title = title,
-                description = description,
-                id = id,
-                notificationChannel = AgendaNotificationService.EVENT_CHANNEL_ID,
-                navDestinationId = R.id.event_nav,
-                notificationZonedMilliTime = ReminderTimeConversion.toZonedEpochMilli(
-                    startDateAndTime,
-                    reminderTime
-                )
-            )
-        }
+
+    val (channel, navId) = when (this) {
+        is AgendaItem.Event -> AgendaNotificationService.EVENT_CHANNEL_ID to R.id.event_nav
         is AgendaItem.Reminder -> {
-            AgendaNotificationInfo(
-                title = title,
-                description = description,
-                id = id,
-                notificationChannel = AgendaNotificationService.REMINDER_CHANNEL_ID,
-                navDestinationId = R.id.reminderDetailFragment,
-                notificationZonedMilliTime = ReminderTimeConversion.toZonedEpochMilli(
-                    startDateAndTime,
-                    reminderTime
-                )
-            )
+            AgendaNotificationService.REMINDER_CHANNEL_ID to R.id.reminderDetailFragment
         }
-        is AgendaItem.Task -> {
-            AgendaNotificationInfo(
-                title = title,
-                description = description,
-                id = id,
-                notificationChannel = AgendaNotificationService.TASK_CHANNEL_ID,
-                navDestinationId = R.id.taskDetailFragment,
-                notificationZonedMilliTime = ReminderTimeConversion.toZonedEpochMilli(
-                    startDateAndTime,
-                    reminderTime
-                )
-            )
-        }
+        is AgendaItem.Task -> AgendaNotificationService.TASK_CHANNEL_ID to R.id.taskDetailFragment
     }
+    return AgendaNotificationInfo(
+        title = title,
+        description = description,
+        id = id,
+        notificationChannel = channel,
+        navDestinationId = navId,
+        notificationZonedMilliTime = ReminderTimeConversion.toZonedEpochMilli(
+            startDateAndTime,
+            reminderTime
+        )
+    )
 }

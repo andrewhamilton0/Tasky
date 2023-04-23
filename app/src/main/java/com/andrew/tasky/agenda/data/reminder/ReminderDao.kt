@@ -14,6 +14,9 @@ interface ReminderDao {
         endEpochMilli: Long
     ): Flow<List<ReminderEntity>>
 
+    @Query("SELECT * FROM ReminderEntity")
+    fun getAllReminders(): Flow<List<ReminderEntity>>
+
     @Query("SELECT * FROM ReminderEntity WHERE id==:id")
     suspend fun getReminderById(id: String): ReminderEntity?
 

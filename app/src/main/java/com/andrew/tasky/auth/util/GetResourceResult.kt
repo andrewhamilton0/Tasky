@@ -20,10 +20,14 @@ suspend fun <T> getResourceResult(apiToBeCalled: suspend () -> Response<T>): Res
             if (response.isSuccessful) {
                 Resource.Success(data = response.body())
             } else {
+                var errorType: ApiErrorType = ApiErrorType.UnknownError
+                if (response.code() == 401) errorType = ApiErrorType.Unauthorized
+
                 val errorResponse: ErrorMessageDto? = convertErrorBody(response.errorBody())
                 Resource.Error(
                     errorMessage = errorResponse?.message?.let { UiText.DynamicString(value = it) }
-                        ?: UiText.Resource(resId = R.string.unknown_error)
+                        ?: UiText.Resource(resId = R.string.unknown_error),
+                    errorType = errorType
                 )
             }
         } catch (e: HttpException) {

@@ -10,5 +10,6 @@ interface AgendaRepository {
     suspend fun getAgendaItemById(id: String): AgendaItem?
     suspend fun updateAgendaItemCache(localDate: LocalDate)
     suspend fun syncModifiedAgendaItems(): Resource<Unit>
-    suspend fun deleteAllAgendaTables()
+    suspend fun syncFullAgenda()
+    suspend fun deleteAllAgendaItems()
 }

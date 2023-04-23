@@ -18,6 +18,9 @@ interface EventDao {
         endEpochMilli: Long
     ): Flow<List<EventEntity>>
 
+    @Query("SELECT * FROM EventEntity")
+    fun getAllEvents(): Flow<List<EventEntity>>
+
     @Query("SELECT * FROM EventEntity WHERE id==:id")
     suspend fun getEventById(id: String): EventEntity?
 

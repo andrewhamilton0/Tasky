@@ -6,7 +6,7 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.andrew.tasky.agenda.data.agenda.workManagers.SyncModifiedAgendaItemsWorker
+import com.andrew.tasky.agenda.data.agenda.workManagers.SyncAgendaWorker
 import com.andrew.tasky.agenda.domain.*
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.CalendarDateItem
@@ -151,8 +151,8 @@ class AgendaViewModel@Inject constructor(
         }
     }
 
-    private val syncModifiedAgendaItemsWorkRequest =
-        PeriodicWorkRequestBuilder<SyncModifiedAgendaItemsWorker>(15, TimeUnit.MINUTES)
+    private val syncFullAgendaWorkRequest =
+        PeriodicWorkRequestBuilder<SyncAgendaWorker>(15, TimeUnit.MINUTES)
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -161,7 +161,7 @@ class AgendaViewModel@Inject constructor(
 
     init {
         workManager.apply {
-            enqueue(syncModifiedAgendaItemsWorkRequest)
+            enqueue(syncFullAgendaWorkRequest)
         }
         viewModelScope.launch {
             dateSelected.collectLatest { agendaRepository.updateAgendaItemCache(it) }
