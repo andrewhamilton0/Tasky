@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.andrew.tasky.agenda.domain.AgendaNotificationScheduler
+import java.time.ZonedDateTime
 
 class AgendaNotificationSchedulerImpl(
     private val context: Context
@@ -13,7 +14,7 @@ class AgendaNotificationSchedulerImpl(
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     override fun schedule(agendaId: String, time: Long) {
-
+        if (time < ZonedDateTime.now().toInstant().toEpochMilli()) return
         val intent = Intent(context, AgendaBroadcastReceiver::class.java)
             .putExtra(AGENDA_NOTIF_SCHED_INTENT, agendaId)
         val pendingIntent = PendingIntent.getBroadcast(

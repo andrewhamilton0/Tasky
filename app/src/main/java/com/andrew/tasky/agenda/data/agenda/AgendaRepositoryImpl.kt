@@ -28,7 +28,8 @@ class AgendaRepositoryImpl(
     private val taskRepository: TaskRepository,
     private val eventRepository: EventRepository,
     private val db: AgendaDatabase,
-    private val appContext: Context
+    private val appContext: Context,
+    private val scheduler: AgendaNotificationScheduler
 ) : AgendaRepository {
 
     private val alarmManager = appContext.getSystemService(AlarmManager::class.java)
@@ -113,6 +114,7 @@ class AgendaRepositoryImpl(
                     } == true
                     if (!containsLocalId) {
                         db.getReminderDao().deleteReminder(localReminder.id)
+                        cancelScheduledNotification(localReminder.id)
                     }
                 }
                 results.data?.reminders?.forEach { reminderDto ->
@@ -121,6 +123,7 @@ class AgendaRepositoryImpl(
                         isDone = localReminder?.isDone ?: false
                     )
                     db.getReminderDao().upsertReminder(remoteReminder)
+                    scheduleNotification(remoteReminder.toReminder())
                 }
                 val localTasks = db.getTaskDao().getTasksBetweenTimes(
                     startEpochMilli = startEpochMilli,
@@ -132,10 +135,12 @@ class AgendaRepositoryImpl(
                     } == true
                     if (!containsLocalId) {
                         db.getTaskDao().deleteTask(localTask.id)
+                        cancelScheduledNotification(localTask.id)
                     }
                 }
                 results.data?.tasks?.forEach { taskDto ->
                     db.getTaskDao().upsertTask(taskDto.toTaskEntity())
+                    scheduleNotification(taskDto.toTaskEntity().toTask())
                 }
                 val localEvents = db.getEventDao().getEventsBetweenTimes(
                     startEpochMilli = startEpochMilli,
@@ -147,6 +152,7 @@ class AgendaRepositoryImpl(
                     } == true
                     if (!containsLocalId) {
                         db.getEventDao().deleteEvent(localEvent.id)
+                        cancelScheduledNotification(localEvent.id)
                     }
                 }
                 results.data?.events?.forEach { eventDto ->
@@ -156,6 +162,7 @@ class AgendaRepositoryImpl(
                         isGoing = localEvent?.isGoing ?: true
                     )
                     db.getEventDao().upsertEvent(remoteEvent)
+                    scheduleNotification(remoteEvent.toEvent(eventRepository))
                 }
             }
         }
@@ -227,7 +234,6 @@ class AgendaRepositoryImpl(
                 )
             }
             is Resource.Success -> {
-
                 val localReminders = db.getReminderDao().getAllReminders().first()
                 localReminders.forEach { localReminder ->
                     val containsLocalId = results.data?.reminders?.any {
@@ -235,6 +241,7 @@ class AgendaRepositoryImpl(
                     } == true
                     if (!containsLocalId) {
                         db.getReminderDao().deleteReminder(localReminder.id)
+                        cancelScheduledNotification(localReminder.id)
                     }
                 }
                 results.data?.reminders?.forEach { reminderDto ->
@@ -243,6 +250,7 @@ class AgendaRepositoryImpl(
                         isDone = localReminder?.isDone ?: false
                     )
                     db.getReminderDao().upsertReminder(remoteReminder)
+                    scheduleNotification(remoteReminder.toReminder())
                 }
 
                 val localTasks = db.getTaskDao().getAllTasks().first()
@@ -252,10 +260,12 @@ class AgendaRepositoryImpl(
                     } == true
                     if (!containsLocalId) {
                         db.getTaskDao().deleteTask(localTask.id)
+                        cancelScheduledNotification(localTask.id)
                     }
                 }
                 results.data?.tasks?.forEach { taskDto ->
                     db.getTaskDao().upsertTask(taskDto.toTaskEntity())
+                    scheduleNotification(taskDto.toTaskEntity().toTask())
                 }
                 val localEvents = db.getEventDao().getAllEvents().first()
                 localEvents.forEach { localEvent ->
@@ -264,6 +274,7 @@ class AgendaRepositoryImpl(
                     } == true
                     if (!containsLocalId) {
                         db.getEventDao().deleteEvent(localEvent.id)
+                        cancelScheduledNotification(localEvent.id)
                     }
                 }
                 results.data?.events?.forEach { eventDto ->
@@ -273,6 +284,7 @@ class AgendaRepositoryImpl(
                         isGoing = localEvent?.isGoing ?: true
                     )
                     db.getEventDao().upsertEvent(remoteEvent)
+                    scheduleNotification(remoteEvent.toEvent(eventRepository))
                 }
             }
         }
@@ -297,5 +309,19 @@ class AgendaRepositoryImpl(
                 alarm = alarmManager.nextAlarmClock
             }
         }
+    }
+
+    private fun scheduleNotification(agendaItem: AgendaItem) {
+        scheduler.schedule(
+            agendaId = agendaItem.id,
+            time = ReminderTimeConversion.toZonedEpochMilli(
+                startLocalDateTime = agendaItem.startDateAndTime,
+                reminderTime = agendaItem.reminderTime
+            )
+        )
+    }
+
+    private fun cancelScheduledNotification(agendaItemId: String) {
+        scheduler.cancel(agendaItemId)
     }
 }
