@@ -4,4 +4,5 @@ sealed interface ApiErrorType {
     object IOException : ApiErrorType
     object HttpException : ApiErrorType
     object UnknownError : ApiErrorType
+    object Unauthorized : ApiErrorType
 }

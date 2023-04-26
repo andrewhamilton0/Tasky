@@ -140,7 +140,8 @@ object AppModule {
         taskRepository: TaskRepository,
         eventRepository: EventRepository,
         db: AgendaDatabase,
-        app: Application
+        app: Application,
+        agendaNotificationScheduler: AgendaNotificationScheduler
     ): AgendaRepository {
         return AgendaRepositoryImpl(
             agendaApi = agendaApi,
@@ -148,7 +149,8 @@ object AppModule {
             taskRepository = taskRepository,
             eventRepository = eventRepository,
             db = db,
-            appContext = app
+            appContext = app,
+            scheduler = agendaNotificationScheduler
         )
     }
 

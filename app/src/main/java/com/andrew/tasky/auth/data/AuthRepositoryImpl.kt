@@ -63,8 +63,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun authenticate(): Resource<Unit> {
-        val token = prefs.getJwt() ?: return Resource.Error()
-
+        val token = prefs.getJwt() ?: return Resource.Error(errorType = ApiErrorType.Unauthorized)
         return getResourceResult { api.authenticate("Bearer $token") }
     }
 
@@ -84,16 +83,19 @@ class AuthRepositoryImpl(
             ).build()
         workManager.enqueue(logoutWorker)
         prefs.clearPrefs()
-        agendaRepository.deleteAllAgendaTables()
+        agendaRepository.deleteAllAgendaItems()
     }
 
     override suspend fun isAuthorizedToLogin(): Boolean {
         val result = authenticate()
-        when (result) {
+        return when (result) {
             is Resource.Error -> {
-                return result.errorType is ApiErrorType.IOException && prefs.containsJwt()
+                when (result.errorType) {
+                    is ApiErrorType.Unauthorized -> false
+                    else -> true
+                }
             }
-            is Resource.Success -> return true
+            is Resource.Success -> true
         }
     }
 }
