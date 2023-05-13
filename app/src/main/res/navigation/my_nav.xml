@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/agendaFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -103,8 +103,8 @@
     </fragment>
     <action android:id="@+id/action_global_editFragment" app:destination="@id/editFragment"/>
     <action
-        android:id="@+id/action_global_agendaFragment"
-        app:destination="@id/agendaFragment"
-        app:popUpTo="@id/loginFragment"
+        android:id="@+id/action_global_loginFragment"
+        app:destination="@id/loginFragment"
+        app:popUpTo="@id/agendaFragment"
         app:popUpToInclusive="true" />
 </navigation>

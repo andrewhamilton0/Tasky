@@ -2,6 +2,7 @@ package com.andrew.tasky.agenda.presentation.screens.photo_detail
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.NavController
@@ -35,6 +36,10 @@ class PhotoDetailFragment : Fragment(R.layout.fragment_photo_detail) {
                 }
                 null -> Unit
             }
+        }
+        collectLatestLifecycleFlow(viewModel.isCreatorEditing) { isCreatorEditing ->
+            binding.deleteButton.isVisible = isCreatorEditing
+            binding.deleteButton.isEnabled = isCreatorEditing
         }
 
         binding.closeButton.setOnClickListener {

@@ -31,6 +31,7 @@ class AgendaNotificationService(
             .setContentTitle(info.title)
             .setContentText(info.description)
             .setContentIntent(navIntent)
+            .setAutoCancel(true)
 
         notificationManager.notify(info.id.hashCode(), notification.build())
     }
