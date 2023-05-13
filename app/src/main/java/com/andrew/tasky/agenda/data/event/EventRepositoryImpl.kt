@@ -6,6 +6,7 @@ import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.storage.ImageStorage
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.domain.AgendaNotificationScheduler
+import com.andrew.tasky.agenda.domain.DateTimeConversion
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -32,7 +33,9 @@ class EventRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
     private val api: EventApi,
     private val context: Context,
-    private val scheduler: AgendaNotificationScheduler
+    private val scheduler: AgendaNotificationScheduler,
+    private val dateTimeConversion: DateTimeConversion,
+    private val reminderTimeConversion: ReminderTimeConversion
 ) : EventRepository {
 
     private val imageStorage = ImageStorage(context)
@@ -124,7 +127,12 @@ class EventRepositoryImpl @Inject constructor(
             } else photo
         }
         val updatedEvent = event.copy(photos = updatedPhotos)
-        db.getEventDao().upsertEvent(updatedEvent.toEventEntity())
+        db.getEventDao().upsertEvent(
+            updatedEvent.toEventEntity(
+                dateTimeConversion = dateTimeConversion,
+                reminderTimeConversion = reminderTimeConversion
+            )
+        )
         db.getEventDao().upsertModifiedEvent(
             ModifiedEventEntity(
                 id = updatedEvent.id,
@@ -169,7 +177,12 @@ class EventRepositoryImpl @Inject constructor(
     private suspend fun createRemoteEventError(
         newEvent: Event
     ) {
-        db.getEventDao().upsertEvent(newEvent.toEventEntity())
+        db.getEventDao().upsertEvent(
+            newEvent.toEventEntity(
+                dateTimeConversion = dateTimeConversion,
+                reminderTimeConversion = reminderTimeConversion
+            )
+        )
         db.getEventDao().upsertModifiedEvent(
             ModifiedEventEntity(
                 id = newEvent.id,
@@ -187,7 +200,12 @@ class EventRepositoryImpl @Inject constructor(
                 eventData = MultipartBody.Part
                     .createFormData(
                         name = "update_event_request",
-                        value = Json.encodeToString(event.toUpdateEventRequest())
+                        value = Json.encodeToString(
+                            event.toUpdateEventRequest(
+                                dateTimeConversion = dateTimeConversion,
+                                reminderTimeConversion = reminderTimeConversion
+                            )
+                        )
                     ),
                 photoData = event.photos.filterIsInstance<LocalPhoto>()
                     .mapIndexedNotNull { index, eventPhoto ->
@@ -209,7 +227,12 @@ class EventRepositoryImpl @Inject constructor(
                 eventData = MultipartBody.Part
                     .createFormData(
                         name = "create_event_request",
-                        value = Json.encodeToString(newEvent.toCreateEventRequest())
+                        value = Json.encodeToString(
+                            newEvent.toCreateEventRequest(
+                                dateTimeConversion = dateTimeConversion,
+                                reminderTimeConversion = reminderTimeConversion
+                            )
+                        )
                     ),
                 photoData = newEvent.photos.filterIsInstance<LocalPhoto>()
                     .mapIndexedNotNull { index, eventPhoto ->
@@ -256,7 +279,11 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getEvent(eventId: String): Event? {
-        return db.getEventDao().getEventById(eventId)?.toEvent(this)
+        return db.getEventDao().getEventById(eventId)?.toEvent(
+            eventRepository = this,
+            dateTimeConversion = dateTimeConversion,
+            reminderTimeConversion = reminderTimeConversion
+        )
     }
 
     override suspend fun getAttendee(email: String): Resource<Attendee> {
@@ -286,7 +313,11 @@ class EventRepositoryImpl @Inject constructor(
         val createAndUpdateModifiedEvents = db.getEventDao().getModifiedEvents().filter {
             it.modifiedType == ModifiedType.CREATE || it.modifiedType == ModifiedType.UPDATE
         }.map {
-            db.getEventDao().getEventById(it.id)?.toEvent(this)
+            db.getEventDao().getEventById(it.id)?.toEvent(
+                eventRepository = this,
+                dateTimeConversion = dateTimeConversion,
+                reminderTimeConversion = reminderTimeConversion
+            )
         }
         createAndUpdateModifiedEvents.forEach { event ->
             event?.let {
@@ -314,9 +345,10 @@ class EventRepositoryImpl @Inject constructor(
     private fun scheduleNotification(event: Event) {
         scheduler.schedule(
             agendaId = event.id,
-            time = ReminderTimeConversion.toZonedEpochMilli(
+            time = reminderTimeConversion.toZonedEpochMilli(
                 startLocalDateTime = event.startDateAndTime,
-                reminderTime = event.reminderTime
+                reminderTime = event.reminderTime,
+                dateTimeConversion = dateTimeConversion
             )
         )
     }

@@ -1,9 +1,8 @@
 package com.andrew.tasky.agenda.data.task
 
+import com.andrew.tasky.agenda.domain.DateTimeConversion
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
-import com.andrew.tasky.agenda.domain.toLocalDateTime
-import com.andrew.tasky.agenda.domain.toZonedEpochMilli
 
 fun TaskDto.toTaskEntity(): TaskEntity {
     return TaskEntity(
@@ -16,44 +15,56 @@ fun TaskDto.toTaskEntity(): TaskEntity {
     )
 }
 
-fun AgendaItem.Task.toTaskDto(): TaskDto {
+fun AgendaItem.Task.toTaskDto(
+    dateTimeConversion: DateTimeConversion,
+    reminderTimeConversion: ReminderTimeConversion
+): TaskDto {
     return TaskDto(
         id = id,
         title = title,
         description = description,
-        time = startDateAndTime.toZonedEpochMilli(),
-        remindAt = ReminderTimeConversion.toZonedEpochMilli(
+        time = dateTimeConversion.localDateTimeToZonedEpochMilli(startDateAndTime),
+        remindAt = reminderTimeConversion.toZonedEpochMilli(
             startLocalDateTime = startDateAndTime,
-            reminderTime = reminderTime
+            reminderTime = reminderTime,
+            dateTimeConversion = dateTimeConversion
         ),
         isDone = isDone
     )
 }
 
-fun AgendaItem.Task.toTaskEntity(): TaskEntity {
+fun AgendaItem.Task.toTaskEntity(
+    dateTimeConversion: DateTimeConversion,
+    reminderTimeConversion: ReminderTimeConversion
+): TaskEntity {
     return TaskEntity(
         id = id,
         isDone = isDone,
         title = title,
         description = description,
-        time = startDateAndTime.toZonedEpochMilli(),
-        remindAt = ReminderTimeConversion.toZonedEpochMilli(
+        time = dateTimeConversion.localDateTimeToZonedEpochMilli(startDateAndTime),
+        remindAt = reminderTimeConversion.toZonedEpochMilli(
             startLocalDateTime = startDateAndTime,
-            reminderTime = reminderTime
+            reminderTime = reminderTime,
+            dateTimeConversion = dateTimeConversion
         )
     )
 }
 
-fun TaskEntity.toTask(): AgendaItem.Task {
+fun TaskEntity.toTask(
+    dateTimeConversion: DateTimeConversion,
+    reminderTimeConversion: ReminderTimeConversion
+): AgendaItem.Task {
     return AgendaItem.Task(
         id = id,
         isDone = isDone,
         title = title,
         description = description,
-        startDateAndTime = time.toLocalDateTime(),
-        reminderTime = ReminderTimeConversion.toEnum(
+        startDateAndTime = dateTimeConversion.zonedEpochMilliToLocalDateTime(time),
+        reminderTime = reminderTimeConversion.toEnum(
             startTimeEpochMilli = time,
-            remindAtEpochMilli = remindAt
+            remindAtEpochMilli = remindAt,
+            dateTimeConversion = dateTimeConversion
         )
     )
 }

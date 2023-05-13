@@ -5,6 +5,7 @@ import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.domain.AgendaNotificationScheduler
+import com.andrew.tasky.agenda.domain.DateTimeConversion
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.TaskRepository
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -16,13 +17,27 @@ class TaskRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
     private val api: TaskApi,
     private val appContext: Context,
-    private val scheduler: AgendaNotificationScheduler
+    private val scheduler: AgendaNotificationScheduler,
+    private val dateTimeConversion: DateTimeConversion,
+    private val reminderTimeConversion: ReminderTimeConversion
 ) : TaskRepository {
 
     override suspend fun createTask(task: AgendaItem.Task) {
         scheduleNotification(task)
-        db.getTaskDao().upsertTask(task.toTaskEntity())
-        val result = getResourceResult { api.createTask(task.toTaskDto()) }
+        db.getTaskDao().upsertTask(
+            task.toTaskEntity(
+                dateTimeConversion = dateTimeConversion,
+                reminderTimeConversion = reminderTimeConversion
+            )
+        )
+        val result = getResourceResult {
+            api.createTask(
+                task.toTaskDto(
+                    dateTimeConversion = dateTimeConversion,
+                    reminderTimeConversion = reminderTimeConversion
+                )
+            )
+        }
         if (result is Resource.Error) {
             db.getTaskDao().upsertModifiedTask(
                 ModifiedTaskEntity(
@@ -39,8 +54,20 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun updateTask(task: AgendaItem.Task) {
         scheduleNotification(task)
-        db.getTaskDao().upsertTask(task.toTaskEntity())
-        val result = getResourceResult { api.updateTask(task.toTaskDto()) }
+        db.getTaskDao().upsertTask(
+            task.toTaskEntity(
+                dateTimeConversion = dateTimeConversion,
+                reminderTimeConversion = reminderTimeConversion
+            )
+        )
+        val result = getResourceResult {
+            api.updateTask(
+                task.toTaskDto(
+                    dateTimeConversion = dateTimeConversion,
+                    reminderTimeConversion = reminderTimeConversion
+                )
+            )
+        }
         if (result is Resource.Error) {
             db.getTaskDao().upsertModifiedTask(
                 ModifiedTaskEntity(
@@ -56,7 +83,10 @@ class TaskRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTask(taskId: String): AgendaItem.Task? {
-        return db.getTaskDao().getTaskById(taskId)?.toTask()
+        return db.getTaskDao().getTaskById(taskId)?.toTask(
+            dateTimeConversion = dateTimeConversion,
+            reminderTimeConversion = reminderTimeConversion
+        )
     }
 
     override suspend fun deleteTask(taskId: String) {
@@ -126,9 +156,10 @@ class TaskRepositoryImpl @Inject constructor(
     private fun scheduleNotification(task: AgendaItem.Task) {
         scheduler.schedule(
             agendaId = task.id,
-            time = ReminderTimeConversion.toZonedEpochMilli(
+            time = reminderTimeConversion.toZonedEpochMilli(
                 startLocalDateTime = task.startDateAndTime,
-                reminderTime = task.reminderTime
+                reminderTime = task.reminderTime,
+                dateTimeConversion = dateTimeConversion
             )
         )
     }

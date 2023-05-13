@@ -3,23 +3,26 @@ package com.andrew.tasky.agenda.data.event
 import com.andrew.tasky.agenda.data.event.attendee.toAttendee
 import com.andrew.tasky.agenda.data.event.photo.toEventPhoto
 import com.andrew.tasky.agenda.data.event.photo.toRemotePhotoDto
+import com.andrew.tasky.agenda.domain.DateTimeConversion
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.EventPhoto
-import com.andrew.tasky.agenda.domain.toLocalDateTime
-import com.andrew.tasky.agenda.domain.toZonedEpochMilli
 
-fun AgendaItem.Event.toCreateEventRequest(): CreateEventRequest {
+fun AgendaItem.Event.toCreateEventRequest(
+    dateTimeConversion: DateTimeConversion,
+    reminderTimeConversion: ReminderTimeConversion
+): CreateEventRequest {
     return CreateEventRequest(
         id = id,
         title = title,
         description = description,
-        from = startDateAndTime.toZonedEpochMilli(),
-        to = endDateAndTime.toZonedEpochMilli(),
-        remindAt = ReminderTimeConversion.toZonedEpochMilli(
+        from = dateTimeConversion.localDateTimeToZonedEpochMilli(startDateAndTime),
+        to = dateTimeConversion.localDateTimeToZonedEpochMilli(endDateAndTime),
+        remindAt = reminderTimeConversion.toZonedEpochMilli(
             reminderTime = reminderTime,
-            startLocalDateTime = startDateAndTime
+            startLocalDateTime = startDateAndTime,
+            dateTimeConversion = dateTimeConversion
         ),
         attendeeIds = attendees.map {
             it.userId
@@ -27,16 +30,20 @@ fun AgendaItem.Event.toCreateEventRequest(): CreateEventRequest {
     )
 }
 
-fun AgendaItem.Event.toUpdateEventRequest(): UpdateEventRequest {
+fun AgendaItem.Event.toUpdateEventRequest(
+    dateTimeConversion: DateTimeConversion,
+    reminderTimeConversion: ReminderTimeConversion
+): UpdateEventRequest {
     return UpdateEventRequest(
         id = id,
         title = title,
         description = description,
-        from = startDateAndTime.toZonedEpochMilli(),
-        to = endDateAndTime.toZonedEpochMilli(),
-        remindAt = ReminderTimeConversion.toZonedEpochMilli(
+        from = dateTimeConversion.localDateTimeToZonedEpochMilli(startDateAndTime),
+        to = dateTimeConversion.localDateTimeToZonedEpochMilli(endDateAndTime),
+        remindAt = reminderTimeConversion.toZonedEpochMilli(
             reminderTime = reminderTime,
-            startLocalDateTime = startDateAndTime
+            startLocalDateTime = startDateAndTime,
+            dateTimeConversion = dateTimeConversion
         ),
         attendeeIds = attendees.map {
             it.userId
@@ -46,19 +53,23 @@ fun AgendaItem.Event.toUpdateEventRequest(): UpdateEventRequest {
     )
 }
 
-fun AgendaItem.Event.toEventEntity(): EventEntity {
+fun AgendaItem.Event.toEventEntity(
+    dateTimeConversion: DateTimeConversion,
+    reminderTimeConversion: ReminderTimeConversion
+): EventEntity {
     return EventEntity(
         id = id,
         isDone = isDone,
         title = title,
         description = description,
-        startDateAndTime = startDateAndTime.toZonedEpochMilli(),
-        endDateAndTime = endDateAndTime.toZonedEpochMilli(),
+        startDateAndTime = dateTimeConversion.localDateTimeToZonedEpochMilli(startDateAndTime),
+        endDateAndTime = dateTimeConversion.localDateTimeToZonedEpochMilli(endDateAndTime),
         host = host,
         isCreator = isCreator,
-        reminderTime = ReminderTimeConversion.toZonedEpochMilli(
+        reminderTime = reminderTimeConversion.toZonedEpochMilli(
             reminderTime = reminderTime,
-            startLocalDateTime = startDateAndTime
+            startLocalDateTime = startDateAndTime,
+            dateTimeConversion = dateTimeConversion
         ),
         isGoing = isGoing,
         remotePhotos = photos.filterIsInstance<EventPhoto.Remote>().map { it.toRemotePhotoDto() },
@@ -88,18 +99,23 @@ fun EventDto.toEventEntity(isDone: Boolean, isGoing: Boolean): EventEntity {
     )
 }
 
-suspend fun EventEntity.toEvent(eventRepository: EventRepository): AgendaItem.Event {
+suspend fun EventEntity.toEvent(
+    eventRepository: EventRepository,
+    dateTimeConversion: DateTimeConversion,
+    reminderTimeConversion: ReminderTimeConversion
+): AgendaItem.Event {
     val localPhotos = eventRepository.getLocalPhotos(localPhotosKeys)
     return AgendaItem.Event(
         id = id,
         isDone = isDone,
         title = title,
         description = description,
-        startDateAndTime = startDateAndTime.toLocalDateTime(),
-        endDateAndTime = endDateAndTime.toLocalDateTime(),
-        reminderTime = ReminderTimeConversion.toEnum(
+        startDateAndTime = dateTimeConversion.zonedEpochMilliToLocalDateTime(startDateAndTime),
+        endDateAndTime = dateTimeConversion.zonedEpochMilliToLocalDateTime(endDateAndTime),
+        reminderTime = reminderTimeConversion.toEnum(
             remindAtEpochMilli = reminderTime,
-            startTimeEpochMilli = startDateAndTime
+            startTimeEpochMilli = startDateAndTime,
+            dateTimeConversion = dateTimeConversion
         ),
         host = host,
         isCreator = isCreator,

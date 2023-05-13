@@ -5,6 +5,7 @@ import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.domain.AgendaNotificationScheduler
+import com.andrew.tasky.agenda.domain.DateTimeConversion
 import com.andrew.tasky.agenda.domain.ReminderRepository
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
@@ -16,13 +17,27 @@ class ReminderRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
     private val api: ReminderApi,
     private val appContext: Context,
-    private val scheduler: AgendaNotificationScheduler
+    private val scheduler: AgendaNotificationScheduler,
+    private val dateTimeConversion: DateTimeConversion,
+    private val reminderTimeConversion: ReminderTimeConversion
 ) : ReminderRepository {
 
     override suspend fun createReminder(reminder: AgendaItem.Reminder) {
         scheduleNotification(reminder)
-        db.getReminderDao().upsertReminder(reminder.toReminderEntity())
-        val result = getResourceResult { api.createReminder(reminder.toReminderDto()) }
+        db.getReminderDao().upsertReminder(
+            reminder.toReminderEntity(
+                dateTimeConversion = dateTimeConversion,
+                reminderTimeConversion = reminderTimeConversion
+            )
+        )
+        val result = getResourceResult {
+            api.createReminder(
+                reminder.toReminderDto(
+                    dateTimeConversion = dateTimeConversion,
+                    reminderTimeConversion = reminderTimeConversion
+                )
+            )
+        }
         if (result is Resource.Error) {
             db.getReminderDao().upsertModifiedReminder(
                 ModifiedReminderEntity(
@@ -35,8 +50,20 @@ class ReminderRepositoryImpl @Inject constructor(
 
     override suspend fun updateReminder(reminder: AgendaItem.Reminder) {
         scheduleNotification(reminder)
-        db.getReminderDao().upsertReminder(reminder.toReminderEntity())
-        val result = getResourceResult { api.updateReminder(reminder.toReminderDto()) }
+        db.getReminderDao().upsertReminder(
+            reminder.toReminderEntity(
+                dateTimeConversion = dateTimeConversion,
+                reminderTimeConversion = reminderTimeConversion
+            )
+        )
+        val result = getResourceResult {
+            api.updateReminder(
+                reminder.toReminderDto(
+                    dateTimeConversion = dateTimeConversion,
+                    reminderTimeConversion = reminderTimeConversion
+                )
+            )
+        }
         if (result is Resource.Error) {
             db.getReminderDao().upsertModifiedReminder(
                 ModifiedReminderEntity(
@@ -48,7 +75,10 @@ class ReminderRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getReminder(reminderId: String): AgendaItem.Reminder? {
-        return db.getReminderDao().getReminderById(reminderId)?.toReminder()
+        return db.getReminderDao().getReminderById(reminderId)?.toReminder(
+            dateTimeConversion = dateTimeConversion,
+            reminderTimeConversion = reminderTimeConversion
+        )
     }
 
     override suspend fun deleteReminder(reminderId: String) {
@@ -111,12 +141,20 @@ class ReminderRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun completeReminderNotification(reminderId: String) {
+        val reminder = db.getReminderDao().getReminderById(
+            reminderId
+        )?.copy(notificationCompleted = true)
+        reminder?.let { db.getReminderDao().upsertReminder(it) }
+    }
+
     private fun scheduleNotification(reminder: AgendaItem.Reminder) {
         scheduler.schedule(
             agendaId = reminder.id,
-            time = ReminderTimeConversion.toZonedEpochMilli(
+            time = reminderTimeConversion.toZonedEpochMilli(
                 startLocalDateTime = reminder.startDateAndTime,
-                reminderTime = reminder.reminderTime
+                reminderTime = reminder.reminderTime,
+                dateTimeConversion = dateTimeConversion
             )
         )
     }
