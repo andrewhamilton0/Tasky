@@ -3,6 +3,8 @@ package com.andrew.tasky.agenda.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.andrew.tasky.agenda.data.agenda.notifications.PersistedNotifDao
+import com.andrew.tasky.agenda.data.agenda.notifications.PersistedNotifEntity
 import com.andrew.tasky.agenda.data.event.EventDao
 import com.andrew.tasky.agenda.data.event.EventEntity
 import com.andrew.tasky.agenda.data.event.ModifiedEventEntity
@@ -20,7 +22,8 @@ import com.andrew.tasky.agenda.data.task.TaskEntity
         TaskEntity::class,
         ModifiedTaskEntity::class,
         EventEntity::class,
-        ModifiedEventEntity::class
+        ModifiedEventEntity::class,
+        PersistedNotifEntity::class
     ],
     version = 1
 )
@@ -31,4 +34,5 @@ abstract class AgendaDatabase : RoomDatabase() {
     abstract fun getReminderDao(): ReminderDao
     abstract fun getTaskDao(): TaskDao
     abstract fun getEventDao(): EventDao
+    abstract fun getPersistedNotifDao(): PersistedNotifDao
 }

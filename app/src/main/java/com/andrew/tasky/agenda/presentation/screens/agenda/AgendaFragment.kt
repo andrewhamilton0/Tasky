@@ -179,7 +179,17 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                     true
                 }
                 R.id.delete -> {
-                    viewModel.deleteAgendaItem(agendaItem = agendaItem)
+                    val deleteItemName = when (agendaItem) {
+                        is AgendaItem.Event -> requireContext().getString(R.string.event)
+                        is AgendaItem.Reminder -> requireContext().getString(R.string.reminder)
+                        is AgendaItem.Task -> requireContext().getString(R.string.task)
+                    }.lowercase()
+                    showDeleteConfirmationDialog(
+                        deleteItemName = deleteItemName,
+                        onResultDeleteAgendaItem = {
+                            viewModel.deleteAgendaItem(agendaItem = agendaItem)
+                        }
+                    )
                     true
                 }
                 else -> true
