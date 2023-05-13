@@ -6,6 +6,8 @@ import android.content.Intent
 import com.andrew.tasky.agenda.data.agenda.notifications.AgendaNotificationSchedulerImpl.Companion.AGENDA_NOTIF_SCHED_INTENT
 import com.andrew.tasky.agenda.data.agenda.toNotificationInfo
 import com.andrew.tasky.agenda.domain.AgendaRepository
+import com.andrew.tasky.agenda.domain.DateTimeConversion
+import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.*
@@ -15,6 +17,10 @@ class AgendaBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
     lateinit var agendaRepository: AgendaRepository
+    @Inject
+    lateinit var dateTimeConversion: DateTimeConversion
+    @Inject
+    lateinit var reminderTimeConversion: ReminderTimeConversion
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -23,8 +29,12 @@ class AgendaBroadcastReceiver : BroadcastReceiver() {
 
         coroutineScope.launch {
             val item = id?.let { agendaRepository.getAgendaItemById(it) }
-            val notificationInfo = item?.toNotificationInfo()
+            val notificationInfo = item?.toNotificationInfo(
+                dateTimeConversion = dateTimeConversion,
+                reminderTimeConversion = reminderTimeConversion
+            )
             notificationInfo?.let { service?.showNotification(it) }
+            id?.let { agendaRepository.upsertPersistedNotification(it) }
         }
     }
 }

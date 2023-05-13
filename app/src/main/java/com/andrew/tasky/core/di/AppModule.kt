@@ -14,6 +14,8 @@ import com.andrew.tasky.agenda.data.reminder.ReminderApi
 import com.andrew.tasky.agenda.data.reminder.ReminderRepositoryImpl
 import com.andrew.tasky.agenda.data.task.TaskApi
 import com.andrew.tasky.agenda.data.task.TaskRepositoryImpl
+import com.andrew.tasky.agenda.data.util.DateTimeConversionImpl
+import com.andrew.tasky.agenda.data.util.ReminderTimeConversionImpl
 import com.andrew.tasky.agenda.data.util.UriByteConverterImpl
 import com.andrew.tasky.agenda.domain.*
 import com.andrew.tasky.auth.data.*
@@ -141,7 +143,9 @@ object AppModule {
         eventRepository: EventRepository,
         db: AgendaDatabase,
         app: Application,
-        agendaNotificationScheduler: AgendaNotificationScheduler
+        agendaNotificationScheduler: AgendaNotificationScheduler,
+        dateTimeConversion: DateTimeConversion,
+        reminderTimeConversion: ReminderTimeConversion
     ): AgendaRepository {
         return AgendaRepositoryImpl(
             agendaApi = agendaApi,
@@ -150,7 +154,9 @@ object AppModule {
             eventRepository = eventRepository,
             db = db,
             appContext = app,
-            scheduler = agendaNotificationScheduler
+            scheduler = agendaNotificationScheduler,
+            dateTimeConversion = dateTimeConversion,
+            reminderTimeConversion = reminderTimeConversion
         )
     }
 
@@ -170,9 +176,18 @@ object AppModule {
         api: ReminderApi,
         db: AgendaDatabase,
         app: Application,
-        scheduler: AgendaNotificationScheduler
+        scheduler: AgendaNotificationScheduler,
+        reminderTimeConversion: ReminderTimeConversion,
+        dateTimeConversion: DateTimeConversion
     ): ReminderRepository {
-        return ReminderRepositoryImpl(db = db, api = api, appContext = app, scheduler = scheduler)
+        return ReminderRepositoryImpl(
+            db = db,
+            api = api,
+            appContext = app,
+            scheduler = scheduler,
+            reminderTimeConversion = reminderTimeConversion,
+            dateTimeConversion = dateTimeConversion
+        )
     }
 
     @Provides
@@ -187,9 +202,18 @@ object AppModule {
         api: TaskApi,
         db: AgendaDatabase,
         app: Application,
-        scheduler: AgendaNotificationScheduler
+        scheduler: AgendaNotificationScheduler,
+        dateTimeConversion: DateTimeConversion,
+        reminderTimeConversion: ReminderTimeConversion
     ): TaskRepository {
-        return TaskRepositoryImpl(db = db, api = api, appContext = app, scheduler = scheduler)
+        return TaskRepositoryImpl(
+            db = db,
+            api = api,
+            appContext = app,
+            scheduler = scheduler,
+            dateTimeConversion = dateTimeConversion,
+            reminderTimeConversion = reminderTimeConversion
+        )
     }
 
     @Provides
@@ -204,13 +228,17 @@ object AppModule {
         api: EventApi,
         db: AgendaDatabase,
         appContext: Application,
-        scheduler: AgendaNotificationScheduler
+        scheduler: AgendaNotificationScheduler,
+        dateTimeConversion: DateTimeConversion,
+        reminderTimeConversion: ReminderTimeConversion
     ): EventRepository {
         return EventRepositoryImpl(
             db = db,
             api = api,
             context = appContext,
-            scheduler = scheduler
+            scheduler = scheduler,
+            dateTimeConversion = dateTimeConversion,
+            reminderTimeConversion = reminderTimeConversion
         )
     }
 
@@ -218,5 +246,17 @@ object AppModule {
     @Singleton
     fun provideEventApi(agendaItemRetrofitBuilder: Retrofit): EventApi {
         return agendaItemRetrofitBuilder.create()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDateTimeConversion(): DateTimeConversion {
+        return DateTimeConversionImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideReminderTimeConversion(): ReminderTimeConversion {
+        return ReminderTimeConversionImpl()
     }
 }
