@@ -7,6 +7,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.andrew.tasky.R
+import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,10 +25,13 @@ class MainActivity : AppCompatActivity() {
 
         installSplashScreen().apply {
             setKeepOnScreenCondition {
-                if (viewModel.isUserLoggedIn.value) {
-                    navController.navigate(R.id.action_global_agendaFragment)
-                }
                 viewModel.isLoading.value
+            }
+        }
+
+        collectLatestLifecycleFlow(viewModel.isUserLoggedIn) { isLoggedIn ->
+            if (!isLoggedIn) {
+                navController.navigate(R.id.action_global_loginFragment)
             }
         }
     }

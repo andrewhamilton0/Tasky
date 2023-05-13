@@ -206,8 +206,7 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 reminderLayout.reminderButton.isVisible = isEditing
             }
 
-            collectLatestLifecycleFlow(viewModel.isCreatorEditing) {
-                isCreatorEditing ->
+            collectLatestLifecycleFlow(viewModel.isCreatorEditing) { isCreatorEditing ->
                 addTitleAndDoneButtonLayout.editTitleButton.isVisible = isCreatorEditing
                 addTitleAndDoneButtonLayout.editTitleButton.isEnabled = isCreatorEditing
                 addTitleAndDoneButtonLayout.titleTextView.isEnabled = isCreatorEditing

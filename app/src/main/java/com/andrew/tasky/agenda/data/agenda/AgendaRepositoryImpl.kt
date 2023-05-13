@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.content.Context
 import android.icu.util.TimeZone
 import android.util.Log
+import com.andrew.tasky.agenda.data.agenda.notifications.PersistedNotifEntity
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.event.toEvent
 import com.andrew.tasky.agenda.data.event.toEventEntity
@@ -29,21 +30,30 @@ class AgendaRepositoryImpl(
     private val eventRepository: EventRepository,
     private val db: AgendaDatabase,
     private val appContext: Context,
-    private val scheduler: AgendaNotificationScheduler
+    private val scheduler: AgendaNotificationScheduler,
+    private val dateTimeConversion: DateTimeConversion,
+    private val reminderTimeConversion: ReminderTimeConversion
 ) : AgendaRepository {
 
     private val alarmManager = appContext.getSystemService(AlarmManager::class.java)
 
     override suspend fun getAgendaItemsOfDateFlow(localDate: LocalDate): Flow<List<AgendaItem>> {
-        val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
-        val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
+        val startEpochMilli = dateTimeConversion.localDateTimeToZonedEpochMilli(
+            localDate.atStartOfDay()
+        )
+        val endEpochMilli = dateTimeConversion.localDateTimeToZonedEpochMilli(
+            localDate.atStartOfDay().plusDays(1)
+        )
 
         val reminders = db.getReminderDao().getRemindersBetweenTimes(
             startEpochMilli = startEpochMilli,
             endEpochMilli = endEpochMilli
         ).map {
             it.map { reminderEntity ->
-                reminderEntity.toReminder()
+                reminderEntity.toReminder(
+                    dateTimeConversion = dateTimeConversion,
+                    reminderTimeConversion = reminderTimeConversion
+                )
             }
         }
         val tasks = db.getTaskDao().getTasksBetweenTimes(
@@ -51,7 +61,10 @@ class AgendaRepositoryImpl(
             endEpochMilli = endEpochMilli
         ).map {
             it.map { taskEntity ->
-                taskEntity.toTask()
+                taskEntity.toTask(
+                    dateTimeConversion = dateTimeConversion,
+                    reminderTimeConversion = reminderTimeConversion
+                )
             }
         }
         val events = db.getEventDao().getEventsBetweenTimes(
@@ -61,7 +74,11 @@ class AgendaRepositoryImpl(
             supervisorScope {
                 it.map { eventEntity ->
                     async {
-                        eventEntity.toEvent(eventRepository)
+                        eventEntity.toEvent(
+                            eventRepository = eventRepository,
+                            dateTimeConversion = dateTimeConversion,
+                            reminderTimeConversion = reminderTimeConversion
+                        )
                     }
                 }.map { it.await() }
             }
@@ -85,15 +102,22 @@ class AgendaRepositoryImpl(
         return agendaItems.find { it != null }
     }
 
+    // TODO DELETE ALL AGENDA ITEMS AND REUPSERT ALL LOCALLY
     override suspend fun updateAgendaItemCache(localDate: LocalDate) {
-        val startEpochMilli = localDate.atStartOfDay().toZonedEpochMilli()
-        val endEpochMilli = localDate.atStartOfDay().plusDays(1).toZonedEpochMilli()
+        val startEpochMilli = dateTimeConversion.localDateTimeToZonedEpochMilli(
+            localDate.atStartOfDay()
+        )
+        val endEpochMilli = dateTimeConversion.localDateTimeToZonedEpochMilli(
+            localDate.atStartOfDay().plusDays(1)
+        )
 
         syncModifiedAgendaItems()
         val results = getResourceResult {
             agendaApi.getAgendaItems(
                 timezone = TimeZone.getDefault().id,
-                time = LocalDateTime.of(localDate, LocalTime.now()).toZonedEpochMilli()
+                time = dateTimeConversion.localDateTimeToZonedEpochMilli(
+                    LocalDateTime.of(localDate, LocalTime.now())
+                )
             )
         }
         when (results) {
@@ -123,7 +147,12 @@ class AgendaRepositoryImpl(
                         isDone = localReminder?.isDone ?: false
                     )
                     db.getReminderDao().upsertReminder(remoteReminder)
-                    scheduleNotification(remoteReminder.toReminder())
+                    scheduleNotification(
+                        remoteReminder.toReminder(
+                            dateTimeConversion = dateTimeConversion,
+                            reminderTimeConversion = reminderTimeConversion
+                        )
+                    )
                 }
                 val localTasks = db.getTaskDao().getTasksBetweenTimes(
                     startEpochMilli = startEpochMilli,
@@ -140,7 +169,12 @@ class AgendaRepositoryImpl(
                 }
                 results.data?.tasks?.forEach { taskDto ->
                     db.getTaskDao().upsertTask(taskDto.toTaskEntity())
-                    scheduleNotification(taskDto.toTaskEntity().toTask())
+                    scheduleNotification(
+                        taskDto.toTaskEntity().toTask(
+                            dateTimeConversion = dateTimeConversion,
+                            reminderTimeConversion = reminderTimeConversion
+                        )
+                    )
                 }
                 val localEvents = db.getEventDao().getEventsBetweenTimes(
                     startEpochMilli = startEpochMilli,
@@ -162,7 +196,13 @@ class AgendaRepositoryImpl(
                         isGoing = localEvent?.isGoing ?: true
                     )
                     db.getEventDao().upsertEvent(remoteEvent)
-                    scheduleNotification(remoteEvent.toEvent(eventRepository))
+                    scheduleNotification(
+                        remoteEvent.toEvent(
+                            eventRepository = eventRepository,
+                            dateTimeConversion = dateTimeConversion,
+                            reminderTimeConversion = reminderTimeConversion
+                        )
+                    )
                 }
             }
         }
@@ -223,6 +263,7 @@ class AgendaRepositoryImpl(
         return Resource.Success()
     }
 
+    // TODO DELETE ALL AGENDA ITEMS AND REUPSERT ALL LOCALLY
     override suspend fun syncFullAgenda() {
         syncModifiedAgendaItems()
         val results = getResourceResult { agendaApi.getFullAgenda() }
@@ -250,7 +291,12 @@ class AgendaRepositoryImpl(
                         isDone = localReminder?.isDone ?: false
                     )
                     db.getReminderDao().upsertReminder(remoteReminder)
-                    scheduleNotification(remoteReminder.toReminder())
+                    scheduleNotification(
+                        remoteReminder.toReminder(
+                            dateTimeConversion = dateTimeConversion,
+                            reminderTimeConversion = reminderTimeConversion
+                        )
+                    )
                 }
 
                 val localTasks = db.getTaskDao().getAllTasks().first()
@@ -265,7 +311,12 @@ class AgendaRepositoryImpl(
                 }
                 results.data?.tasks?.forEach { taskDto ->
                     db.getTaskDao().upsertTask(taskDto.toTaskEntity())
-                    scheduleNotification(taskDto.toTaskEntity().toTask())
+                    scheduleNotification(
+                        taskDto.toTaskEntity().toTask(
+                            dateTimeConversion = dateTimeConversion,
+                            reminderTimeConversion = reminderTimeConversion
+                        )
+                    )
                 }
                 val localEvents = db.getEventDao().getAllEvents().first()
                 localEvents.forEach { localEvent ->
@@ -284,7 +335,13 @@ class AgendaRepositoryImpl(
                         isGoing = localEvent?.isGoing ?: true
                     )
                     db.getEventDao().upsertEvent(remoteEvent)
-                    scheduleNotification(remoteEvent.toEvent(eventRepository))
+                    scheduleNotification(
+                        remoteEvent.toEvent(
+                            eventRepository = eventRepository,
+                            dateTimeConversion = dateTimeConversion,
+                            reminderTimeConversion = reminderTimeConversion
+                        )
+                    )
                 }
             }
         }
@@ -293,6 +350,30 @@ class AgendaRepositoryImpl(
     override suspend fun deleteAllAgendaItems() {
         deleteAllAgendaTables()
         cancelAllNotifications()
+    }
+
+    override suspend fun sendPersistedNotifications() {
+        // Adds ten seconds because scheduler does not schedule alarms even 1 second old
+        val timePlusTenSeconds = dateTimeConversion
+            .localDateTimeToZonedEpochMilli(LocalDateTime.now().plusSeconds(10))
+        val persistedNotifs = db.getPersistedNotifDao().getAllPersistedNotifs().first()
+
+        persistedNotifs.forEach {
+            scheduler.schedule(
+                agendaId = it.agendaId,
+                time = timePlusTenSeconds
+            )
+        }
+    }
+
+    override suspend fun upsertPersistedNotification(agendaId: String) {
+        db.getPersistedNotifDao().upsertPersistedNotif(
+            PersistedNotifEntity(agendaId = agendaId)
+        )
+    }
+
+    override suspend fun deleteAllPersistedNotifs() {
+        db.getPersistedNotifDao().deleteAllPersistedNotifs()
     }
 
     private suspend fun deleteAllAgendaTables() {
@@ -314,9 +395,10 @@ class AgendaRepositoryImpl(
     private fun scheduleNotification(agendaItem: AgendaItem) {
         scheduler.schedule(
             agendaId = agendaItem.id,
-            time = ReminderTimeConversion.toZonedEpochMilli(
+            time = reminderTimeConversion.toZonedEpochMilli(
                 startLocalDateTime = agendaItem.startDateAndTime,
-                reminderTime = agendaItem.reminderTime
+                reminderTime = agendaItem.reminderTime,
+                dateTimeConversion = dateTimeConversion
             )
         )
     }
