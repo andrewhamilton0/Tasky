@@ -141,13 +141,6 @@ class ReminderRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun completeReminderNotification(reminderId: String) {
-        val reminder = db.getReminderDao().getReminderById(
-            reminderId
-        )?.copy(notificationCompleted = true)
-        reminder?.let { db.getReminderDao().upsertReminder(it) }
-    }
-
     private fun scheduleNotification(reminder: AgendaItem.Reminder) {
         scheduler.schedule(
             agendaId = reminder.id,
