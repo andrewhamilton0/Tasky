@@ -81,7 +81,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                             viewModel.logout()
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToLoginFragment()
+                                    .actionGlobalLoginFragment()
                             )
                             true
                         }

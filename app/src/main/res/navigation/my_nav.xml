@@ -36,11 +36,6 @@
         android:label="fragment_agenda"
         tools:layout="@layout/fragment_agenda" >
         <action
-            android:id="@+id/action_agendaFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_agendaFragment_to_event_nav"
             app:destination="@id/event_nav">
             <argument
