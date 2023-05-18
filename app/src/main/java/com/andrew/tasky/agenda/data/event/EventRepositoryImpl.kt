@@ -19,6 +19,7 @@ import com.andrew.tasky.core.data.Resource
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -310,7 +311,7 @@ class EventRepositoryImpl @Inject constructor(
 
     override suspend fun uploadCreateAndUpdateModifiedEvents() {
 
-        val createAndUpdateModifiedEvents = db.getEventDao().getModifiedEvents().filter {
+        val createAndUpdateModifiedEvents = db.getEventDao().getModifiedEvents().first().filter {
             it.modifiedType == ModifiedType.CREATE || it.modifiedType == ModifiedType.UPDATE
         }.map {
             db.getEventDao().getEventById(it.id)?.toEvent(

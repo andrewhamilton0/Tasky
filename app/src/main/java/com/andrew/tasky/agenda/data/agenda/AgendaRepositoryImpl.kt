@@ -4,7 +4,6 @@ import android.app.AlarmManager
 import android.content.Context
 import android.icu.util.TimeZone
 import android.util.Log
-import com.andrew.tasky.agenda.data.agenda.notifications.PersistedNotifEntity
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.event.toEvent
 import com.andrew.tasky.agenda.data.event.toEventEntity
@@ -213,17 +212,17 @@ class AgendaRepositoryImpl(
         taskRepository.uploadCreateAndUpdateModifiedTasks()
         eventRepository.uploadCreateAndUpdateModifiedEvents()
 
-        val reminderDeleteIds = db.getReminderDao().getModifiedReminders().filter {
+        val reminderDeleteIds = db.getReminderDao().getModifiedReminders().first().filter {
             it.modifiedType == ModifiedType.DELETE
         }.map {
             it.id
         }
-        val taskDeleteIds = db.getTaskDao().getModifiedTasks().filter {
+        val taskDeleteIds = db.getTaskDao().getModifiedTasks().first().filter {
             it.modifiedType == ModifiedType.DELETE
         }.map {
             it.id
         }
-        val eventDeleteIds = db.getEventDao().getModifiedEvents().filter {
+        val eventDeleteIds = db.getEventDao().getModifiedEvents().first().filter {
             it.modifiedType == ModifiedType.DELETE
         }.map {
             it.id
@@ -352,28 +351,11 @@ class AgendaRepositoryImpl(
         cancelAllNotifications()
     }
 
-    override suspend fun sendPersistedNotifications() {
-        // Adds ten seconds because scheduler does not schedule alarms even 1 second old
-        val timePlusTenSeconds = dateTimeConversion
-            .localDateTimeToZonedEpochMilli(LocalDateTime.now().plusSeconds(10))
-        val persistedNotifs = db.getPersistedNotifDao().getAllPersistedNotifs().first()
-
-        persistedNotifs.forEach {
-            scheduler.schedule(
-                agendaId = it.agendaId,
-                time = timePlusTenSeconds
-            )
+    override suspend fun scheduleAllAgendaItemNotifications() {
+        val agendaItems = getAllAgendaItems().first()
+        agendaItems.forEach { item ->
+            scheduleNotification(item)
         }
-    }
-
-    override suspend fun upsertPersistedNotification(agendaId: String) {
-        db.getPersistedNotifDao().upsertPersistedNotif(
-            PersistedNotifEntity(agendaId = agendaId)
-        )
-    }
-
-    override suspend fun deleteAllPersistedNotifs() {
-        db.getPersistedNotifDao().deleteAllPersistedNotifs()
     }
 
     private suspend fun deleteAllAgendaTables() {
@@ -405,5 +387,31 @@ class AgendaRepositoryImpl(
 
     private fun cancelScheduledNotification(agendaItemId: String) {
         scheduler.cancel(agendaItemId)
+    }
+
+    private suspend fun getAllAgendaItems(): Flow<List<AgendaItem>> {
+        val reminders = db.getReminderDao().getAllReminders().map {
+            it.map { reminderEntity ->
+                reminderEntity.toReminder(dateTimeConversion, reminderTimeConversion)
+            }
+        }
+        val events = db.getEventDao().getAllEvents().map {
+            it.map { eventEntity ->
+                eventEntity.toEvent(
+                    eventRepository,
+                    dateTimeConversion,
+                    reminderTimeConversion,
+                )
+            }
+        }
+        val tasks = db.getTaskDao().getAllTasks().map {
+            it.map { taskEntity ->
+                taskEntity.toTask(dateTimeConversion, reminderTimeConversion)
+            }
+        }
+
+        return combine(events, reminders, tasks) { _events, _reminders, _tasks ->
+            _events + _reminders + _tasks
+        }
     }
 }

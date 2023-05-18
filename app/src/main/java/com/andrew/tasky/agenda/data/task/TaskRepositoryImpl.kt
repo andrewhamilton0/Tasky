@@ -12,6 +12,7 @@ import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.util.getResourceResult
 import com.andrew.tasky.core.data.Resource
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
 
 class TaskRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
@@ -108,7 +109,7 @@ class TaskRepositoryImpl @Inject constructor(
     }
 
     override suspend fun uploadCreateAndUpdateModifiedTasks() {
-        val modifiedTasks = db.getTaskDao().getModifiedTasks().groupBy {
+        val modifiedTasks = db.getTaskDao().getModifiedTasks().first().groupBy {
             it.modifiedType
         }
 

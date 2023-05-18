@@ -27,7 +27,7 @@ interface TaskDao {
     suspend fun upsertModifiedTask(modifiedTask: ModifiedTaskEntity): Long
 
     @Query("SELECT * FROM ModifiedTaskEntity")
-    suspend fun getModifiedTasks(): List<ModifiedTaskEntity>
+    fun getModifiedTasks(): Flow<List<ModifiedTaskEntity>>
 
     @Query("DELETE FROM ModifiedTaskEntity WHERE id==:id")
     suspend fun deleteModifiedTaskById(id: String): Int
