@@ -24,17 +24,10 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
 
-    private suspend fun deleteAllPersistedNotifications() {
-        agendaRepository.deleteAllPersistedNotifs()
-    }
-
     init {
         viewModelScope.launch {
             _isUserLoggedIn.send(authRepository.isAuthorizedToLogin())
             _isLoading.value = false
-        }
-        viewModelScope.launch {
-            deleteAllPersistedNotifications()
         }
     }
 }

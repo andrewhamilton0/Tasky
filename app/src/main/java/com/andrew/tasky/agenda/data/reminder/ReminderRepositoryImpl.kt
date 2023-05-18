@@ -12,6 +12,7 @@ import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.util.getResourceResult
 import com.andrew.tasky.core.data.Resource
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
 
 class ReminderRepositoryImpl @Inject constructor(
     private val db: AgendaDatabase,
@@ -96,7 +97,7 @@ class ReminderRepositoryImpl @Inject constructor(
     }
 
     override suspend fun uploadCreateAndUpdateModifiedReminders() {
-        val modifiedReminders = db.getReminderDao().getModifiedReminders().groupBy {
+        val modifiedReminders = db.getReminderDao().getModifiedReminders().first().groupBy {
             it.modifiedType
         }
 
@@ -139,13 +140,6 @@ class ReminderRepositoryImpl @Inject constructor(
                 }
             }
         }
-    }
-
-    override suspend fun completeReminderNotification(reminderId: String) {
-        val reminder = db.getReminderDao().getReminderById(
-            reminderId
-        )?.copy(notificationCompleted = true)
-        reminder?.let { db.getReminderDao().upsertReminder(it) }
     }
 
     private fun scheduleNotification(reminder: AgendaItem.Reminder) {

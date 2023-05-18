@@ -34,7 +34,6 @@ class AgendaBroadcastReceiver : BroadcastReceiver() {
                 reminderTimeConversion = reminderTimeConversion
             )
             notificationInfo?.let { service?.showNotification(it) }
-            id?.let { agendaRepository.upsertPersistedNotification(it) }
         }
     }
 }

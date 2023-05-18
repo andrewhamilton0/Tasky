@@ -34,7 +34,7 @@ interface EventDao {
     suspend fun getModifiedEventById(id: String): ModifiedEventEntity?
 
     @Query("SELECT * FROM ModifiedEventEntity")
-    suspend fun getModifiedEvents(): List<ModifiedEventEntity>
+    fun getModifiedEvents(): Flow<List<ModifiedEventEntity>>
 
     @Query("DELETE FROM ModifiedEventEntity WHERE id==:id")
     suspend fun deleteModifiedEventById(id: String): Int

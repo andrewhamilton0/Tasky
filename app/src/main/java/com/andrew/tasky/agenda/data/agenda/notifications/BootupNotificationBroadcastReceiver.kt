@@ -8,7 +8,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -19,9 +18,9 @@ class BootupNotificationBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
-            val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+            val coroutineScope = CoroutineScope(Dispatchers.Main)
             coroutineScope.launch {
-                agendaRepository.sendPersistedNotifications()
+                agendaRepository.scheduleAllAgendaItemNotifications()
             }
         }
     }

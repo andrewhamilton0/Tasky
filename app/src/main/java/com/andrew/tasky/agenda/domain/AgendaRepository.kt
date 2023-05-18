@@ -12,7 +12,5 @@ interface AgendaRepository {
     suspend fun syncModifiedAgendaItems(): Resource<Unit>
     suspend fun syncFullAgenda()
     suspend fun deleteAllAgendaItems()
-    suspend fun sendPersistedNotifications()
-    suspend fun upsertPersistedNotification(agendaId: String)
-    suspend fun deleteAllPersistedNotifs()
+    suspend fun scheduleAllAgendaItemNotifications()
 }

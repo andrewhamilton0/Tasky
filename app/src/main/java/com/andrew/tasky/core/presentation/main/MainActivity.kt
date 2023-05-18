@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
+import com.andrew.tasky.auth.presentation.screens.login.LoginFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         collectLatestLifecycleFlow(viewModel.isUserLoggedIn) { isLoggedIn ->
             if (!isLoggedIn) {
-                navController.navigate(R.id.action_global_loginFragment)
+                navController.navigate(LoginFragmentDirections.actionGlobalLoginFragment())
             }
         }
     }
