@@ -212,54 +212,75 @@ class AgendaRepositoryImpl(
         taskRepository.uploadCreateAndUpdateModifiedTasks()
         eventRepository.uploadCreateAndUpdateModifiedEvents()
 
-        val reminderDeleteIds = db.getReminderDao().getModifiedReminders().first().filter {
-            it.modifiedType == ModifiedType.DELETE
-        }.map {
-            it.id
-        }
-        val taskDeleteIds = db.getTaskDao().getModifiedTasks().first().filter {
-            it.modifiedType == ModifiedType.DELETE
-        }.map {
-            it.id
-        }
-        val eventDeleteIds = db.getEventDao().getModifiedEvents().first().filter {
-            it.modifiedType == ModifiedType.DELETE
-        }.map {
-            it.id
-        }
-
-        if (reminderDeleteIds.isNotEmpty() ||
-            taskDeleteIds.isNotEmpty() ||
-            eventDeleteIds.isNotEmpty()
-        ) {
-            val syncAgendaRequest = SyncAgendaRequest(
-                eventDeleteIds,
-                taskDeleteIds,
-                reminderDeleteIds
-            )
-            val results = getResourceResult { agendaApi.syncAgendaItems(syncAgendaRequest) }
-            when (results) {
-                is Resource.Error -> {
-                    Log.e(
-                        "SyncAgendaItem Error",
-                        results.message?.asString(appContext) ?: "Unknown Error"
-                    )
-                }
-                is Resource.Success -> {
-                    reminderDeleteIds.forEach {
-                        db.getReminderDao().deleteModifiedReminderById(it)
-                    }
-                    taskDeleteIds.forEach {
-                        db.getTaskDao().deleteModifiedTaskById(it)
-                    }
-                    eventDeleteIds.forEach {
-                        db.getEventDao().deleteModifiedEventById(it)
-                    }
+        val coroutine = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        return coroutine.async {
+            val reminderDeleteIdsAsync = async {
+                db.getReminderDao().getModifiedReminders().first().filter {
+                    it.modifiedType == ModifiedType.DELETE
+                }.map {
+                    it.id
                 }
             }
-            return results
-        }
-        return Resource.Success()
+            val taskDeleteIdsAsync = async {
+                db.getTaskDao().getModifiedTasks().first().filter {
+                    it.modifiedType == ModifiedType.DELETE
+                }.map {
+                    it.id
+                }
+            }
+            val eventDeleteIdsAsync = async {
+                db.getEventDao().getModifiedEvents().first().filter {
+                    it.modifiedType == ModifiedType.DELETE
+                }.map {
+                    it.id
+                }
+            }
+            val eventDeleteIds = eventDeleteIdsAsync.await()
+            val taskDeleteIds = taskDeleteIdsAsync.await()
+            val reminderDeleteIds = reminderDeleteIdsAsync.await()
+
+            if (reminderDeleteIds.isNotEmpty() ||
+                taskDeleteIds.isNotEmpty() ||
+                eventDeleteIds.isNotEmpty()
+            ) {
+                val syncAgendaRequest = SyncAgendaRequest(
+                    eventDeleteIds,
+                    taskDeleteIds,
+                    reminderDeleteIds
+                )
+                val results = getResourceResult { agendaApi.syncAgendaItems(syncAgendaRequest) }
+                when (results) {
+                    is Resource.Error -> {
+                        Log.e(
+                            "SyncAgendaItem Error",
+                            results.message?.asString(appContext) ?: "Unknown Error"
+                        )
+                    }
+
+                    is Resource.Success -> {
+                        launch {
+                            reminderDeleteIds.forEach {
+                                db.getReminderDao().deleteModifiedReminderById(it)
+                            }
+                        }
+                        launch {
+                            taskDeleteIds.forEach {
+                                db.getTaskDao().deleteModifiedTaskById(it)
+                            }
+                        }
+                        launch {
+                            eventDeleteIds.forEach {
+                                db.getEventDao().deleteModifiedEventById(it)
+                            }
+                        }
+                    }
+                }
+                return@async results
+            }
+            else{
+                return@async Resource.Success()
+            }
+        }.await()
     }
 
     // TODO DELETE ALL AGENDA ITEMS AND REUPSERT ALL LOCALLY

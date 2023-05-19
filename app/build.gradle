@@ -7,6 +7,8 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'kotlin-parcelize'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.0'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -120,6 +122,11 @@ dependencies {
     //WorkManager
     def work_version = "2.7.1"
     implementation "androidx.work:work-runtime-ktx:$work_version"
+
+    //FireBase
+    implementation platform('com.google.firebase:firebase-bom:32.0.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
 }
 
 kapt {
