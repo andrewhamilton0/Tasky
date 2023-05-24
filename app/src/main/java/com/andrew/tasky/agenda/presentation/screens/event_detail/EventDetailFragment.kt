@@ -18,10 +18,13 @@ import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.agenda.presentation.adapters.PhotoItemAdapter
 import com.andrew.tasky.agenda.util.*
+import com.andrew.tasky.core.data.Resource
 import com.andrew.tasky.databinding.FragmentEventDetailBinding
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 
 @AndroidEntryPoint
 class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
@@ -127,38 +130,62 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
 
             startTimeAndDateLayout.timeTextView.setOnClickListener {
                 viewModel.setEditMode(true)
-                showTimePickerDialog(viewModel::setStartTime)
+                showTimePickerDialog(
+                    onResult = viewModel::setStartTime,
+                    initialTime = viewModel.selectedStartDateTime.value.toLocalTime()
+                )
             }
             startTimeAndDateLayout.timeButton.setOnClickListener {
                 viewModel.setEditMode(true)
-                showTimePickerDialog(viewModel::setStartTime)
+                showTimePickerDialog(
+                    onResult = viewModel::setStartTime,
+                    initialTime = viewModel.selectedStartDateTime.value.toLocalTime()
+                )
             }
             startTimeAndDateLayout.dateTextView.setOnClickListener {
                 viewModel.setEditMode(true)
-                showDatePickerDialog(viewModel::setStartDate)
+                showDatePickerDialog(
+                    onResult = viewModel::setStartDate,
+                    initialDate = viewModel.selectedStartDateTime.value.toLocalDate()
+                )
             }
             startTimeAndDateLayout.dateButton.setOnClickListener {
                 viewModel.setEditMode(true)
-                showDatePickerDialog(viewModel::setStartDate)
+                showDatePickerDialog(
+                    onResult = viewModel::setStartDate,
+                    initialDate = viewModel.selectedStartDateTime.value.toLocalDate()
+                )
             }
 
             endTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.to)
 
             endTimeAndDateLayout.timeTextView.setOnClickListener {
                 viewModel.setEditMode(true)
-                showTimePickerDialog(viewModel::setEndTime)
+                showTimePickerDialog(
+                    onResult = viewModel::setEndTime,
+                    initialTime = viewModel.selectedEndDateTime.value.toLocalTime()
+                )
             }
             endTimeAndDateLayout.timeButton.setOnClickListener {
                 viewModel.setEditMode(true)
-                showTimePickerDialog(viewModel::setEndTime)
+                showTimePickerDialog(
+                    onResult = viewModel::setEndTime,
+                    initialTime = viewModel.selectedEndDateTime.value.toLocalTime()
+                )
             }
             endTimeAndDateLayout.dateTextView.setOnClickListener {
                 viewModel.setEditMode(true)
-                showDatePickerDialog(viewModel::setEndDate)
+                showDatePickerDialog(
+                    onResult = viewModel::setEndDate,
+                    initialDate = viewModel.selectedEndDateTime.value.toLocalDate()
+                )
             }
             endTimeAndDateLayout.dateButton.setOnClickListener {
                 viewModel.setEditMode(true)
-                showDatePickerDialog(viewModel::setEndDate)
+                showDatePickerDialog(
+                    onResult = viewModel::setEndDate,
+                    initialDate = viewModel.selectedEndDateTime.value.toLocalDate()
+                )
             }
 
             reminderLayout.reminderTextView.setOnClickListener {
@@ -178,7 +205,10 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
 
             attendeesLayout.addAttendeeButton.setOnClickListener {
                 viewModel.setEditMode(true)
-                showAttendeeDialog(onEmailResult = viewModel::addAttendee)
+                showAttendeeDialog(
+                    onEmailResult = viewModel::addAttendee,
+                    onSuccessListener = attendeeSuccessChannel.receiveAsFlow()
+                )
             }
             attendeesLayout.allButton.setOnClickListener {
                 viewModel.setAttendeeFilterType(EventDetailViewModel.AttendeeFilterTypes.ALL)
@@ -362,24 +392,20 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 addPhotoLayout.addPhotoLayout.isVisible = allowedToSeePhotoLayout
             }
 
-            collectLatestLifecycleFlow(viewModel.selectedStartTime) { selectedStartTime ->
-                startTimeAndDateLayout.timeTextView.text = selectedStartTime.format(
+            collectLatestLifecycleFlow(viewModel.selectedStartDateTime) { selectedStartDateTime ->
+                startTimeAndDateLayout.timeTextView.text = selectedStartDateTime.format(
                     DateTimeFormatter.ofPattern("HH:mm")
                 )
-            }
-            collectLatestLifecycleFlow(viewModel.selectedStartDate) { selectedStartDate ->
-                startTimeAndDateLayout.dateTextView.text = selectedStartDate.format(
+                startTimeAndDateLayout.dateTextView.text = selectedStartDateTime.format(
                     DateTimeFormatter.ofPattern("MMM dd yyyy")
                 )
             }
 
-            collectLatestLifecycleFlow(viewModel.selectedEndTime) { selectedEndTime ->
-                endTimeAndDateLayout.timeTextView.text = selectedEndTime.format(
+            collectLatestLifecycleFlow(viewModel.selectedEndDateTime) { selectedEndDateTime ->
+                endTimeAndDateLayout.timeTextView.text = selectedEndDateTime.format(
                     DateTimeFormatter.ofPattern("HH:mm")
                 )
-            }
-            collectLatestLifecycleFlow(viewModel.selectedEndDate) { selectedEndDate ->
-                endTimeAndDateLayout.dateTextView.text = selectedEndDate.format(
+                endTimeAndDateLayout.dateTextView.text = selectedEndDateTime.format(
                     DateTimeFormatter.ofPattern("MMM dd yyyy")
                 )
             }
@@ -508,8 +534,19 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         collectLatestLifecycleFlow(viewModel.isSavingEvent) { isSaving ->
             binding.progressBar.isVisible = isSaving
         }
-        collectLatestLifecycleFlow(viewModel.attendeeToastMessage) {
-            Toast.makeText(context, it.asString(requireContext()), Toast.LENGTH_SHORT).show()
+        collectLatestLifecycleFlow(viewModel.addAttendee) { result ->
+            when (result) {
+                is Resource.Error -> {
+                    Toast.makeText(
+                        context,
+                        result.message?.asString(requireContext()),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is Resource.Success -> {
+                    attendeeSuccessChannel.send(Unit)
+                }
+            }
         }
         collectLatestLifecycleFlow(viewModel.photosNotAddedToastMessage) {
             Toast.makeText(context, it.asString(requireContext()), Toast.LENGTH_LONG).show()
@@ -525,4 +562,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             EventDetailFragmentDirections.actionEventDetailFragmentToPhotoDetailFragment()
         )
     }
+
+    private val attendeeSuccessChannel = Channel<Unit>()
 }

@@ -88,16 +88,28 @@ class TaskDetailFragment : Fragment(R.layout.fragment_task_detail) {
 
             startTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.from)
             startTimeAndDateLayout.timeTextView.setOnClickListener {
-                showTimePickerDialog(viewModel::setStartTime)
+                showTimePickerDialog(
+                    onResult = viewModel::setStartTime,
+                    initialTime = viewModel.selectedStartTime.value
+                )
             }
             startTimeAndDateLayout.timeButton.setOnClickListener {
-                showTimePickerDialog(viewModel::setStartTime)
+                showTimePickerDialog(
+                    onResult = viewModel::setStartTime,
+                    initialTime = viewModel.selectedStartTime.value
+                )
             }
             startTimeAndDateLayout.dateTextView.setOnClickListener {
-                showDatePickerDialog(viewModel::setStartDate)
+                showDatePickerDialog(
+                    onResult = viewModel::setStartDate,
+                    initialDate = viewModel.selectedStartDate.value
+                )
             }
             startTimeAndDateLayout.dateButton.setOnClickListener {
-                showDatePickerDialog(viewModel::setStartDate)
+                showDatePickerDialog(
+                    onResult = viewModel::setStartDate,
+                    initialDate = viewModel.selectedStartDate.value
+                )
             }
 
             reminderLayout.reminderTextView.setOnClickListener {

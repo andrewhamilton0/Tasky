@@ -64,28 +64,56 @@ class EventDetailViewModel @Inject constructor(
         _description.value = description
     }
 
-    private val _selectedStartDate = MutableStateFlow(LocalDate.now())
-    val selectedStartDate = _selectedStartDate.asStateFlow()
+    private val _selectedStartDateTime = MutableStateFlow(LocalDateTime.now())
+    val selectedStartDateTime = _selectedStartDateTime.asStateFlow()
+
+    private val _selectedEndDateTime = MutableStateFlow(LocalDateTime.now())
+    val selectedEndDateTime = _selectedEndDateTime.asStateFlow()
+
+    private fun setStartDateTime(newDateTime: LocalDateTime) {
+        _selectedStartDateTime.update { newDateTime }
+        if (selectedEndDateTime.value < selectedStartDateTime.value) {
+            _selectedEndDateTime.update { selectedStartDateTime.value.plusMinutes(30) }
+        }
+    }
+
+    private fun setEndDateTime(newDateTime: LocalDateTime) {
+        _selectedEndDateTime.update { newDateTime }
+        if (selectedEndDateTime.value < selectedStartDateTime.value) {
+            _selectedStartDateTime.update { selectedEndDateTime.value.minusMinutes(30) }
+        }
+    }
+
     fun setStartDate(selectedStartDate: LocalDate) {
-        _selectedStartDate.value = selectedStartDate
+        val newDateTime = LocalDateTime.of(
+            selectedStartDate,
+            selectedStartDateTime.value.toLocalTime()
+        )
+        setStartDateTime(newDateTime)
     }
 
-    private val _selectedStartTime = MutableStateFlow(LocalTime.now())
-    val selectedStartTime = _selectedStartTime.asStateFlow()
     fun setStartTime(selectedStartTime: LocalTime) {
-        _selectedStartTime.value = selectedStartTime
+        val newDateTime = LocalDateTime.of(
+            selectedStartDateTime.value.toLocalDate(),
+            selectedStartTime
+        )
+        setStartDateTime(newDateTime)
     }
 
-    private val _selectedEndDate = MutableStateFlow(LocalDate.now())
-    val selectedEndDate = _selectedEndDate.asStateFlow()
     fun setEndDate(selectedEndDate: LocalDate) {
-        _selectedEndDate.value = selectedEndDate
+        val newDateTime = LocalDateTime.of(
+            selectedEndDate,
+            selectedEndDateTime.value.toLocalTime()
+        )
+        setEndDateTime(newDateTime)
     }
 
-    private val _selectedEndTime = MutableStateFlow(LocalTime.now())
-    val selectedEndTime = _selectedEndTime.asStateFlow()
     fun setEndTime(selectedEndTime: LocalTime) {
-        _selectedEndTime.value = selectedEndTime
+        val newDateTime = LocalDateTime.of(
+            selectedEndDateTime.value.toLocalDate(),
+            selectedEndTime
+        )
+        setEndDateTime(newDateTime)
     }
 
     private val _selectedReminderTime = MutableStateFlow(ReminderTime.TEN_MINUTES_BEFORE)
@@ -129,11 +157,13 @@ class EventDetailViewModel @Inject constructor(
             when (result) {
                 is Resource.Error -> {
                     if (result.message != null) {
-                        attendeeToastMessageChannel.send(result.message)
+                        addAttendeeChannel.send(Resource.Error(result.message))
                     } else {
-                        attendeeToastMessageChannel.send(
-                            UiText.Resource(
-                                resId = R.string.unknown_error
+                        addAttendeeChannel.send(
+                            Resource.Error(
+                                errorMessage = UiText.Resource(
+                                    resId = R.string.unknown_error
+                                )
                             )
                         )
                     }
@@ -143,17 +173,24 @@ class EventDetailViewModel @Inject constructor(
                         val attendee = result.data.copy(isGoing = true)
                         if (!attendees.value.contains(attendee)) {
                             _attendees.value += attendee
+                            addAttendeeChannel.send(
+                                Resource.Success()
+                            )
                         } else {
-                            attendeeToastMessageChannel.send(
-                                UiText.Resource(
-                                    resId = R.string.attendee_already_added
+                            addAttendeeChannel.send(
+                                Resource.Error(
+                                    errorMessage = UiText.Resource(
+                                        resId = R.string.attendee_already_added
+                                    )
                                 )
                             )
                         }
                     } else {
-                        attendeeToastMessageChannel.send(
-                            UiText.Resource(
-                                resId = R.string.unknown_error
+                        addAttendeeChannel.send(
+                            Resource.Error(
+                                errorMessage = UiText.Resource(
+                                    resId = R.string.unknown_error
+                                )
                             )
                         )
                     }
@@ -162,8 +199,8 @@ class EventDetailViewModel @Inject constructor(
         }
     }
 
-    private val attendeeToastMessageChannel = Channel<UiText>()
-    val attendeeToastMessage = attendeeToastMessageChannel.receiveAsFlow()
+    private val addAttendeeChannel = Channel<Resource<Unit>>()
+    val addAttendee = addAttendeeChannel.receiveAsFlow()
 
     val goingAttendees = attendees.map {
         it.filter { attendee -> attendee.isGoing }
@@ -191,7 +228,7 @@ class EventDetailViewModel @Inject constructor(
     val allowedToSeePhotoLayout = combine(isCreator, uiEventPhotos) { isCreator, photos ->
         when {
             isCreator -> true
-            !isCreator && photos.isNotEmpty() -> true
+            photos.isNotEmpty() -> true
             else -> false
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
@@ -239,14 +276,8 @@ class EventDetailViewModel @Inject constructor(
             isDone = isDone.value,
             title = title.value,
             description = description.value,
-            startDateAndTime = LocalDateTime.of(
-                selectedStartDate.value,
-                selectedStartTime.value
-            ),
-            endDateAndTime = LocalDateTime.of(
-                selectedEndDate.value,
-                selectedEndTime.value
-            ),
+            startDateAndTime = selectedStartDateTime.value,
+            endDateAndTime = selectedEndDateTime.value,
             reminderTime = selectedReminderTime.value,
             photos = photos.value,
             attendees = attendees.value,

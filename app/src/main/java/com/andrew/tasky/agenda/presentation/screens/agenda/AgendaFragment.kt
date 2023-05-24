@@ -66,10 +66,16 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         fragmentAgendaBinding.apply {
 
             calendarMonth.setOnClickListener {
-                showDatePickerDialog(viewModel::setDateSelected)
+                showDatePickerDialog(
+                    onResult = viewModel::setDateSelected,
+                    initialDate = viewModel.dateSelected.value
+                )
             }
             calendarDropDownArrow.setOnClickListener {
-                showDatePickerDialog(viewModel::setDateSelected)
+                showDatePickerDialog(
+                    onResult = viewModel::setDateSelected,
+                    initialDate = viewModel.dateSelected.value
+                )
             }
 
             logoutButton.setOnClickListener { view ->

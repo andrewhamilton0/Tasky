@@ -276,8 +276,7 @@ class AgendaRepositoryImpl(
                     }
                 }
                 return@async results
-            }
-            else{
+            } else {
                 return@async Resource.Success()
             }
         }.await()

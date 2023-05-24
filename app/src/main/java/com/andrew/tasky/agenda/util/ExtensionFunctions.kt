@@ -19,7 +19,6 @@ import com.andrew.tasky.agenda.presentation.dialogs.TimePickerDialog
 import com.andrew.tasky.agenda.presentation.screens.edit.EditFragmentDirections
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -159,54 +158,36 @@ fun Fragment.showReminderOptionsPopupMenu(view: View, onResult: (ReminderTime) -
     popupMenu.show()
 }
 
-fun Fragment.showDatePickerDialog(onResult: (LocalDate) -> Unit) {
-    val datePickerFragment = DatePickerDialog()
+fun Fragment.showDatePickerDialog(
+    onResult: (LocalDate) -> Unit,
+    initialDate: LocalDate
+) {
+    val datePickerFragment = DatePickerDialog(
+        initialDate = initialDate,
+        onResult = onResult
+    )
     val supportFragmentManager = requireActivity().supportFragmentManager
-
-    supportFragmentManager.setFragmentResultListener(
-        "REQUEST_KEY",
-        viewLifecycleOwner
-    ) { resultKey, bundle ->
-        if (resultKey == "REQUEST_KEY") {
-            val date = bundle.getString("SELECTED_DATE")
-            val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
-            onResult(LocalDate.parse(date, formatter))
-        }
-    }
     datePickerFragment.show(supportFragmentManager, "DatePickerFragment")
 }
 
-fun Fragment.showTimePickerDialog(onResult: (LocalTime) -> Unit) {
-    val timePickerDialog = TimePickerDialog()
+fun Fragment.showTimePickerDialog(
+    onResult: (LocalTime) -> Unit,
+    initialTime: LocalTime
+) {
+    val timePickerDialog = TimePickerDialog(
+        onResult = onResult,
+        initialTime = initialTime
+    )
     val supportFragmentManager = requireActivity().supportFragmentManager
-
-    supportFragmentManager.setFragmentResultListener(
-        "REQUEST_KEY",
-        viewLifecycleOwner
-    ) { resultKey, bundle ->
-        if (resultKey == "REQUEST_KEY") {
-            val time = bundle.getString("SELECTED_TIME")
-            val formatter = DateTimeFormatter.ofPattern("hh:mm a")
-            onResult(LocalTime.parse(time, formatter))
-        }
-    }
     timePickerDialog.show(supportFragmentManager, "TimePickerDialog")
 }
 
-fun Fragment.showAttendeeDialog(onEmailResult: (String) -> Unit) {
-    val attendeeDialog = AddAttendeeDialog()
+fun Fragment.showAttendeeDialog(onEmailResult: (String) -> Unit, onSuccessListener: Flow<Unit>) {
+    val attendeeDialog = AddAttendeeDialog(
+        onSuccess = onSuccessListener,
+        onEmailResult = onEmailResult
+    )
     val supportFragmentManager = requireActivity().supportFragmentManager
 
-    supportFragmentManager.setFragmentResultListener(
-        "REQUEST_KEY",
-        viewLifecycleOwner
-    ) { resultKey, bundle ->
-        if (resultKey == "REQUEST_KEY") {
-            val attendee = bundle.getString("ATTENDEE")
-            if (attendee != null) {
-                onEmailResult(attendee)
-            }
-        }
-    }
     attendeeDialog.show(supportFragmentManager, "AddAttendeeDialog")
 }
