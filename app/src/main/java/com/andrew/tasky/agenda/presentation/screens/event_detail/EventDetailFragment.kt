@@ -1,11 +1,17 @@
 package com.andrew.tasky.agenda.presentation.screens.event_detail
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Paint
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -18,10 +24,13 @@ import com.andrew.tasky.agenda.domain.models.EventPhoto
 import com.andrew.tasky.agenda.presentation.adapters.AttendeeItemAdapter
 import com.andrew.tasky.agenda.presentation.adapters.PhotoItemAdapter
 import com.andrew.tasky.agenda.util.*
+import com.andrew.tasky.core.data.Resource
 import com.andrew.tasky.databinding.FragmentEventDetailBinding
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 
 @AndroidEntryPoint
 class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
@@ -40,6 +49,11 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
         }
     )
+    private val notificationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        Unit
+    }
     private lateinit var photoAdapter: PhotoItemAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,6 +76,11 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 viewModel.setEditMode(true)
             }
             header.saveButton.setOnClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                    !areNotificationPermissionsEnabled(requireContext())
+                ) {
+                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
                 viewModel.saveEvent()
             }
 
@@ -127,38 +146,62 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
 
             startTimeAndDateLayout.timeTextView.setOnClickListener {
                 viewModel.setEditMode(true)
-                showTimePickerDialog(viewModel::setStartTime)
+                showTimePickerDialog(
+                    onResult = viewModel::setStartTime,
+                    initialTime = viewModel.selectedStartDateTime.value.toLocalTime()
+                )
             }
             startTimeAndDateLayout.timeButton.setOnClickListener {
                 viewModel.setEditMode(true)
-                showTimePickerDialog(viewModel::setStartTime)
+                showTimePickerDialog(
+                    onResult = viewModel::setStartTime,
+                    initialTime = viewModel.selectedStartDateTime.value.toLocalTime()
+                )
             }
             startTimeAndDateLayout.dateTextView.setOnClickListener {
                 viewModel.setEditMode(true)
-                showDatePickerDialog(viewModel::setStartDate)
+                showDatePickerDialog(
+                    onResult = viewModel::setStartDate,
+                    initialDate = viewModel.selectedStartDateTime.value.toLocalDate()
+                )
             }
             startTimeAndDateLayout.dateButton.setOnClickListener {
                 viewModel.setEditMode(true)
-                showDatePickerDialog(viewModel::setStartDate)
+                showDatePickerDialog(
+                    onResult = viewModel::setStartDate,
+                    initialDate = viewModel.selectedStartDateTime.value.toLocalDate()
+                )
             }
 
             endTimeAndDateLayout.timeAndDateBeginningText.text = getString(R.string.to)
 
             endTimeAndDateLayout.timeTextView.setOnClickListener {
                 viewModel.setEditMode(true)
-                showTimePickerDialog(viewModel::setEndTime)
+                showTimePickerDialog(
+                    onResult = viewModel::setEndTime,
+                    initialTime = viewModel.selectedEndDateTime.value.toLocalTime()
+                )
             }
             endTimeAndDateLayout.timeButton.setOnClickListener {
                 viewModel.setEditMode(true)
-                showTimePickerDialog(viewModel::setEndTime)
+                showTimePickerDialog(
+                    onResult = viewModel::setEndTime,
+                    initialTime = viewModel.selectedEndDateTime.value.toLocalTime()
+                )
             }
             endTimeAndDateLayout.dateTextView.setOnClickListener {
                 viewModel.setEditMode(true)
-                showDatePickerDialog(viewModel::setEndDate)
+                showDatePickerDialog(
+                    onResult = viewModel::setEndDate,
+                    initialDate = viewModel.selectedEndDateTime.value.toLocalDate()
+                )
             }
             endTimeAndDateLayout.dateButton.setOnClickListener {
                 viewModel.setEditMode(true)
-                showDatePickerDialog(viewModel::setEndDate)
+                showDatePickerDialog(
+                    onResult = viewModel::setEndDate,
+                    initialDate = viewModel.selectedEndDateTime.value.toLocalDate()
+                )
             }
 
             reminderLayout.reminderTextView.setOnClickListener {
@@ -178,7 +221,10 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
 
             attendeesLayout.addAttendeeButton.setOnClickListener {
                 viewModel.setEditMode(true)
-                showAttendeeDialog(onEmailResult = viewModel::addAttendee)
+                showAttendeeDialog(
+                    onEmailResult = viewModel::addAttendee,
+                    onSuccessListener = attendeeSuccessChannel.receiveAsFlow()
+                )
             }
             attendeesLayout.allButton.setOnClickListener {
                 viewModel.setAttendeeFilterType(EventDetailViewModel.AttendeeFilterTypes.ALL)
@@ -362,24 +408,20 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 addPhotoLayout.addPhotoLayout.isVisible = allowedToSeePhotoLayout
             }
 
-            collectLatestLifecycleFlow(viewModel.selectedStartTime) { selectedStartTime ->
-                startTimeAndDateLayout.timeTextView.text = selectedStartTime.format(
+            collectLatestLifecycleFlow(viewModel.selectedStartDateTime) { selectedStartDateTime ->
+                startTimeAndDateLayout.timeTextView.text = selectedStartDateTime.format(
                     DateTimeFormatter.ofPattern("HH:mm")
                 )
-            }
-            collectLatestLifecycleFlow(viewModel.selectedStartDate) { selectedStartDate ->
-                startTimeAndDateLayout.dateTextView.text = selectedStartDate.format(
+                startTimeAndDateLayout.dateTextView.text = selectedStartDateTime.format(
                     DateTimeFormatter.ofPattern("MMM dd yyyy")
                 )
             }
 
-            collectLatestLifecycleFlow(viewModel.selectedEndTime) { selectedEndTime ->
-                endTimeAndDateLayout.timeTextView.text = selectedEndTime.format(
+            collectLatestLifecycleFlow(viewModel.selectedEndDateTime) { selectedEndDateTime ->
+                endTimeAndDateLayout.timeTextView.text = selectedEndDateTime.format(
                     DateTimeFormatter.ofPattern("HH:mm")
                 )
-            }
-            collectLatestLifecycleFlow(viewModel.selectedEndDate) { selectedEndDate ->
-                endTimeAndDateLayout.dateTextView.text = selectedEndDate.format(
+                endTimeAndDateLayout.dateTextView.text = selectedEndDateTime.format(
                     DateTimeFormatter.ofPattern("MMM dd yyyy")
                 )
             }
@@ -508,8 +550,19 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         collectLatestLifecycleFlow(viewModel.isSavingEvent) { isSaving ->
             binding.progressBar.isVisible = isSaving
         }
-        collectLatestLifecycleFlow(viewModel.attendeeToastMessage) {
-            Toast.makeText(context, it.asString(requireContext()), Toast.LENGTH_SHORT).show()
+        collectLatestLifecycleFlow(viewModel.addAttendee) { result ->
+            when (result) {
+                is Resource.Error -> {
+                    Toast.makeText(
+                        context,
+                        result.message?.asString(requireContext()),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is Resource.Success -> {
+                    attendeeSuccessChannel.send(Unit)
+                }
+            }
         }
         collectLatestLifecycleFlow(viewModel.photosNotAddedToastMessage) {
             Toast.makeText(context, it.asString(requireContext()), Toast.LENGTH_LONG).show()
@@ -525,4 +578,19 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             EventDetailFragmentDirections.actionEventDetailFragmentToPhotoDetailFragment()
         )
     }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun areNotificationPermissionsEnabled(context: Context): Boolean {
+        return when (
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        ) {
+            PackageManager.PERMISSION_GRANTED -> true
+            else -> false
+        }
+    }
+
+    private val attendeeSuccessChannel = Channel<Unit>()
 }

@@ -4,14 +4,17 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.setFragmentResult
 import com.andrew.tasky.R
+import com.andrew.tasky.agenda.util.collectLatestLifecycleFlow
 import com.andrew.tasky.databinding.DialogAddAttendeeBinding
+import kotlinx.coroutines.flow.Flow
 
-class AddAttendeeDialog() : DialogFragment(R.layout.dialog_add_attendee) {
+class AddAttendeeDialog(
+    private val onSuccess: Flow<Unit>,
+    private val onEmailResult: (String) -> Unit
+) : DialogFragment(R.layout.dialog_add_attendee) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -26,11 +29,14 @@ class AddAttendeeDialog() : DialogFragment(R.layout.dialog_add_attendee) {
             }
             addVisitorButton.setOnClickListener {
                 val result = emailTextField.getText()
-                setFragmentResult("REQUEST_KEY", bundleOf("ATTENDEE" to result))
+                onEmailResult(result)
             }
             closeButton.setOnClickListener {
                 dismiss()
             }
+        }
+        collectLatestLifecycleFlow(onSuccess) {
+            dismiss()
         }
     }
 }
