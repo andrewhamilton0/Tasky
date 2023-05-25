@@ -1,6 +1,5 @@
 package com.andrew.tasky.agenda.data.agenda
 
-import android.app.AlarmManager
 import android.content.Context
 import android.icu.util.TimeZone
 import android.util.Log
@@ -33,8 +32,6 @@ class AgendaRepositoryImpl(
     private val dateTimeConversion: DateTimeConversion,
     private val reminderTimeConversion: ReminderTimeConversion
 ) : AgendaRepository {
-
-    private val alarmManager = appContext.getSystemService(AlarmManager::class.java)
 
     override suspend fun getAgendaItemsOfDateFlow(localDate: LocalDate): Flow<List<AgendaItem>> {
         val startEpochMilli = dateTimeConversion.localDateTimeToZonedEpochMilli(
@@ -367,8 +364,8 @@ class AgendaRepositoryImpl(
     }
 
     override suspend fun deleteAllAgendaItems() {
-        deleteAllAgendaTables()
         cancelAllNotifications()
+        deleteAllAgendaTables()
     }
 
     override suspend fun scheduleAllAgendaItemNotifications() {
@@ -386,10 +383,10 @@ class AgendaRepositoryImpl(
 
     private suspend fun cancelAllNotifications() {
         withContext(Dispatchers.Main) {
-            var alarm = alarmManager.nextAlarmClock
-            while (alarm != null) {
-                alarm.showIntent.cancel()
-                alarm = alarmManager.nextAlarmClock
+            getAllAgendaItems().first().forEach {
+                launch(Dispatchers.Main + SupervisorJob()) {
+                    cancelScheduledNotification(it.id)
+                }
             }
         }
     }

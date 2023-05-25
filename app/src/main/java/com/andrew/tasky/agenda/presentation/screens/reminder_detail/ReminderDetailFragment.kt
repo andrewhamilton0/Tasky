@@ -1,8 +1,15 @@
 package com.andrew.tasky.agenda.presentation.screens.reminder_detail
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Paint
+import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -24,6 +31,11 @@ class ReminderDetailFragment : Fragment(R.layout.fragment_reminder_detail) {
     private val viewModel: ReminderDetailViewModel by viewModels()
     private lateinit var navController: NavController
     private lateinit var binding: FragmentReminderDetailBinding
+    private val notificationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        Unit
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,6 +57,7 @@ class ReminderDetailFragment : Fragment(R.layout.fragment_reminder_detail) {
                 viewModel.setEditMode(true)
             }
             header.saveButton.setOnClickListener {
+                checkAndPopupNotificationPermission()
                 viewModel.saveAgendaItem()
                 navController.popBackStack()
             }
@@ -220,6 +233,27 @@ class ReminderDetailFragment : Fragment(R.layout.fragment_reminder_detail) {
                             getString(R.string.one_day_before)
                 }
             }
+        }
+    }
+
+    private fun checkAndPopupNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !areNotificationPermissionsEnabled(requireContext())
+        ) {
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun areNotificationPermissionsEnabled(context: Context): Boolean {
+        return when (
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        ) {
+            PackageManager.PERMISSION_GRANTED -> true
+            else -> false
         }
     }
 }

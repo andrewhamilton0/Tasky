@@ -1,11 +1,17 @@
 package com.andrew.tasky.agenda.presentation.screens.event_detail
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Paint
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -43,6 +49,11 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
             }
         }
     )
+    private val notificationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        Unit
+    }
     private lateinit var photoAdapter: PhotoItemAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,6 +76,11 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 viewModel.setEditMode(true)
             }
             header.saveButton.setOnClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                    !areNotificationPermissionsEnabled(requireContext())
+                ) {
+                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
                 viewModel.saveEvent()
             }
 
@@ -561,6 +577,19 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
         navController.navigate(
             EventDetailFragmentDirections.actionEventDetailFragmentToPhotoDetailFragment()
         )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun areNotificationPermissionsEnabled(context: Context): Boolean {
+        return when (
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        ) {
+            PackageManager.PERMISSION_GRANTED -> true
+            else -> false
+        }
     }
 
     private val attendeeSuccessChannel = Channel<Unit>()
