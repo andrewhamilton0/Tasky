@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_eventDetailFragment_to_photoDetailFragment"
             app:destination="@id/photoDetailFragment" />
+        <argument
+            android:name="initialDate"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/photoDetailFragment"

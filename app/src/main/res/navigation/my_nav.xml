@@ -43,6 +43,9 @@
                 app:argType="string"
                 app:nullable="true"
                 android:defaultValue="@null"/>
+                <argument
+                    android:name="initialDate"
+                    app:argType="string" />
             <argument
                 android:name="isInEditMode"
                 app:argType="boolean"
@@ -72,6 +75,9 @@
             app:argType="boolean"
             android:defaultValue="false"
             />
+        <argument
+            android:name="initialDate"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/taskDetailFragment"
@@ -89,6 +95,9 @@
             app:argType="boolean"
             android:defaultValue="false"
             />
+        <argument
+            android:name="initialDate"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/editFragment"

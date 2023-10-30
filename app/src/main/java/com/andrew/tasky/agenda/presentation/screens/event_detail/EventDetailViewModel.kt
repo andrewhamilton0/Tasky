@@ -18,6 +18,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
@@ -36,6 +37,7 @@ class EventDetailViewModel @Inject constructor(
 
     private var hostId: String? = null
     private val deletedPhotos = mutableListOf<EventPhoto>()
+    private val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
 
     private val _isInEditMode = MutableStateFlow(false)
     val isInEditMode = _isInEditMode.asStateFlow()
@@ -348,6 +350,8 @@ class EventDetailViewModel @Inject constructor(
                     deletedPhotos.addAll(event.deletedPhotos)
                 }
             }
+        } ?: savedStateHandle.get<String>("initialDate")?.let { dateString ->
+            setStartDate(LocalDate.parse(dateString, formatter))
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)

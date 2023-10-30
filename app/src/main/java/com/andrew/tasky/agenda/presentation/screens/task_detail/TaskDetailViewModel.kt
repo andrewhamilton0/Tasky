@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 import kotlinx.coroutines.NonCancellable
@@ -21,6 +22,8 @@ class TaskDetailViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: TaskRepository,
 ) : ViewModel() {
+
+    private val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
 
     private val _isInEditMode = MutableStateFlow(false)
     val isInEditMode = _isInEditMode.asStateFlow()
@@ -110,6 +113,8 @@ class TaskDetailViewModel @Inject constructor(
                     setSelectedReminderTime(task.reminderTime)
                 }
             }
+        } ?: savedStateHandle.get<String>("initialDate")?.let { dateString ->
+            setStartDate(LocalDate.parse(dateString, formatter))
         }
         savedStateHandle.get<Boolean>("isInEditMode")?.let { initialEditMode ->
             setEditMode(initialEditMode)
