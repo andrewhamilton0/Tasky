@@ -27,6 +27,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
 
     private lateinit var agendaAdapter: AgendaItemAdapter
     private lateinit var miniCalendarAdapter: MiniCalendarAdapter
+    private val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -105,7 +106,9 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                         R.id.event -> {
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToEventNav()
+                                    .actionAgendaFragmentToEventNav(
+                                        viewModel.dateSelected.value.format(formatter)
+                                    )
                                     .setIsInEditMode(true)
                             )
                             true
@@ -113,7 +116,9 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                         R.id.reminder -> {
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToReminderDetailFragment()
+                                    .actionAgendaFragmentToReminderDetailFragment(
+                                        viewModel.dateSelected.value.format(formatter)
+                                    )
                                     .setIsInEditMode(true)
                             )
                             true
@@ -121,7 +126,9 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
                         R.id.task -> {
                             navController.navigate(
                                 AgendaFragmentDirections
-                                    .actionAgendaFragmentToTaskDetailFragment()
+                                    .actionAgendaFragmentToTaskDetailFragment(
+                                        viewModel.dateSelected.value.format(formatter)
+                                    )
                                     .setIsInEditMode(true)
                             )
                             true
@@ -143,7 +150,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         when (dateType) {
             is DateType.FullDate ->
                 fragmentAgendaBinding.currentDateSelectedTextView.text =
-                    dateType.date.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
+                    dateType.date.format(formatter)
             DateType.Today ->
                 fragmentAgendaBinding.currentDateSelectedTextView.text =
                     getString(R.string.today)
@@ -208,20 +215,26 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         when (agendaItem) {
             is AgendaItem.Task -> navController.navigate(
                 AgendaFragmentDirections
-                    .actionAgendaFragmentToTaskDetailFragment()
+                    .actionAgendaFragmentToTaskDetailFragment(
+                        viewModel.dateSelected.value.format(formatter)
+                    )
                     .setId(agendaItem.id)
                     .setIsInEditMode(isInEditMode)
             )
             is AgendaItem.Event ->
                 navController.navigate(
                     AgendaFragmentDirections
-                        .actionAgendaFragmentToEventNav()
+                        .actionAgendaFragmentToEventNav(
+                            viewModel.dateSelected.value.format(formatter)
+                        )
                         .setId(agendaItem.id)
                         .setIsInEditMode(isInEditMode)
                 )
             is AgendaItem.Reminder -> navController.navigate(
                 AgendaFragmentDirections
-                    .actionAgendaFragmentToReminderDetailFragment()
+                    .actionAgendaFragmentToReminderDetailFragment(
+                        viewModel.dateSelected.value.format(formatter)
+                    )
                     .setId(agendaItem.id)
                     .setIsInEditMode(isInEditMode)
             )

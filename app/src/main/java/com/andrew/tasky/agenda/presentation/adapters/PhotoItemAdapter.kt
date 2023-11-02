@@ -73,18 +73,15 @@ class PhotoItemAdapter(
                             Glide.with(context)
                                 .load(photo.bitmap)
                                 .into(image)
-                            holder.itemView.setOnClickListener {
-                                onPhotoClick(photo)
-                            }
                         }
                         is EventPhoto.Remote -> {
                             Glide.with(context)
                                 .load(photo.photoUrl)
                                 .into(image)
-                            holder.itemView.setOnClickListener {
-                                onPhotoClick(photo)
-                            }
                         }
+                    }
+                    holder.itemView.setOnClickListener {
+                        onPhotoClick(photo)
                     }
                 }
             }
