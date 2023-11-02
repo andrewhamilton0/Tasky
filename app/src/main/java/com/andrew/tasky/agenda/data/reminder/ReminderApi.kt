@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.reminder
 
+import com.andrew.tasky.agenda.data.networkModels.ReminderDto
 import retrofit2.Response
 import retrofit2.http.*
 

@@ -10,6 +10,6 @@ data class Attendee(
     val userId: String,
     val eventId: String?,
     val isGoing: Boolean,
-    val remindAt: Long,
+    val remindAt: Long?,
     val isCreator: Boolean
 ) : Parcelable

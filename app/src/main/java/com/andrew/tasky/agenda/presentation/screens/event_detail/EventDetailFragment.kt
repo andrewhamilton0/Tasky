@@ -276,6 +276,30 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 endTimeAndDateLayout.dateButton.isVisible = isCreatorEditing
 
                 attendeesLayout.addAttendeeButton.isVisible = isCreatorEditing
+
+                val goingAttendeeAdapter = AttendeeItemAdapter(
+                    isCreatorEditing = isCreatorEditing,
+                    onDeleteIconClick = viewModel::deleteAttendee
+                )
+                attendeesLayout.goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
+                attendeesLayout.goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
+                    requireContext()
+                )
+                collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
+                    goingAttendeeAdapter.submitList(goingAttendees)
+                }
+
+                val notGoingAttendeeAdapter = AttendeeItemAdapter(
+                    isCreatorEditing = isCreatorEditing,
+                    onDeleteIconClick = viewModel::deleteAttendee
+                )
+                attendeesLayout.notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
+                attendeesLayout.notGoingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
+                    requireContext()
+                )
+                collectLatestLifecycleFlow(viewModel.notGoingAttendees) { notGoingAttendees ->
+                    notGoingAttendeeAdapter.submitList(notGoingAttendees)
+                }
             }
 
             collectLatestLifecycleFlow(viewModel.isDone) { isDone ->
@@ -299,63 +323,6 @@ class EventDetailFragment : Fragment(R.layout.fragment_event_detail) {
                 addDescriptionLayout.descriptionTextView.text = description
             }
             collectLatestLifecycleFlow(viewModel.isCreator) { isCreator ->
-
-                addTitleAndDoneButtonLayout.apply {
-                    editTitleButton.isVisible = isCreator
-                    editTitleButton.isEnabled = isCreator
-                    titleTextView.isEnabled = isCreator
-                }
-
-                addDescriptionLayout.apply {
-                    editDescriptionButton.isVisible = isCreator
-                    editDescriptionButton.isEnabled = isCreator
-                    descriptionTextView.isEnabled = isCreator
-                }
-
-                startTimeAndDateLayout.apply {
-                    timeTextView.isEnabled = isCreator
-                    timeButton.isEnabled = isCreator
-                    timeButton.isVisible = isCreator
-                    dateTextView.isEnabled = isCreator
-                    dateButton.isEnabled = isCreator
-                    dateButton.isVisible = isCreator
-                }
-
-                endTimeAndDateLayout.apply {
-                    timeTextView.isEnabled = isCreator
-                    timeButton.isEnabled = isCreator
-                    timeButton.isVisible = isCreator
-                    dateTextView.isEnabled = isCreator
-                    dateButton.isEnabled = isCreator
-                    dateButton.isVisible = isCreator
-                }
-
-                attendeesLayout.addAttendeeButton.isVisible = isCreator
-                val goingAttendeeAdapter = AttendeeItemAdapter(
-                    isUserCreator = isCreator,
-                    onDeleteIconClick = viewModel::deleteAttendee
-                )
-                attendeesLayout.goingAttendeeRecyclerView.adapter = goingAttendeeAdapter
-                attendeesLayout.goingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
-                    requireContext()
-                )
-
-                collectLatestLifecycleFlow(viewModel.goingAttendees) { goingAttendees ->
-                    goingAttendeeAdapter.submitList(goingAttendees)
-                }
-
-                val notGoingAttendeeAdapter = AttendeeItemAdapter(
-                    isUserCreator = isCreator,
-                    onDeleteIconClick = viewModel::deleteAttendee
-                )
-                attendeesLayout.notGoingAttendeeRecyclerView.adapter = notGoingAttendeeAdapter
-                attendeesLayout.notGoingAttendeeRecyclerView.layoutManager = LinearLayoutManager(
-                    requireContext()
-                )
-                collectLatestLifecycleFlow(viewModel.notGoingAttendees) { notGoingAttendees ->
-                    notGoingAttendeeAdapter.submitList(notGoingAttendees)
-                }
-
                 if (isCreator) {
                     deleteBtn.deleteAgendaItemButton.text = String.format(
                         resources

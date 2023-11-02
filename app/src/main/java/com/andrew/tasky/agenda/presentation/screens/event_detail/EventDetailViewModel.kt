@@ -139,17 +139,6 @@ class EventDetailViewModel @Inject constructor(
         _photos.value -= photo
     }
 
-    val uiEventPhotos = photos.combine(isCreator) { photos, isCreator ->
-        photos.map { photo ->
-            UiEventPhoto.Photo(photo)
-        }.toMutableList<UiEventPhoto>()
-            .apply {
-                if ((size in 1..9) && (isCreator)) {
-                    add(UiEventPhoto.AddPhoto)
-                }
-            }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
     private val _attendees = MutableStateFlow(listOf<Attendee>())
     private val attendees = _attendees.asStateFlow()
 
@@ -227,9 +216,22 @@ class EventDetailViewModel @Inject constructor(
         isCreator && isEditing
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
-    val allowedToSeePhotoLayout = combine(isCreator, uiEventPhotos) { isCreator, photos ->
+    val uiEventPhotos = photos.combine(isCreatorEditing) { photos, isCreatorEditing ->
+        photos.map { photo ->
+            UiEventPhoto.Photo(photo)
+        }.toMutableList<UiEventPhoto>()
+            .apply {
+                if ((size in 1..9) && (isCreatorEditing)) {
+                    add(UiEventPhoto.AddPhoto)
+                }
+            }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val allowedToSeePhotoLayout = combine(
+        isCreatorEditing, uiEventPhotos
+    ) { isCreatorEditing, photos ->
         when {
-            isCreator -> true
+            isCreatorEditing -> true
             photos.isNotEmpty() -> true
             else -> false
         }

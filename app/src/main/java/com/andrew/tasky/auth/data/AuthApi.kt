@@ -1,5 +1,8 @@
 package com.andrew.tasky.auth.data
 
+import com.andrew.tasky.auth.data.networkModels.LoginRequest
+import com.andrew.tasky.auth.data.networkModels.RegisterRequest
+import com.andrew.tasky.auth.data.networkModels.TokenResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET

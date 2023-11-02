@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.data.task
+package com.andrew.tasky.agenda.data.networkModels
 
 data class TaskDto(
     val id: String,
