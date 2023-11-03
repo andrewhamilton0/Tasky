@@ -6,6 +6,7 @@ import android.util.Log
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.event.toEvent
 import com.andrew.tasky.agenda.data.event.toEventEntity
+import com.andrew.tasky.agenda.data.networkmodels.SyncAgendaRequest
 import com.andrew.tasky.agenda.data.reminder.toReminder
 import com.andrew.tasky.agenda.data.reminder.toReminderEntity
 import com.andrew.tasky.agenda.data.task.toTask

@@ -1,7 +1,7 @@
 package com.andrew.tasky.agenda.data.event.attendee
 
-import com.andrew.tasky.agenda.data.networkModels.AttendeeDto
-import com.andrew.tasky.agenda.data.networkModels.GetAttendeeResponseAttendeeDto
+import com.andrew.tasky.agenda.data.networkmodels.AttendeeDto
+import com.andrew.tasky.agenda.data.networkmodels.GetAttendeeResponseAttendeeDto
 import com.andrew.tasky.agenda.domain.models.Attendee
 
 fun AttendeeDto.toAttendee(hostId: String): Attendee {

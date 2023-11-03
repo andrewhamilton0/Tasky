@@ -2,7 +2,7 @@ package com.andrew.tasky.agenda.data.event
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.andrew.tasky.agenda.data.event.photo.RemoteEventPhotoDto
+import com.andrew.tasky.agenda.data.networkmodels.RemoteEventPhotoDto
 import com.andrew.tasky.agenda.domain.models.Attendee
 
 @Entity

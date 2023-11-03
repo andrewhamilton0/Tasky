@@ -1,6 +1,4 @@
-package com.andrew.tasky.agenda.data.networkModels
-
-import com.andrew.tasky.agenda.data.event.photo.RemoteEventPhotoDto
+package com.andrew.tasky.agenda.data.networkmodels
 
 data class EventDto(
     val id: String,

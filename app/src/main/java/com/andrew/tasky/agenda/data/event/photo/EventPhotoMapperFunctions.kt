@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.event.photo
 
+import com.andrew.tasky.agenda.data.networkmodels.RemoteEventPhotoDto
 import com.andrew.tasky.agenda.domain.models.EventPhoto
 
 fun RemoteEventPhotoDto.toEventPhoto(): EventPhoto.Remote {

@@ -4,7 +4,7 @@ import android.content.Context
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
 import com.andrew.tasky.agenda.data.event.attendee.toAttendee
-import com.andrew.tasky.agenda.data.networkModels.EventDto
+import com.andrew.tasky.agenda.data.networkmodels.EventDto
 import com.andrew.tasky.agenda.data.storage.ImageStorage
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.domain.AgendaNotificationScheduler

@@ -3,9 +3,9 @@ package com.andrew.tasky.agenda.data.event
 import com.andrew.tasky.agenda.data.event.attendee.toAttendee
 import com.andrew.tasky.agenda.data.event.photo.toEventPhoto
 import com.andrew.tasky.agenda.data.event.photo.toRemotePhotoDto
-import com.andrew.tasky.agenda.data.networkModels.CreateEventRequest
-import com.andrew.tasky.agenda.data.networkModels.EventDto
-import com.andrew.tasky.agenda.data.networkModels.UpdateEventRequest
+import com.andrew.tasky.agenda.data.networkmodels.CreateEventRequest
+import com.andrew.tasky.agenda.data.networkmodels.EventDto
+import com.andrew.tasky.agenda.data.networkmodels.UpdateEventRequest
 import com.andrew.tasky.agenda.domain.DateTimeConversion
 import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion

@@ -1,7 +1,7 @@
 package com.andrew.tasky.agenda.data.event
 
-import com.andrew.tasky.agenda.data.networkModels.EventDto
-import com.andrew.tasky.agenda.data.networkModels.GetAttendeeResponse
+import com.andrew.tasky.agenda.data.networkmodels.EventDto
+import com.andrew.tasky.agenda.data.networkmodels.GetAttendeeResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*

@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class com.andrew.tasky.agenda.data.networkmodels.** { *; }
+-keep class com.andrew.tasky.auth.data.networkmodels.** { *; }
+-keep class com.andrew.tasky.core.data.networkmodels.** { *; }

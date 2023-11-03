@@ -1,6 +1,6 @@
 package com.andrew.tasky.agenda.data.task
 
-import com.andrew.tasky.agenda.data.networkModels.TaskDto
+import com.andrew.tasky.agenda.data.networkmodels.TaskDto
 import com.andrew.tasky.agenda.domain.DateTimeConversion
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem

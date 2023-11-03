@@ -2,8 +2,8 @@ package com.andrew.tasky.auth.data
 
 import androidx.work.*
 import com.andrew.tasky.agenda.domain.AgendaRepository
-import com.andrew.tasky.auth.data.networkModels.LoginRequest
-import com.andrew.tasky.auth.data.networkModels.RegisterRequest
+import com.andrew.tasky.auth.data.networkmodels.LoginRequest
+import com.andrew.tasky.auth.data.networkmodels.RegisterRequest
 import com.andrew.tasky.auth.domain.AuthRepository
 import com.andrew.tasky.auth.util.getResourceResult
 import com.andrew.tasky.core.data.Resource

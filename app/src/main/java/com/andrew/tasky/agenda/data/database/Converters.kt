@@ -1,7 +1,7 @@
 package com.andrew.tasky.agenda.data.database
 
 import androidx.room.TypeConverter
-import com.andrew.tasky.agenda.data.event.photo.RemoteEventPhotoDto
+import com.andrew.tasky.agenda.data.networkmodels.RemoteEventPhotoDto
 import com.andrew.tasky.agenda.domain.models.Attendee
 import com.google.gson.Gson
 
