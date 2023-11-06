@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.data.event.photo
+package com.andrew.tasky.agenda.data.networkmodels
 
 data class RemoteEventPhotoDto(
     val key: String,

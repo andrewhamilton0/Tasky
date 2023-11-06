@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.data.agenda
+package com.andrew.tasky.agenda.data.networkmodels
 
 data class SyncAgendaRequest(
     val deletedEventIds: List<String>,

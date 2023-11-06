@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.data.reminder
 
+import com.andrew.tasky.agenda.data.networkmodels.ReminderDto
 import com.andrew.tasky.agenda.domain.DateTimeConversion
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem

@@ -176,6 +176,7 @@ class AgendaFragment : Fragment(R.layout.fragment_agenda) {
         fragmentAgendaBinding.agendaItemRecyclerView.adapter = agendaAdapter
         fragmentAgendaBinding.agendaItemRecyclerView.layoutManager =
             LinearLayoutManager(requireContext())
+        fragmentAgendaBinding.agendaItemRecyclerView.itemAnimator = null
     }
 
     private fun agendaItemOptions(agendaItem: AgendaItem, view: View) {

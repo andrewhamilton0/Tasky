@@ -1,6 +1,8 @@
 package com.andrew.tasky.agenda.data.agenda
 
 import com.andrew.tasky.agenda.data.*
+import com.andrew.tasky.agenda.data.networkmodels.AgendaResponse
+import com.andrew.tasky.agenda.data.networkmodels.SyncAgendaRequest
 import retrofit2.Response
 import retrofit2.http.*
 

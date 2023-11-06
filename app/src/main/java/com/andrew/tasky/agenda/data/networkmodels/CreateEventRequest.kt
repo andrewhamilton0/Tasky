@@ -1,16 +1,14 @@
-package com.andrew.tasky.agenda.data.event
+package com.andrew.tasky.agenda.data.networkmodels
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateEventRequest(
+data class CreateEventRequest(
     val id: String,
     val title: String,
     val description: String,
     val from: Long,
     val to: Long,
     val remindAt: Long,
-    val attendeeIds: List<String>,
-    val deletedPhotoKeys: List<String>,
-    val isGoing: Boolean
+    val attendeeIds: List<String>
 )

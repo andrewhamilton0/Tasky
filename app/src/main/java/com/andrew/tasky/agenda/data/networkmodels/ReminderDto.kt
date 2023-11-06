@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.data.reminder
+package com.andrew.tasky.agenda.data.networkmodels
 
 data class ReminderDto(
     val id: String,

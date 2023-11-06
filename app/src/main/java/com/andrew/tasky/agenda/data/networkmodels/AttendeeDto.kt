@@ -1,4 +1,4 @@
-package com.andrew.tasky.agenda.data.event.attendee
+package com.andrew.tasky.agenda.data.networkmodels
 
 data class AttendeeDto(
     val email: String,

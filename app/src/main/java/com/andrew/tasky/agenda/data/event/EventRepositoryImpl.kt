@@ -3,6 +3,8 @@ package com.andrew.tasky.agenda.data.event
 import android.content.Context
 import com.andrew.tasky.R
 import com.andrew.tasky.agenda.data.database.AgendaDatabase
+import com.andrew.tasky.agenda.data.event.attendee.toAttendee
+import com.andrew.tasky.agenda.data.networkmodels.EventDto
 import com.andrew.tasky.agenda.data.storage.ImageStorage
 import com.andrew.tasky.agenda.data.util.ModifiedType
 import com.andrew.tasky.agenda.domain.AgendaNotificationScheduler
@@ -292,7 +294,7 @@ class EventRepositoryImpl @Inject constructor(
         when (result) {
             is Resource.Success -> {
                 return if (result.data?.doesUserExist == true) {
-                    Resource.Success(result.data.attendee)
+                    Resource.Success(result.data.attendee.toAttendee())
                 } else {
                     return Resource.Error(
                         errorMessage = UiText.Resource(R.string.user_not_found)

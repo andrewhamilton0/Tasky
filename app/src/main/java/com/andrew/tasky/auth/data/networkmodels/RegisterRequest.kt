@@ -1,4 +1,4 @@
-package com.andrew.tasky.auth.data
+package com.andrew.tasky.auth.data.networkmodels
 
 data class RegisterRequest(
     val fullName: String,
