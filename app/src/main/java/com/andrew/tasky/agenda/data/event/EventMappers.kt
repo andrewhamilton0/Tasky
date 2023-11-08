@@ -84,7 +84,10 @@ fun AgendaItem.Event.toEventEntity(
     )
 }
 
-fun EventDto.toEventEntity(isDone: Boolean, isGoing: Boolean): EventEntity {
+fun EventDto.toEventEntity(isDone: Boolean, currentUserId: String): EventEntity {
+    val currentAttendee = attendees.first { attendeeDto ->
+        attendeeDto.userId == currentUserId
+    }
     return EventEntity(
         id = id,
         title = title,
@@ -98,7 +101,7 @@ fun EventDto.toEventEntity(isDone: Boolean, isGoing: Boolean): EventEntity {
         attendees = attendees.map { it.toAttendee(hostId = host) },
         remotePhotos = photos,
         localPhotosKeys = emptyList(),
-        isGoing = isGoing
+        isGoing = currentAttendee.isGoing
     )
 }
 

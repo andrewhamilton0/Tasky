@@ -145,7 +145,8 @@ object AppModule {
         app: Application,
         agendaNotificationScheduler: AgendaNotificationScheduler,
         dateTimeConversion: DateTimeConversion,
-        reminderTimeConversion: ReminderTimeConversion
+        reminderTimeConversion: ReminderTimeConversion,
+        sharedPrefs: SharedPrefs
     ): AgendaRepository {
         return AgendaRepositoryImpl(
             agendaApi = agendaApi,
@@ -156,7 +157,8 @@ object AppModule {
             appContext = app,
             scheduler = agendaNotificationScheduler,
             dateTimeConversion = dateTimeConversion,
-            reminderTimeConversion = reminderTimeConversion
+            reminderTimeConversion = reminderTimeConversion,
+            sharedPrefs = sharedPrefs
         )
     }
 
@@ -230,7 +232,8 @@ object AppModule {
         appContext: Application,
         scheduler: AgendaNotificationScheduler,
         dateTimeConversion: DateTimeConversion,
-        reminderTimeConversion: ReminderTimeConversion
+        reminderTimeConversion: ReminderTimeConversion,
+        sharedPrefs: SharedPrefs
     ): EventRepository {
         return EventRepositoryImpl(
             db = db,
@@ -238,7 +241,8 @@ object AppModule {
             context = appContext,
             scheduler = scheduler,
             dateTimeConversion = dateTimeConversion,
-            reminderTimeConversion = reminderTimeConversion
+            reminderTimeConversion = reminderTimeConversion,
+            sharedPrefs = sharedPrefs
         )
     }
 
