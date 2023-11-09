@@ -44,7 +44,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 )
             }
             loginButton.setOnClickListener() {
-                checkAndPopupNotificationPermission()
                 viewModel.login(
                     username = emailTextField.getText(),
                     password = passwordTextField.getText()
@@ -62,6 +61,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     ).show()
                 }
                 is Resource.Success -> {
+                    checkAndPopupNotificationPermission()
                     navController.navigate(
                         LoginFragmentDirections.actionLoginFragmentToAgendaFragment()
                     )

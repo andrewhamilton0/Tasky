@@ -1,5 +1,6 @@
 package com.andrew.tasky.agenda.presentation.screens.agenda
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
@@ -160,8 +161,10 @@ class AgendaViewModel@Inject constructor(
             ).build()
 
     init {
-        workManager.apply {
-            enqueue(syncFullAgendaWorkRequest)
+        viewModelScope.launch(Dispatchers.IO) {
+            workManager.apply {
+                enqueue(syncFullAgendaWorkRequest)
+            }
         }
         viewModelScope.launch {
             dateSelected.collectLatest { agendaRepository.updateAgendaItemCache(it) }

@@ -19,6 +19,10 @@ class SharedPrefsImpl(
         return sharedPrefs.getString(PrefsKeys.JWT, null)
     }
 
+    override fun getUserId(): String {
+        return sharedPrefs.getString(PrefsKeys.USER_ID, "") ?: ""
+    }
+
     override fun containsJwt(): Boolean {
         return sharedPrefs.contains(PrefsKeys.JWT)
     }

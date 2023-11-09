@@ -11,6 +11,7 @@ import com.andrew.tasky.agenda.domain.EventRepository
 import com.andrew.tasky.agenda.domain.ReminderTimeConversion
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.agenda.domain.models.EventPhoto
+import com.andrew.tasky.core.domain.SharedPrefs
 
 fun AgendaItem.Event.toCreateEventRequest(
     dateTimeConversion: DateTimeConversion,
@@ -84,7 +85,11 @@ fun AgendaItem.Event.toEventEntity(
     )
 }
 
-fun EventDto.toEventEntity(isDone: Boolean, isGoing: Boolean): EventEntity {
+fun EventDto.toEventEntity(isDone: Boolean, sharedPrefs: SharedPrefs): EventEntity {
+    val currentUserId = sharedPrefs.getUserId()
+    val currentAttendee = attendees.first { attendeeDto ->
+        attendeeDto.userId == currentUserId
+    }
     return EventEntity(
         id = id,
         title = title,
@@ -98,7 +103,7 @@ fun EventDto.toEventEntity(isDone: Boolean, isGoing: Boolean): EventEntity {
         attendees = attendees.map { it.toAttendee(hostId = host) },
         remotePhotos = photos,
         localPhotosKeys = emptyList(),
-        isGoing = isGoing
+        isGoing = currentAttendee.isGoing
     )
 }
 

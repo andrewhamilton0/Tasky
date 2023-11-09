@@ -2,6 +2,7 @@ package com.andrew.tasky.agenda.data.storage
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import com.andrew.tasky.agenda.data.util.BitmapConverters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,11 +32,16 @@ class ImageStorage(private val context: Context) {
     }
 
     suspend fun getBitmap(photoKey: String): Bitmap? {
-        return withContext(Dispatchers.IO) {
-            val filename = photoKey.plus(".jpg")
-            val files = context.filesDir.listFiles()
-            val byteArray = files?.find { it.name == filename }?.readBytes()
-            byteArray?.let { BitmapConverters.byteArrayToBitmap(it) }
+        return try {
+            withContext(Dispatchers.IO) {
+                val filename = photoKey.plus(".jpg")
+                val files = context.filesDir.listFiles()
+                val byteArray = files?.find { it.name == filename }?.readBytes()
+                byteArray?.let { BitmapConverters.byteArrayToBitmap(it) }
+            }
+        } catch (e: Exception) {
+            Log.e("Image Storage fun getBitmap", e.message ?: "Unknown error")
+            null
         }
     }
 

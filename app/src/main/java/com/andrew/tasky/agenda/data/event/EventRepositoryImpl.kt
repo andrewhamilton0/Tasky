@@ -18,6 +18,7 @@ import com.andrew.tasky.agenda.domain.models.UpsertEventResult
 import com.andrew.tasky.auth.util.getResourceResult
 import com.andrew.tasky.core.UiText
 import com.andrew.tasky.core.data.Resource
+import com.andrew.tasky.core.domain.SharedPrefs
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -38,7 +39,8 @@ class EventRepositoryImpl @Inject constructor(
     private val context: Context,
     private val scheduler: AgendaNotificationScheduler,
     private val dateTimeConversion: DateTimeConversion,
-    private val reminderTimeConversion: ReminderTimeConversion
+    private val reminderTimeConversion: ReminderTimeConversion,
+    private val sharedPrefs: SharedPrefs
 ) : EventRepository {
 
     private val imageStorage = ImageStorage(context)
@@ -171,7 +173,7 @@ class EventRepositoryImpl @Inject constructor(
             db.getEventDao().upsertEvent(
                 it.toEventEntity(
                     isDone = localEvent.isDone,
-                    isGoing = localEvent.isGoing
+                    sharedPrefs = sharedPrefs
                 )
             )
         }

@@ -16,6 +16,7 @@ import com.andrew.tasky.agenda.domain.*
 import com.andrew.tasky.agenda.domain.models.AgendaItem
 import com.andrew.tasky.auth.util.getResourceResult
 import com.andrew.tasky.core.data.Resource
+import com.andrew.tasky.core.domain.SharedPrefs
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -31,7 +32,8 @@ class AgendaRepositoryImpl(
     private val appContext: Context,
     private val scheduler: AgendaNotificationScheduler,
     private val dateTimeConversion: DateTimeConversion,
-    private val reminderTimeConversion: ReminderTimeConversion
+    private val reminderTimeConversion: ReminderTimeConversion,
+    private val sharedPrefs: SharedPrefs
 ) : AgendaRepository {
 
     override suspend fun getAgendaItemsOfDateFlow(localDate: LocalDate): Flow<List<AgendaItem>> {
@@ -190,7 +192,7 @@ class AgendaRepositoryImpl(
                     val localEvent = db.getEventDao().getEventById(eventDto.id)
                     val remoteEvent = eventDto.toEventEntity(
                         isDone = localEvent?.isDone ?: false,
-                        isGoing = localEvent?.isGoing ?: true
+                        sharedPrefs = sharedPrefs
                     )
                     db.getEventDao().upsertEvent(remoteEvent)
                     scheduleNotification(
@@ -350,7 +352,7 @@ class AgendaRepositoryImpl(
                     val localEvent = db.getEventDao().getEventById(eventDto.id)
                     val remoteEvent = eventDto.toEventEntity(
                         isDone = localEvent?.isDone ?: false,
-                        isGoing = localEvent?.isGoing ?: true
+                        sharedPrefs = sharedPrefs
                     )
                     db.getEventDao().upsertEvent(remoteEvent)
                     scheduleNotification(
