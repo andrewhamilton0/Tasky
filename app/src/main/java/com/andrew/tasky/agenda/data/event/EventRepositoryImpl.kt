@@ -45,7 +45,6 @@ class EventRepositoryImpl @Inject constructor(
 
     private val imageStorage = ImageStorage(context)
     private val eventPhotoCompressor = EventPhotoCompressor()
-    private val currentUserId = sharedPrefs.getUserId()
 
     override suspend fun upsertEvent(event: Event): UpsertEventResult {
         val unsavedLocalPhotos = event.photos.filterIsInstance<LocalPhoto>().filter {
@@ -174,7 +173,7 @@ class EventRepositoryImpl @Inject constructor(
             db.getEventDao().upsertEvent(
                 it.toEventEntity(
                     isDone = localEvent.isDone,
-                    currentUserId = currentUserId
+                    sharedPrefs = sharedPrefs
                 )
             )
         }

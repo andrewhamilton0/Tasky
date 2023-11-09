@@ -36,8 +36,6 @@ class AgendaRepositoryImpl(
     private val sharedPrefs: SharedPrefs
 ) : AgendaRepository {
 
-    private val currentUserId = sharedPrefs.getUserId()
-
     override suspend fun getAgendaItemsOfDateFlow(localDate: LocalDate): Flow<List<AgendaItem>> {
         val startEpochMilli = dateTimeConversion.localDateTimeToZonedEpochMilli(
             localDate.atStartOfDay()
@@ -194,7 +192,7 @@ class AgendaRepositoryImpl(
                     val localEvent = db.getEventDao().getEventById(eventDto.id)
                     val remoteEvent = eventDto.toEventEntity(
                         isDone = localEvent?.isDone ?: false,
-                        currentUserId = currentUserId
+                        sharedPrefs = sharedPrefs
                     )
                     db.getEventDao().upsertEvent(remoteEvent)
                     scheduleNotification(
@@ -354,7 +352,7 @@ class AgendaRepositoryImpl(
                     val localEvent = db.getEventDao().getEventById(eventDto.id)
                     val remoteEvent = eventDto.toEventEntity(
                         isDone = localEvent?.isDone ?: false,
-                        currentUserId = currentUserId
+                        sharedPrefs = sharedPrefs
                     )
                     db.getEventDao().upsertEvent(remoteEvent)
                     scheduleNotification(
