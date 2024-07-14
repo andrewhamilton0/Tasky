@@ -56,7 +56,7 @@ class AuthRepositoryImpl(
                 Resource.Error(result.message)
             }
             is Resource.Success -> {
-                result.data?.token?.let { prefs.putJwt(it) }
+                result.data?.accessToken?.let { prefs.putJwt(it) }
                 result.data?.userId?.let { prefs.putUserId(it) }
                 result.data?.fullName?.let { prefs.putFullName(it) }
                 Resource.Success()
