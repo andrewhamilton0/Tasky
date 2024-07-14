@@ -83,6 +83,13 @@ class TaskRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun toggleIsDone(taskId: String) {
+        val task = db.getTaskDao().getTaskById(taskId)
+        task?.let {
+            db.getTaskDao().upsertTask(it.copy(isDone = !it.isDone))
+        }
+    }
+
     override suspend fun getTask(taskId: String): AgendaItem.Task? {
         return db.getTaskDao().getTaskById(taskId)?.toTask(
             dateTimeConversion = dateTimeConversion,

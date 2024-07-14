@@ -1,6 +1,5 @@
 package com.andrew.tasky.agenda.presentation.screens.agenda
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
@@ -85,15 +84,13 @@ class AgendaViewModel@Inject constructor(
             withContext(NonCancellable) {
                 when (agendaItem) {
                     is AgendaItem.Event -> {
-                        eventRepository.upsertEvent(agendaItem.copy(isDone = !agendaItem.isDone))
+                        eventRepository.toggleIsDone(agendaItem.id)
                     }
                     is AgendaItem.Reminder -> {
-                        reminderRepository.updateReminder(
-                            agendaItem.copy(isDone = !agendaItem.isDone)
-                        )
+                        reminderRepository.toggleIsDone(agendaItem.id)
                     }
                     is AgendaItem.Task -> {
-                        taskRepository.updateTask(agendaItem.copy(isDone = !agendaItem.isDone))
+                        taskRepository.toggleIsDone(agendaItem.id)
                     }
                 }
             }

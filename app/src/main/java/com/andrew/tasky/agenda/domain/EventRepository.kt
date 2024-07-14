@@ -8,6 +8,7 @@ import com.andrew.tasky.core.data.Resource
 
 interface EventRepository {
     suspend fun upsertEvent(event: AgendaItem.Event): UpsertEventResult
+    suspend fun toggleIsDone(eventId: String)
     suspend fun deleteEvent(eventId: String)
     suspend fun getEvent(eventId: String): AgendaItem.Event?
     suspend fun getAttendee(email: String): Resource<Attendee>

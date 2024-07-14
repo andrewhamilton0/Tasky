@@ -219,15 +219,19 @@ class ReminderDetailFragment : Fragment(R.layout.fragment_reminder_detail) {
                     ReminderTime.TEN_MINUTES_BEFORE ->
                         reminderLayout.reminderTextView.text =
                             getString(R.string.ten_minutes_before)
+
                     ReminderTime.THIRTY_MINUTES_BEFORE ->
                         reminderLayout.reminderTextView.text =
                             getString(R.string.thirty_minutes_before)
+
                     ReminderTime.ONE_HOUR_BEFORE ->
                         reminderLayout.reminderTextView.text =
                             getString(R.string.one_hour_before)
+
                     ReminderTime.SIX_HOURS_BEFORE ->
                         reminderLayout.reminderTextView.text =
                             getString(R.string.six_hours_before)
+
                     ReminderTime.ONE_DAY_BEFORE ->
                         reminderLayout.reminderTextView.text =
                             getString(R.string.one_day_before)

@@ -104,6 +104,13 @@ class EventRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun toggleIsDone(eventId: String) {
+        val event = db.getEventDao().getEventById(eventId)
+        event?.let {
+            db.getEventDao().upsertEvent(it.copy(isDone = !it.isDone))
+        }
+    }
+
     data class CompressionResult(val photos: List<LocalPhoto>, val deletedPhotoCount: Int)
     private suspend fun compressAndDeletePhotos(
         photos: List<LocalPhoto>
