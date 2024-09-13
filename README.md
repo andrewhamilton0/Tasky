@@ -16,7 +16,8 @@ Login Screen | Register Screen | Agenda Screen | Event Detail Screen
 
 Kotlin: Coroutines, flows, state-flows, lambda functions, sealed classes, channels
 
-Android: Workmanager, Room Database, Alarm Manager, MVVM, Recycler Views, Intents, Single Activity Architecture, XML views
-
+Android: Workmanager, Room Database, Alarm Manager, Recycler Views, Intents, Single Activity Architecture, XML views
 
 Other libraries: Glide, Retrofit, Dagger Hilt
+
+Architecture: Mvvm
